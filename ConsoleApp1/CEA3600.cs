@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace ConsoleApp1
 {
-    class CEA3600
+    class CEA3600 : IDisposable
     {
         private string m_ip;
         private int m_port;
@@ -21,6 +21,20 @@ namespace ConsoleApp1
             m_port = port;
             m_name = name;
             m_isCon = false;
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                m_socket.Close();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         public int Con()
         {
@@ -83,21 +97,34 @@ namespace ConsoleApp1
             return 0;
         }
     }
-    class UDPer
+    class UDPer : IDisposable
     {
         private readonly int PORT = 11234;
         private readonly int DEVICE_PORT = 12362;
         private UdpClient udpClient = null;
         private Dictionary<string, KeyValuePair<string, int>> m_deviceTable;
         public List<CEA3600> m_scaner = new List<CEA3600>();
-        private bool m_active = true;
-
 
         public UDPer()
         {
             udpClient = new UdpClient();
             m_deviceTable = new Dictionary<string, KeyValuePair<string, int>>();
             Bind();
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                udpClient.Close();
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         public int Bind()
         {

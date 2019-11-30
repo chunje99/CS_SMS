@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace ConsoleApp1
 {
@@ -52,7 +51,7 @@ namespace ConsoleApp1
                         break;
                     case 'p':  //get pid
                         md.GetPID();
-                            break;
+                        break;
                     case 'r':
                         md.GetDistribution();
                         break;

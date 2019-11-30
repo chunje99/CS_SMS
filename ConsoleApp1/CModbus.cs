@@ -1,15 +1,15 @@
-﻿using System;
+﻿using EasyModbus;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyModbus;
 
 namespace ConsoleApp1
 {
     class CModbus
     {
         static private int readLen = 902;
-        private int[] registers = new int[readLen*2];
+        private int[] registers = new int[readLen * 2];
         Queue<KeyValuePair<int, int>> m_changeQueue = new Queue<KeyValuePair<int, int>>();
         ModbusClient m_modbusClient = null;
         private EasyModbus.ModbusServer modbusServer = null;
@@ -106,13 +106,18 @@ namespace ConsoleApp1
                 {
                     try
                     {
+                        if (m_changeQueue.Count <= 0)
+                        {
+                            await Task.Delay(100);
+                            continue;
+                        }
                         var kv = m_changeQueue.Dequeue();
                         Console.WriteLine("Value of HoldingRegister " + kv.Key + " " + kv.Value.ToString());
 
                         //Get PID
-                        if(kv.Key == 900 || kv.Key == 901)
+                        if (kv.Key == 900 || kv.Key == 901)
                         {
-                            if(GetPID() == 1)
+                            if (GetPID() == 1)
                             {
                                 Distribution();
                             }
@@ -120,8 +125,7 @@ namespace ConsoleApp1
                     }
                     catch (Exception e)
                     {
-                        //Console.WriteLine(e.ToString());
-                        await Task.Delay(100);
+                        Console.WriteLine(e.ToString());
                     }
                 }
             });
@@ -167,7 +171,7 @@ namespace ConsoleApp1
             int[] r = m_modbusClient.ReadHoldingRegisters(900, 2);    //Read 10 Holding Registers from Server, starting with Address 1
             int pid = r[1] * 65536 + r[0];
             Console.WriteLine("Value of HoldingRegister: " + pid);
-            if ( m_pid != pid)
+            if (m_pid != pid)
             {
                 m_pid = pid;
                 Console.WriteLine("Reset 32010");
@@ -179,7 +183,7 @@ namespace ConsoleApp1
         public int Distribution()
         {
             //todo Get chuteID
-            m_modbusClient.WriteMultipleRegisters(32000, new int[] { m_pid%65536, m_pid/65536, chuteID, 0 });
+            m_modbusClient.WriteMultipleRegisters(32000, new int[] { m_pid % 65536, m_pid / 65536, chuteID, 0 });
             Console.WriteLine("Set chute " + (chuteID + 1));
             chuteID++;
             chuteID = chuteID % 48;
@@ -197,7 +201,7 @@ namespace ConsoleApp1
         {
             Console.WriteLine("===================");
             Console.Write("Value of HoldingRegister ");
-            for (int i = 0; i < readLen ; i++)
+            for (int i = 0; i < readLen; i++)
             {
                 if (i % 10 == 0)
                     Console.WriteLine("");
