@@ -1,4 +1,7 @@
 ﻿using System;
+using CS_SMS_LIB;
+using System.Diagnostics;
+
 
 namespace ConsoleApp1
 {
@@ -6,51 +9,52 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("==============");
-            Console.WriteLine("START");
-            Console.WriteLine("==============");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("START");
+            Debug.WriteLine("==============");
 
-            Console.WriteLine("==============");
-            Console.WriteLine("Scaner");
-            Console.WriteLine("==============");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("Scaner");
+            Debug.WriteLine("==============");
             UDPer udp = new UDPer();
             udp.Start();
-            Console.WriteLine("==============");
-            Console.WriteLine("Find Zebra");
-            Console.WriteLine("==============");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("Find Zebra");
+            Debug.WriteLine("==============");
             udp.Scan();
             udp.Tables();
 
-            Console.WriteLine("==============");
-            Console.WriteLine("PLC");
-            Console.WriteLine("==============");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("PLC");
+            Debug.WriteLine("==============");
             CModbus md = new CModbus("127.0.0.1", 502);
             md.StartClient();
             //md.startServer();
 
             bool active = true;
+            int chuteid = 1;
             while (active)
             {
 
-                Console.WriteLine("Press any key to continue . . . ");
-                Console.WriteLine("w : make pid");
-                Console.WriteLine("W : Distribution");
-                Console.WriteLine("p : get pid");
-                Console.WriteLine("r : read distribution state");
-                Console.WriteLine("a : read all");
-                Console.WriteLine("s : scaner start");
-                Console.WriteLine("x : exit");
+                Debug.WriteLine("Press any key to continue . . . ");
+                Debug.WriteLine("w : make pid");
+                Debug.WriteLine("W : Distribution");
+                Debug.WriteLine("p : get pid");
+                Debug.WriteLine("r : read distribution state");
+                Debug.WriteLine("a : read all");
+                Debug.WriteLine("s : scaner start");
+                Debug.WriteLine("x : exit");
                 var cki = Console.ReadKey(true);
                 switch (cki.KeyChar)
                 {
                     case 'w':  //make pid
-                        md.MakePID();
+                        md.MakePID(chuteid++);
                         break;
                     case 'W':  //Distribution
                         md.Distribution();
                         break;
                     case 'p':  //get pid
-                        md.GetPID();
+                        Debug.WriteLine(md.m_pid);
                         break;
                     case 'r':
                         md.GetDistribution();
@@ -64,12 +68,12 @@ namespace ConsoleApp1
                         {
                             scaner.act0 = (name, barcode) =>
                             {
-                                Console.WriteLine("==============");
-                                Console.WriteLine("MAIN");
-                                Console.WriteLine(name);
-                                Console.WriteLine(barcode);
-                                Console.WriteLine("==============");
-                                md.MakePID();
+                                Debug.WriteLine("==============");
+                                Debug.WriteLine("MAIN");
+                                Debug.WriteLine(name);
+                                Debug.WriteLine(barcode);
+                                Debug.WriteLine("==============");
+                                md.MakePID(chuteid++);
                             };
                         }
                         break;

@@ -3,23 +3,30 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
-namespace ConsoleApp1
+namespace CS_SMS_LIB
 {
-    class CModbus
+    public class CModbus
     {
         static private int readLen = 902;
         private int[] registers = new int[readLen * 2];
-        Queue<KeyValuePair<int, int>> m_changeQueue = new Queue<KeyValuePair<int, int>>();
-        ModbusClient m_modbusClient = null;
+        private Queue<KeyValuePair<int, int>> m_changeQueue = new Queue<KeyValuePair<int, int>>();
+        private ModbusClient m_modbusClient = null;
         private EasyModbus.ModbusServer modbusServer = null;
-        private int m_port = 502;
-        private string m_host = "127.0.0.1";
-        private bool m_active = true;
-        private int chuteID = 0;
+        public int m_port { get; set; } = 502;
+        public string m_host { get; set; } = "127.0.0.1";
+        private bool m_active  = true;
+        public int m_chuteID { get; set; } = 0;
         private int conCnt = 0;
-        private int m_pid = -1;
+        public int m_pid { get; set; } = -1;
 
+        public CModbus()
+        {
+            m_host = "127.0.0.1";
+            m_port = 502;
+            m_active = true;
+        }
         public CModbus(string host, int port)
         {
             m_host = host;
@@ -43,7 +50,7 @@ namespace ConsoleApp1
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
                 Thread.Sleep(1000);
                 if (m_active)
                     return Connection();
@@ -60,7 +67,7 @@ namespace ConsoleApp1
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
             }
             return 0;
 
@@ -85,13 +92,13 @@ namespace ConsoleApp1
                                 {
                                     registers[offset] = r[i];
                                     m_changeQueue.Enqueue(new KeyValuePair<int, int>(offset, r[i]));
-                                    //Console.WriteLine("Value of HoldingRegister " + i + " " + r[i].ToString());
+                                    //Debug.WriteLine("Value of HoldingRegister " + i + " " + r[i].ToString());
                                 }
                         }
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.ToString());
+                        Debug.WriteLine(e.ToString());
                         Connection();
                     }
                     await Task.Delay(100);
@@ -112,12 +119,12 @@ namespace ConsoleApp1
                             continue;
                         }
                         var kv = m_changeQueue.Dequeue();
-                        Console.WriteLine("Value of HoldingRegister " + kv.Key + " " + kv.Value.ToString());
+                        Debug.WriteLine("Value of HoldingRegister " + kv.Key + " " + kv.Value.ToString());
 
                         //Get PID
                         if (kv.Key == 900 || kv.Key == 901)
                         {
-                            if (GetPID() == 1)
+                            if (SetPID() == 1)
                             {
                                 Distribution();
                             }
@@ -125,7 +132,7 @@ namespace ConsoleApp1
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.ToString());
+                        Debug.WriteLine(e.ToString());
                     }
                 }
             });
@@ -154,27 +161,28 @@ namespace ConsoleApp1
 
         public void HoldingRegistersChanged(int startingAddress, int quantity)
         {
-            Console.WriteLine(startingAddress);
-            Console.WriteLine(quantity);
+            Debug.WriteLine(startingAddress);
+            Debug.WriteLine(quantity);
             for (int i = 0; i < quantity; i++)
-                Console.WriteLine(modbusServer.holdingRegisters[startingAddress + i]);
+                Debug.WriteLine(modbusServer.holdingRegisters[startingAddress + i]);
         }
-        public int MakePID()
+        public int MakePID(int chuteID)
         {
-            Console.WriteLine("MakePID");
+            Debug.WriteLine("MakePID chuteID :" + chuteID);
+            m_chuteID = chuteID;
             m_modbusClient.WriteMultipleRegisters(32010, new int[] { 1 });
             return 0;
         }
-        public int GetPID()
+        private int SetPID()
         {
-            Console.WriteLine("GetPID");
+            Debug.WriteLine("SetPID");
             int[] r = m_modbusClient.ReadHoldingRegisters(900, 2);    //Read 10 Holding Registers from Server, starting with Address 1
             int pid = r[1] * 65536 + r[0];
-            Console.WriteLine("Value of HoldingRegister: " + pid);
+            Debug.WriteLine("Value of HoldingRegister: " + pid);
             if (m_pid != pid)
             {
                 m_pid = pid;
-                Console.WriteLine("Reset 32010");
+                Debug.WriteLine("Reset 32010");
                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
                 return 1;  /// update
             }
@@ -183,10 +191,8 @@ namespace ConsoleApp1
         public int Distribution()
         {
             //todo Get chuteID
-            m_modbusClient.WriteMultipleRegisters(32000, new int[] { m_pid % 65536, m_pid / 65536, chuteID, 0 });
-            Console.WriteLine("Set chute " + (chuteID + 1));
-            chuteID++;
-            chuteID = chuteID % 48;
+            m_modbusClient.WriteMultipleRegisters(32000, new int[] { m_pid % 65536, m_pid / 65536, m_chuteID, 0 });
+            Debug.WriteLine("Set chute " + (m_chuteID + 1));
             return 0;
         }
         public int GetDistribution()
@@ -194,22 +200,22 @@ namespace ConsoleApp1
             int[] r = m_modbusClient.ReadHoldingRegisters(32000, 4);    //Read 10 Holding Registers from Server, starting with Address 1
             int pid = r[1] * 65536 + r[0];
             int chute = r[3] * 65536 + r[2];
-            Console.WriteLine("pid : " + pid + " , cute : " + chute);
+            Debug.WriteLine("pid : " + pid + " , cute : " + chute);
             return 0;
         }
         public int PrintAll()
         {
-            Console.WriteLine("===================");
-            Console.Write("Value of HoldingRegister ");
+            Debug.WriteLine("===================");
+            Debug.Write("Value of HoldingRegister ");
             for (int i = 0; i < readLen; i++)
             {
                 if (i % 10 == 0)
-                    Console.WriteLine("");
-                Console.Write(registers[i] + ", ");
+                    Debug.WriteLine("");
+                Debug.Write(registers[i] + ", ");
 
             }
-            Console.WriteLine("");
-            Console.WriteLine("===================");
+            Debug.WriteLine("");
+            Debug.WriteLine("===================");
             return 0;
         }
         public void SetActive(bool active)

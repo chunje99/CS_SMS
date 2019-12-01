@@ -4,17 +4,19 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
-namespace ConsoleApp1
+namespace CS_SMS_LIB
 {
-    class CEA3600 : IDisposable
+    public class CEA3600 : IDisposable
     {
-        private string m_ip;
+        string m_ip;
         private int m_port;
         private Socket m_socket;
-        private string m_name;
+        public string m_name { get; } = "";
         private bool m_isCon;
         public Action<string, string> act0 = null;
+        public Queue<string> m_msgQueue = new Queue<string>();
         public CEA3600(string ip, int port, string name)
         {
             m_ip = ip;
@@ -54,8 +56,8 @@ namespace ConsoleApp1
         }
         public int Start()
         {
-            Console.WriteLine("==============");
-            Console.WriteLine("Scaner START {0}", m_name);
+            Debug.WriteLine("==============");
+            Debug.WriteLine("Scaner START {0}", m_name);
             Task.Run(() =>
             {
                 // we got the client attempting to connect
@@ -68,48 +70,56 @@ namespace ConsoleApp1
                         bytesRec = m_socket.Receive(header);
                         if (header[0] != 0)
                         {
-                            Console.WriteLine("{0} : 프로토콜 에러", m_name);
+                            Debug.WriteLine("{0} : 프로토콜 에러", m_name);
                             break;
                         }
                         if (bytesRec < 3)
                         {
-                            Console.WriteLine("{0} : size < 3", m_name);
+                            Debug.WriteLine("{0} : size < 3", m_name);
                             break;
                         }
                         int barcodeSize = header[1] - 3;
                         int barcodeType = header[2];
-                        Console.WriteLine("{0} : Length {1} Type {2}",
+                        Debug.WriteLine("{0} : Length {1} Type {2}",
                             m_name, barcodeSize.ToString(), barcodeType.ToString());
                         byte[] body = new byte[barcodeSize];
                         bytesRec = m_socket.Receive(body);
                         string data = Encoding.ASCII.GetString(body, 0, bytesRec);
-                        //Console.WriteLine(bytes[0]);
-                        Console.WriteLine("{0} : {1}", m_name, data);
+                        //Debug.WriteLine(bytes[0]);
+                        Debug.WriteLine("{0} : {1}", m_name, data);
                         act0(m_name, data);
+                        m_msgQueue.Enqueue(data);
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    Debug.WriteLine(e.ToString());
                 }
             });
 
             return 0;
         }
     }
-    class UDPer : IDisposable
+    public class UDPer : IDisposable
     {
         private readonly int PORT = 11234;
         private readonly int DEVICE_PORT = 12362;
         private UdpClient udpClient = null;
-        private Dictionary<string, KeyValuePair<string, int>> m_deviceTable;
-        public List<CEA3600> m_scaner = new List<CEA3600>();
+        public Dictionary<string, KeyValuePair<string, int>> m_deviceTable { get; } = null;
+        public List<CEA3600> m_scaner { get;} = new List<CEA3600>();
 
         public UDPer()
         {
+            Debug.WriteLine("UDPer");
             udpClient = new UdpClient();
+            Debug.WriteLine("udpClient");
             m_deviceTable = new Dictionary<string, KeyValuePair<string, int>>();
+            Debug.WriteLine("m_deviceTalbe");
             Bind();
+        }
+        public void Print()
+        {
+            Debug.WriteLine("Print");
         }
         protected virtual void Dispose(bool disposing)
         {
@@ -128,11 +138,13 @@ namespace ConsoleApp1
         }
         public int Bind()
         {
+            Debug.WriteLine("Bind()");
             udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
             return 0;
         }
         public int Start()
         {
+            Debug.WriteLine("Start()");
             Task.Run(() =>
             {
                 while (true)
@@ -142,13 +154,13 @@ namespace ConsoleApp1
                         var from = new IPEndPoint(0, 0);
                         var recvBuffer = udpClient.Receive(ref from);
                         string MAC = Encoding.UTF8.GetString(recvBuffer);
-                        Console.WriteLine(MAC);
+                        Debug.WriteLine(MAC);
                         if (!m_deviceTable.ContainsKey(MAC))
                             m_deviceTable.Add(MAC, new KeyValuePair<string, int>(from.Address.ToString(), 54321));
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.ToString());
+                        Debug.WriteLine(e.ToString());
                     }
                 }
             });
@@ -156,8 +168,8 @@ namespace ConsoleApp1
         }
         public int Scan()
         {
-            Console.WriteLine("==============");
-            Console.WriteLine("SCAN");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("SCAN");
             m_deviceTable.Clear();
             byte[] bytes = Encoding.ASCII.GetBytes("MVP\x0d");
             udpClient.Send(bytes, bytes.Length, "255.255.255.255", DEVICE_PORT);
@@ -165,18 +177,19 @@ namespace ConsoleApp1
         }
         public int Tables()
         {
-            Console.WriteLine("==============");
-            Console.WriteLine("Tables");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("Tables");
             foreach (KeyValuePair<string, KeyValuePair<string, int>> kv in m_deviceTable)
             {
-                Console.WriteLine("MAC : {0}, IP : {1}, PORT : {2}", kv.Key, kv.Value.Key, kv.Value.ToString());
+                Debug.WriteLine("MAC : {0}, IP : {1}, PORT : {2}", kv.Key, kv.Value.Key, kv.Value.ToString());
             }
             return 0;
         }
         public int StartScaner()
         {
-            Console.WriteLine("==============");
-            Console.WriteLine("StartScaner");
+            Debug.WriteLine("==============");
+            Debug.WriteLine("StartScaner");
+            StopScanner();
             foreach (KeyValuePair<string, KeyValuePair<string, int>> kv in m_deviceTable)
             {
                 m_scaner.Add(new CEA3600(kv.Value.Key, kv.Value.Value, kv.Key));

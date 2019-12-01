@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="CS_SMS_APP.ConnectPLC"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CS_SMS_APP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock>Connect PLC</TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="HOST " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="200,100,0,0" Text="127.0.0.1" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="PLC_Host"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,100,0,0" Text="502" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="PLC_Port"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,100,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="PLC_Status"/>
+        <Button Content="접속" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="PLC_Connect" Click="PLC_Connect_Click"/>
+    </Grid>
+
+</Page>

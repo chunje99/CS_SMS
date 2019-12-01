@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="CS_SMS_APP.Monitoring"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CS_SMS_APP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock>Monitoring</TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="150,50,0,0" Text="스캐너 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="250,50,0,0" Text="0 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="260,50,0,0" Text="스캐너0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner0"/>
+        <TextBlock HorizontalAlignment="Left" Margin="480,50,0,0" Text="1 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="490,50,0,0" Text="스캐너1" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner1"/>
+        <TextBlock HorizontalAlignment="Left" Margin="710,50,0,0" Text="2 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="720,50,0,0" Text="스캐너2" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="940,50,0,0" Text="3 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="950,50,0,0" Text="스캐너3" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner3"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1170,50,0,0" Text="4 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="1180,50,0,0" Text="스캐너4" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner4"/>
+        <TextBlock HorizontalAlignment="Left" Margin="230,100,0,0" Text="PID" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="260,100,0,0" Text="-1" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_pid"/>
+        <TextBlock HorizontalAlignment="Left" Margin="220,150,0,0" Text="chute" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="260,150,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_chuteid"/>
+        <ListView Margin="300,200,0,0" >
+            <Grid x:Name="HeartBest">
+            </Grid>
+        </ListView>
+        <ListView x:Name="HeartList" Margin="600,200,0,0" >
+        </ListView>
+    </Grid>
+
+</Page>
