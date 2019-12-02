@@ -25,6 +25,8 @@ namespace CS_SMS_APP
     {
         public static UDPer udp  =  new UDPer();
         public static CModbus md = new CModbus();
+        public static CBanner banner = new CBanner();
+
         public static TextBox[] m_scanner = new TextBox[5];
         public static Queue<string> m_msgQueue = new Queue<string>();
         public global()
@@ -80,6 +82,9 @@ namespace CS_SMS_APP
                     ContentFrame.Navigate(typeof(Home));
                     break;
                 case "scanner":
+                    ContentFrame.Navigate(typeof(MainScanner));
+                    break;
+                case "scanners":
                     ContentFrame.Navigate(typeof(SearchScanner));
                     break;
                 case "plc":

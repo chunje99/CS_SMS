@@ -7,15 +7,8 @@ namespace ConsoleApp1
 {
     class Program
     {
-        static void Main(string[] args)
+        static public void Test1()
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("START");
-            Debug.WriteLine("==============");
-
-            Debug.WriteLine("==============");
-            Debug.WriteLine("Scaner");
-            Debug.WriteLine("==============");
             UDPer udp = new UDPer();
             udp.Start();
             Debug.WriteLine("==============");
@@ -86,5 +79,44 @@ namespace ConsoleApp1
             }
             md.Disconnection();
         }
+        static void Test2()
+        {
+            CBanner banner = new CBanner();
+            banner.m_ip = "192.168.0.100";
+            banner.m_port = 5123;
+            Debug.WriteLine( "Connect : " + banner.Connect());
+            banner.m_port = 51236;
+            Debug.WriteLine( "Connect : " + banner.Connect());
+            banner.Start();
+
+            bool active = true;
+            while (active)
+            {
+
+                Debug.WriteLine("Press any key to continue . . . ");
+                Debug.WriteLine("x : exit");
+                var cki = Console.ReadKey(true);
+                switch (cki.KeyChar)
+                {
+                    case 'x':
+                        active = false;
+                        break;
+                }
+            }
+
+        }
+        static void Main(string[] args)
+        {
+            Debug.WriteLine("==============");
+            Debug.WriteLine("START");
+            Debug.WriteLine("==============");
+
+            Debug.WriteLine("==============");
+            Debug.WriteLine("Scaner");
+            Debug.WriteLine("==============");
+            //Program.Test1();
+            Program.Test2();
+        }
+
     }
 }

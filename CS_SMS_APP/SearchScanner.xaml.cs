@@ -87,11 +87,10 @@ namespace CS_SMS_APP
                 names[i] = device.Key.Replace("MAC=", "").Replace("PORT=54321","");
                 i++;
             }
-            Scanner_0.Text = names[0];
-            Scanner_1.Text = names[1];
-            Scanner_2.Text = names[2];
-            Scanner_3.Text = names[3];
-            Scanner_4.Text = names[4];
+            Scanner_1.Text = names[0];
+            Scanner_2.Text = names[1];
+            Scanner_3.Text = names[2];
+            Scanner_4.Text = names[3];
         }
 
         private void Click_Connection(object sender, RoutedEventArgs e)

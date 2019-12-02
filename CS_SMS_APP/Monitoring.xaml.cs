@@ -27,6 +27,18 @@ namespace CS_SMS_APP
     /// </summary>
     public sealed partial class Monitoring : Page
     {
+        public MonitorData m_monitorData { get; set; }
+        public Monitoring()
+        {
+            this.InitializeComponent();
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+            this.m_monitorData = new MonitorData();
+
+            SetMainScanner();
+            CheckMsg();
+            MakeTable();
+        }
+
         private void CheckMsg()
         {
             Task.Run(() =>
@@ -42,32 +54,26 @@ namespace CS_SMS_APP
                             if (global.udp.m_scaner[i].m_msgQueue.Count() > 0 )
                             {
                                 var barcode = global.udp.m_scaner[i].m_msgQueue.Dequeue();
-                                global.md.MakePID(++global.md.m_chuteID);
                                 var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                 {
                                     switch(idx)
                                     {
                                         case 0:
-                                            UpdateUI(Monitoring_scanner0, barcode);
-                                            break;
-                                        case 1:
                                             UpdateUI(Monitoring_scanner1, barcode);
                                             break;
-                                        case 2:
+                                        case 1:
                                             UpdateUI(Monitoring_scanner2, barcode);
                                             break;
-                                        case 3:
+                                        case 2:
                                             UpdateUI(Monitoring_scanner3, barcode);
                                             break;
-                                        case 4:
+                                        case 3:
                                             UpdateUI(Monitoring_scanner4, barcode);
                                             break;
                                     }
                                 });
                             }
                         }
-                        UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
-                        UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
 
                         Thread.Sleep(100);
                     }
@@ -88,51 +94,116 @@ namespace CS_SMS_APP
                 tbox.Text = barcode;
             });
         }
-        public Monitoring()
+        public int SetMainScanner()
         {
-            this.InitializeComponent();
-            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
-            CheckMsg();
-            for(int i = 0; i < 13; i++)
+            global.banner.act0 = (string data) =>
+            {
+                global.md.MakePID(++global.md.m_chuteID);
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateUI(Monitoring_scanner0, data);
+                    UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
+                    UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
+                });
+
+            };
+            return 0;
+        }
+        public int MakeTable()
+        {
+            MakeTableHeartBest();
+            MakeTableTrackingData();
+            return 0;
+        }
+        public int MakeTableHeartBest()
+        {
+            /*
+            for (int i = 0; i < 13; i++)
             {
                 ColumnDefinition c1 = new ColumnDefinition();
-                c1.Width = new GridLength(100, GridUnitType.Star);
+                c1.Width = new GridLength(150, GridUnitType.Auto);
                 HeartBest.ColumnDefinitions.Add(c1);
             }
-            for(int i = 0; i < 13; i++)
+            for (int i = 0; i < 2; i++)
             {
                 RowDefinition rowDef = new RowDefinition();
                 HeartBest.RowDefinitions.Add(rowDef);
             }
+
             TextBlock t1 = new TextBlock();
-            t1.Text = "asdfasdfasf";
+            t1.Text = "Current Cnt";
             Grid.SetColumn(t1, 0);
             Grid.SetRow(t1, 0);
             HeartBest.Children.Add(t1);
-            TextBlock t2 = new TextBlock();
-            t2.Text = "asdfasdfasf";
-            Grid.SetColumn(t2, 0);
-            Grid.SetRow(t2, 1);
-            HeartBest.Children.Add(t2);
-            TextBlock t3 = new TextBlock();
-            t3.Text = "asdfasdfasf";
-            Grid.SetColumn(t3, 0);
-            Grid.SetRow(t3, 2);
-            HeartBest.Children.Add(t3);
 
-            String[] aa = { "aa1", "aa2", "", "" };
-            var lv1 = new ListViewItem();
-            lv1.Content = "Test Content";
-            lv1.Width = 400;
-            lv1.HorizontalAlignment = HorizontalAlignment.Stretch;
-            lv1.VerticalAlignment = VerticalAlignment.Stretch;
-            HeartList.Items.Add(lv1);
-
+            for (int i = 1; i < 13 ; i++)
+            {
+                t1 = new TextBlock();
+                //t1.Text = "{x:Bind m_monitorData.HeartBest[" + i +"]}";
+                //"{x:Bind m_monitorData.HeartBest[" + i +"]}";
+                Binding b = new Binding();
+                b.Source = m_monitorData.HeartBest[i];
+                t1.SetBinding(TextBlock.TextProperty, b);
+                Grid.SetRow(t1, 0);
+                Grid.SetColumn(t1, i);
+                HeartBest.Children.Add(t1);
+            }
+            
+            for (int i = 0; i < 13 ; i++)
+            {
+                t1 = new TextBlock();
+                t1.Text = global.md.registers[i].ToString();
+                Grid.SetRow(t1, 1);
+                Grid.SetColumn(t1, i);
+                HeartBest.Children.Add(t1);
+            }
+            */
+            return 0;
+        }
+        public int MakeTableTrackingData()
+        {
+            /*
+                    <TextBlock Text="1" Margin="0,0,0,0"></TextBlock>
+                    <TextBlock Text="PID" Margin="50,0,0,0"></TextBlock>
+                    <TextBlock Text="chute num" Margin="50,20,0,0"></TextBlock>
+                    <TextBlock Text="PID" Margin="150,0,0,0"></TextBlock>
+                    <TextBlock Text="chute num" Margin="150,20,0,0"></TextBlock>
+            */
+            for ( int i = 0; i < 10; i++)
+            {
+                Grid g1 = new Grid();
+                TextBlock t1 = new TextBlock();
+                t1.Text = i.ToString();
+                g1.Children.Add(t1);
+                TextBlock t2 = new TextBlock();
+                t2.Text = "PID";
+                t2.Margin = new Thickness(50, 0, 0, 0);
+                g1.Children.Add(t2);
+                TrackingData.Children.Add(g1);
+            }
+            return 0;
         }
         public class Heart_Best
         {
             public string[] name { get; set; } = new string[13];
         }
         public ObservableCollection<Heart_Best> m_items { get; set; } = new ObservableCollection<Heart_Best>();
+
+        private void Monitoring_chuteid_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Bindings.Update();
+        }
+    }
+    public class MonitorData
+    {
+        public int[] HeartBest { get; set; }
+        public int[] SettingData { get; set; }
+        public int[] EventData { get; set; }
+        public MonitorData()
+        {
+            HeartBest = new int[13];
+            SettingData = new int[12];
+            EventData = new int[72];
+        }
     }
 }

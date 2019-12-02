@@ -21,9 +21,10 @@
                 </NavigationViewItem>
                 <NavigationViewItemSeparator/>
                 <NavigationViewItemHeader Content="Main pages"/>
-                <NavigationViewItem x:Uid="AppsNavItem" Icon="AllApps" Content="Search Sacnner" Tag="scanner"/>
-                <NavigationViewItem x:Uid="GamesNavItem" Icon="Video" Content="Connect PLC" Tag="plc"/>
-                <NavigationViewItem x:Uid="MusicNavItem" Icon="Audio" Content="Monitoring" Tag="monitoring"/>
+                <NavigationViewItem x:Uid="AppsNavItem" Icon="Camera" Content="Main Sacnner" Tag="scanner"/>
+                <NavigationViewItem x:Uid="AppsNavItem" Icon="Scan" Content="Search Sacnners" Tag="scanners"/>
+                <NavigationViewItem x:Uid="GamesNavItem" Icon="Remote" Content="Connect PLC" Tag="plc"/>
+                <NavigationViewItem x:Uid="MusicNavItem" Icon="View" Content="Monitoring" Tag="monitoring"/>
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" Margin="24">

@@ -87,7 +87,8 @@ namespace CS_SMS_LIB
                         string data = Encoding.ASCII.GetString(body, 0, bytesRec);
                         //Debug.WriteLine(bytes[0]);
                         Debug.WriteLine("{0} : {1}", m_name, data);
-                        act0(m_name, data);
+                        if(act0 != null)
+                            act0(m_name, data);
                         m_msgQueue.Enqueue(data);
                     }
                 }

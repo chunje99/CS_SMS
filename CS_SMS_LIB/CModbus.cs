@@ -10,7 +10,7 @@ namespace CS_SMS_LIB
     public class CModbus
     {
         static private int readLen = 902;
-        private int[] registers = new int[readLen * 2];
+        public int[] registers { get; } = new int[readLen * 2];
         private Queue<KeyValuePair<int, int>> m_changeQueue = new Queue<KeyValuePair<int, int>>();
         private ModbusClient m_modbusClient = null;
         private EasyModbus.ModbusServer modbusServer = null;

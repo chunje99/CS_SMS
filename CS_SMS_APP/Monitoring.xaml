@@ -24,12 +24,89 @@
         <TextBlock HorizontalAlignment="Left" Margin="230,100,0,0" Text="PID" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="260,100,0,0" Text="-1" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_pid"/>
         <TextBlock HorizontalAlignment="Left" Margin="220,150,0,0" Text="chute" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="260,150,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_chuteid"/>
-        <ListView Margin="300,200,0,0" >
+        <TextBox HorizontalAlignment="Left" Margin="260,150,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_chuteid" TextChanged="Monitoring_chuteid_TextChanged"/>
+        <ListView Margin="300,200,0,0" x:Name="listView">
             <Grid x:Name="HeartBest">
+                <TextBlock Text="CNT" Margin="0,0,0,0"></TextBlock>
+                <TextBlock Text="Mod1" Margin="50,0,0,0"></TextBlock>
+                <TextBlock Text="Mod2" Margin="100,0,0,0"></TextBlock>
+                <TextBlock Text="Mod3" Margin="150,0,0,0"></TextBlock>
+                <TextBlock Text="Mod4" Margin="200,0,0,0"></TextBlock>
+                <TextBlock Text="Mod5" Margin="250,0,0,0"></TextBlock>
+                <TextBlock Text="Mod6" Margin="300,0,0,0"></TextBlock>
+                <TextBlock Text="Mod7" Margin="350,0,0,0"></TextBlock>
+                <TextBlock Text="Mod8" Margin="400,0,0,0"></TextBlock>
+                <TextBlock Text="Mod9" Margin="450,0,0,0"></TextBlock>
+                <TextBlock Text="Mod10" Margin="500,0,0,0"></TextBlock>
+                <TextBlock Text="Mod11" Margin="550,0,0,0"></TextBlock>
+                <TextBlock Text="Mod12" Margin="600,0,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[0]}" Margin="0,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[1]}" Margin="50,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[2]}" Margin="100,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[3]}" Margin="150,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[4]}" Margin="200,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[5]}" Margin="250,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[6]}" Margin="300,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[7]}" Margin="350,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[8]}" Margin="400,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[9]}" Margin="450,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[10]}" Margin="500,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[11]}" Margin="550,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.HeartBest[12]}" Margin="600,20,0,0"></TextBlock>
             </Grid>
-        </ListView>
-        <ListView x:Name="HeartList" Margin="600,200,0,0" >
+            <Grid x:Name="SettingData">
+                <TextBlock Text="Mod1" Margin="0,0,0,0"></TextBlock>
+                <TextBlock Text="Mod2" Margin="50,0,0,0"></TextBlock>
+                <TextBlock Text="Mod3" Margin="100,0,0,0"></TextBlock>
+                <TextBlock Text="Mod4" Margin="150,0,0,0"></TextBlock>
+                <TextBlock Text="Mod5" Margin="200,0,0,0"></TextBlock>
+                <TextBlock Text="Mod6" Margin="250,0,0,0"></TextBlock>
+                <TextBlock Text="Mod7" Margin="300,0,0,0"></TextBlock>
+                <TextBlock Text="Mod8" Margin="350,0,0,0"></TextBlock>
+                <TextBlock Text="Mod9" Margin="400,0,0,0"></TextBlock>
+                <TextBlock Text="Mod10" Margin="450,0,0,0"></TextBlock>
+                <TextBlock Text="Mod11" Margin="500,0,0,0"></TextBlock>
+                <TextBlock Text="Mod12" Margin="550,0,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[0]}" Margin="0,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[1]}" Margin="50,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[2]}" Margin="100,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[3]}" Margin="150,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[4]}" Margin="200,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[5]}" Margin="250,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[6]}" Margin="300,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[7]}" Margin="350,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[8]}" Margin="400,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[9]}" Margin="450,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[10]}" Margin="500,20,0,0"></TextBlock>
+                <TextBlock Text="{x:Bind m_monitorData.SettingData[11]}" Margin="550,20,0,0"></TextBlock>
+            </Grid>
+            <Grid x:Name="EventData">
+                <Grid>
+                    <TextBlock Text="Mod1" Margin="0,0,0,0"></TextBlock>
+                    <TextBlock Text="Alam Code" Margin="50,0,0,0"></TextBlock>
+                    <TextBlock Text="Speed" Margin="50,20,0,0"></TextBlock>
+                    <TextBlock Text="1_Chute만재" Margin="50,40,0,0"></TextBlock>
+                    <TextBlock Text="2_Chute만재" Margin="50,60,0,0"></TextBlock>
+                    <TextBlock Text="3_Chute만재" Margin="50,80,0,0"></TextBlock>
+                    <TextBlock Text="4_Chute만재" Margin="50,100,0,0"></TextBlock>
+
+                    <TextBlock Text="{x:Bind m_monitorData.EventData[0]}" Margin="150,0,0,0"></TextBlock>
+                    <TextBlock Text="{x:Bind m_monitorData.EventData[1]}" Margin="150,20,0,0"></TextBlock>
+                    <TextBlock Text="{x:Bind m_monitorData.EventData[2]}" Margin="150,40,0,0"></TextBlock>
+                    <TextBlock Text="{x:Bind m_monitorData.EventData[3]}" Margin="150,60,0,0"></TextBlock>
+                    <TextBlock Text="{x:Bind m_monitorData.EventData[4]}" Margin="150,80,0,0"></TextBlock>
+                    <TextBlock Text="{x:Bind m_monitorData.EventData[5]}" Margin="150,100,0,0"></TextBlock>
+                </Grid>
+            </Grid>
+            <Grid x:Name="TrackingData">
+                <Grid>
+                    <TextBlock Text="1" Margin="0,0,0,0"></TextBlock>
+                    <TextBlock Text="PID" Margin="50,0,0,0"></TextBlock>
+                    <TextBlock Text="chute num" Margin="50,20,0,0"></TextBlock>
+                    <TextBlock Text="PID" Margin="150,0,0,0"></TextBlock>
+                    <TextBlock Text="chute num" Margin="150,20,0,0"></TextBlock>
+                </Grid>
+            </Grid>
         </ListView>
     </Grid>
 
