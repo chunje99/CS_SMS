@@ -89,7 +89,27 @@ namespace ConsoleApp1
             Debug.WriteLine( "Connect : " + banner.Connect());
             banner.Start();
 
-            bool active = true;
+        }
+        static public void Test3()
+        {
+            CApi api = new CApi();
+            Class1 ca = new Class1();
+            ca.Start();
+        }
+        static void Main(string[] args)
+        {
+            Debug.WriteLine("==============");
+            Debug.WriteLine("START");
+            Debug.WriteLine("==============");
+
+            Debug.WriteLine("==============");
+            Debug.WriteLine("Scaner");
+            Debug.WriteLine("==============");
+            //Program.Test1();
+            //Program.Test2();
+            Program.Test3();
+
+            bool active = false;
             while (active)
             {
 
@@ -103,19 +123,6 @@ namespace ConsoleApp1
                         break;
                 }
             }
-
-        }
-        static void Main(string[] args)
-        {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("START");
-            Debug.WriteLine("==============");
-
-            Debug.WriteLine("==============");
-            Debug.WriteLine("Scaner");
-            Debug.WriteLine("==============");
-            //Program.Test1();
-            Program.Test2();
         }
 
     }
