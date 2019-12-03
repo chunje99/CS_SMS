@@ -20,6 +20,8 @@ namespace CS_SMS_LIB
         public int m_chuteID { get; set; } = 0;
         private int conCnt = 0;
         public int m_pid { get; set; } = -1;
+        public Action<int, int> act0 = null;
+        public bool m_dist { get; set; } = true;
 
         public CModbus()
         {
@@ -86,6 +88,7 @@ namespace CS_SMS_LIB
                         int offset = 0;
                         while (offset < readLen)
                         {
+                            //Debug.WriteLine("Read Register {0} , {1}", offset.ToString(), limit.ToString());
                             var r = m_modbusClient.ReadHoldingRegisters(offset, limit);    //Read 10 Holding Registers from Server, starting with Address 1
                             for (int i = 0; i < r.Length; i++, offset++)
                                 if (r[i] != registers[offset])
@@ -129,6 +132,8 @@ namespace CS_SMS_LIB
                                 Distribution();
                             }
                         }
+                        if (act0 != null)
+                            act0(kv.Key, kv.Value);
                     }
                     catch (Exception e)
                     {
@@ -168,9 +173,15 @@ namespace CS_SMS_LIB
         }
         public int MakePID(int chuteID)
         {
+            if(!m_dist)
+            {
+                Debug.WriteLine("========== Error ==========");
+                Debug.WriteLine("pid 받기 전에 다시 들어왔음");
+            }
             Debug.WriteLine("MakePID chuteID :" + chuteID);
             m_chuteID = chuteID;
             m_modbusClient.WriteMultipleRegisters(32010, new int[] { 1 });
+            m_dist = false;
             return 0;
         }
         private int SetPID()
@@ -193,6 +204,7 @@ namespace CS_SMS_LIB
             //todo Get chuteID
             m_modbusClient.WriteMultipleRegisters(32000, new int[] { m_pid % 65536, m_pid / 65536, m_chuteID, 0 });
             Debug.WriteLine("Set chute " + (m_chuteID + 1));
+            m_dist = true;
             return 0;
         }
         public int GetDistribution()

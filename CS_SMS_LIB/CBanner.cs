@@ -77,12 +77,33 @@ namespace CS_SMS_LIB
                     {
                         byte[] bytes = new byte[1024];
                         int readLen = netStream.Read(bytes, 0, 1024);
+                        Debug.WriteLine("readLen " + readLen);
+                        if (readLen <= 3)
+                            continue;
                         if (bytes[0] == 2)
                             Debug.WriteLine("<STX>");
+                        else
+                        {
+                            Debug.WriteLine("<STX> Error");
+                            continue;
+                        }
                         if (bytes[readLen-2] == 13)
                             Debug.WriteLine("<CR>");
+                        else
+                        {
+                            Debug.WriteLine("<CR> Error");
+                            continue;
+
+                        }
                         if (bytes[readLen-1] == 10)
                             Debug.WriteLine("<LF>");
+                        else
+                        {
+                            Debug.WriteLine("<LF> Error");
+                            continue;
+
+                        }
+
                         string retStr = Encoding.UTF8.GetString(bytes,1, readLen-3);
                         if(act0 != null)
                             act0(retStr);

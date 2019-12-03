@@ -93,8 +93,7 @@ namespace ConsoleApp1
         static public void Test3()
         {
             CApi api = new CApi();
-            Class1 ca = new Class1();
-            ca.Start();
+            api.GetChute("abcasdfasdfasdf");
         }
         static void Main(string[] args)
         {

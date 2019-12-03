@@ -27,16 +27,32 @@ namespace CS_SMS_APP
     /// </summary>
     public sealed partial class Monitoring : Page
     {
-        public MonitorData m_monitorData { get; set; }
         public Monitoring()
         {
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
-            this.m_monitorData = new MonitorData();
 
             SetMainScanner();
             CheckMsg();
             MakeTable();
+            ///Check plc data
+            CheckPLCData();
+        }
+
+        private void CheckPLCData()
+        {
+            global.md.act0 = (int address, int value) =>
+            {
+                Debug.WriteLine("{0}, {1}", value.ToString(), address.ToString());
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    if(address == 900 || address == 901)
+                        UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
+                    else
+                        global.ChangeText(value.ToString(), address);
+
+                });
+            };
         }
 
         private void CheckMsg()
@@ -98,11 +114,12 @@ namespace CS_SMS_APP
         {
             global.banner.act0 = (string data) =>
             {
-                global.md.MakePID(++global.md.m_chuteID);
+                global.api.GetChute(data);
+                global.md.MakePID(global.api.m_chute);
                 var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     UpdateUI(Monitoring_scanner0, data);
-                    UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
+                    //UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
                     UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
                 });
 
@@ -112,98 +129,229 @@ namespace CS_SMS_APP
         public int MakeTable()
         {
             MakeTableHeartBest();
+            MakeTableSettingData();
+            MakeTableEventData();
             MakeTableTrackingData();
+            MakeTableConfirmData();
+            MakeTableInputData();
             return 0;
         }
         public int MakeTableHeartBest()
         {
-            /*
-            for (int i = 0; i < 13; i++)
+            TextBlock t0 = new TextBlock();
+            t0.Text = "CNT";
+            t0.Margin = new Thickness(0, 0, 0, 0);
+            HeartBest.Children.Add(t0);
+            for (int i = 1; i < 13; i++)
             {
-                ColumnDefinition c1 = new ColumnDefinition();
-                c1.Width = new GridLength(150, GridUnitType.Auto);
-                HeartBest.ColumnDefinitions.Add(c1);
+                TextBlock t2 = new TextBlock();
+                t2.Text = "Mod" + i;
+                t2.Margin = new Thickness(50*i, 0, 0, 0);
+                HeartBest.Children.Add(t2);
             }
-            for (int i = 0; i < 2; i++)
-            {
-                RowDefinition rowDef = new RowDefinition();
-                HeartBest.RowDefinitions.Add(rowDef);
-            }
-
+            int location = 0;
             TextBlock t1 = new TextBlock();
-            t1.Text = "Current Cnt";
-            Grid.SetColumn(t1, 0);
-            Grid.SetRow(t1, 0);
+            t1.Text = "0";
+            t1.Margin = new Thickness(0, 20, 0, 0);
             HeartBest.Children.Add(t1);
+            global.m_plcData.Add(new PlcData(t1, "HeartBest_cnt" , location++));
+            for (int i = 1; i < 13; i++)
+            {
+                TextBlock t2 = new TextBlock();
+                t2.Text = "0";
+                t2.Margin = new Thickness(50*i, 20, 0, 0);
+                HeartBest.Children.Add(t2);
+                global.m_plcData.Add(new PlcData(t2, "HeartBest_modul" + i, location++));
+            }
+            return 0;
+        }
+        public int MakeTableSettingData()
+        {
+            int location = 21;
+            for (int i = 0; i < 12; i++)
+            {
+                TextBlock t1 = new TextBlock();
+                t1.Text = "Mod" + (i + 1);
+                t1.Margin = new Thickness(50*i, 0, 0, 0);
+                SettingData.Children.Add(t1);
+            }
 
-            for (int i = 1; i < 13 ; i++)
+            for (int i = 0; i < 12; i++)
             {
-                t1 = new TextBlock();
-                //t1.Text = "{x:Bind m_monitorData.HeartBest[" + i +"]}";
-                //"{x:Bind m_monitorData.HeartBest[" + i +"]}";
-                Binding b = new Binding();
-                b.Source = m_monitorData.HeartBest[i];
-                t1.SetBinding(TextBlock.TextProperty, b);
-                Grid.SetRow(t1, 0);
-                Grid.SetColumn(t1, i);
-                HeartBest.Children.Add(t1);
+                TextBlock t1 = new TextBlock();
+                t1.Text = "0";
+                t1.Margin = new Thickness(50*i, 20, 0, 0);
+                SettingData.Children.Add(t1);
+                global.m_plcData.Add(new PlcData(t1, "SettingData_modul" + (i+1), location++));
             }
-            
-            for (int i = 0; i < 13 ; i++)
+            return 0;
+        }
+        public int MakeTableEventData()
+        {
+            int chuteCnt = 1;
+            int location = 41;
+            for( int i = 1; i < 13; i++)
             {
-                t1 = new TextBlock();
-                t1.Text = global.md.registers[i].ToString();
-                Grid.SetRow(t1, 1);
-                Grid.SetColumn(t1, i);
-                HeartBest.Children.Add(t1);
+                Grid g1 = new Grid();
+                g1.BorderThickness = new Thickness(1);
+                g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
+
+                TextBlock t1 = new TextBlock();
+                t1.Margin = new Thickness(0, 0, 0, 0);
+                t1.Text = "Module #" + i.ToString();
+                g1.Children.Add(t1);
+
+                TextBlock t2 = new TextBlock();
+                t2.Text = "Alarm Code";
+                t2.Margin = new Thickness(100, 0, 0, 0);
+                g1.Children.Add(t2);
+
+                TextBlock t3 = new TextBlock();
+                t3.Text = "Speed";
+                t3.Margin = new Thickness(100, 20, 0, 0);
+                g1.Children.Add(t3);
+
+
+                for ( int j = 0; j < 4; j++)
+                {
+                    TextBlock t4 = new TextBlock();
+                    t4.Text = "Chute_" + (chuteCnt++).ToString() + " 만재";
+                    t4.Margin = new Thickness(100, j * 20 + 40, 0, 0);
+                    g1.Children.Add(t4);
+
+                }
+                for ( int j = 0; j < 6; j++)
+                { 
+                    TextBlock t5 = new TextBlock();
+                    t5.Text = "0";
+                    t5.Margin = new Thickness(500, j*20, 0, 0);
+                    g1.Children.Add(t5);
+                    global.m_plcData.Add(new PlcData(t5, "EventData_modul" + i + "_" + j, location++));
+                }
+
+                EventData.Children.Add(g1);
             }
-            */
             return 0;
         }
         public int MakeTableTrackingData()
         {
-            /*
-                    <TextBlock Text="1" Margin="0,0,0,0"></TextBlock>
-                    <TextBlock Text="PID" Margin="50,0,0,0"></TextBlock>
-                    <TextBlock Text="chute num" Margin="50,20,0,0"></TextBlock>
-                    <TextBlock Text="PID" Margin="150,0,0,0"></TextBlock>
-                    <TextBlock Text="chute num" Margin="150,20,0,0"></TextBlock>
-            */
-            for ( int i = 0; i < 10; i++)
+            int location = 200;
+            for ( int i = 0; i < 51; i++)
             {
                 Grid g1 = new Grid();
+            g1.BorderThickness = new Thickness(1);
+            g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
                 TextBlock t1 = new TextBlock();
+                t1.Margin = new Thickness(0, 0, 0, 0);
                 t1.Text = i.ToString();
                 g1.Children.Add(t1);
                 TextBlock t2 = new TextBlock();
                 t2.Text = "PID";
-                t2.Margin = new Thickness(50, 0, 0, 0);
+                t2.Margin = new Thickness(100, 0, 0, 0);
                 g1.Children.Add(t2);
+                TextBlock t3 = new TextBlock();
+                t3.Text = "ChuteNum";
+                t3.Margin = new Thickness(100, 20, 0, 0);
+                g1.Children.Add(t3);
+
+                TextBlock t4 = new TextBlock();
+                t4.Text = "0";
+                t4.Margin = new Thickness(500, 00, 0, 0);
+                g1.Children.Add(t4);
+                global.m_plcData.Add(new PlcData(t4, "TrackingData_" + i + "_0", location++));
+                location++; //dword
+                TextBlock t5 = new TextBlock();
+                t5.Text = "0";
+                t5.Margin = new Thickness(500, 20, 0, 0);
+                g1.Children.Add(t5);
+                global.m_plcData.Add(new PlcData(t5, "TrackingData_" + i + "_1", location++));
+
                 TrackingData.Children.Add(g1);
             }
             return 0;
         }
-        public class Heart_Best
+        public int MakeTableConfirmData()
         {
-            public string[] name { get; set; } = new string[13];
+            int location = 500;
+            for( int i = 1; i < 49; i++)
+            {
+                Grid g1 = new Grid();
+                g1.BorderThickness = new Thickness(1);
+                g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
+
+                TextBlock t1 = new TextBlock();
+                t1.Margin = new Thickness(0, 0, 0, 0);
+                t1.Text = "Chute #" + i.ToString();
+                g1.Children.Add(t1);
+                TextBlock t2 = new TextBlock();
+                t2.Text = "PID";
+                t2.Margin = new Thickness(100, 0, 0, 0);
+                g1.Children.Add(t2);
+                TextBlock t3 = new TextBlock();
+                t3.Text = "Confirm Data";
+                t3.Margin = new Thickness(100, 20, 0, 0);
+                g1.Children.Add(t3);
+                TextBlock t4 = new TextBlock();
+                t4.Text = "Stack Count";
+                t4.Margin = new Thickness(100, 40, 0, 0);
+                g1.Children.Add(t4);
+                TextBlock t5 = new TextBlock();
+                t5.Text = "Stack Count";
+                t5.Margin = new Thickness(100, 60, 0, 0);
+                g1.Children.Add(t5);
+
+                for (int j = 0; j < 4; j++)
+                {
+                    TextBlock t6 = new TextBlock();
+                    t6.Margin = new Thickness(500, 20*j, 0, 0);
+                    t6.Text = "0";
+                    g1.Children.Add(t6);
+                    global.m_plcData.Add(new PlcData(t6, "ConfirmData_Chute" + i + "_" + j, location++));
+                    if (j == 0) location++;
+
+                }
+
+                ConfirmData.Children.Add(g1);
+            }
+
+            return 0;
         }
-        public ObservableCollection<Heart_Best> m_items { get; set; } = new ObservableCollection<Heart_Best>();
+        public int MakeTableInputData()
+        {
+            int chuteCnt = 1;
+            int location = 800;
+            for( int i = 1; i < 13; i++)
+            {
+                Grid g1 = new Grid();
+                g1.BorderThickness = new Thickness(1);
+                g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
+
+                TextBlock t1 = new TextBlock();
+                t1.Margin = new Thickness(0, 0, 0, 0);
+                t1.Text = "Module #" + i.ToString() + "\n Pakced Data";
+                g1.Children.Add(t1);
+                for( int j = 0; j < 4; j++)
+                {
+                    TextBlock t2 = new TextBlock();
+                    t2.Text = "Chute_" + (chuteCnt++).ToString() + " Button";
+                    t2.Margin = new Thickness(100, j*20, 0, 0);
+                    g1.Children.Add(t2);
+
+                    TextBlock t3 = new TextBlock();
+                    t3.Text = "0";
+                    t3.Margin = new Thickness(500, j*20, 0, 0);
+                    g1.Children.Add(t3);
+                    global.m_plcData.Add(new PlcData(t3, "InputData_Chute" + (chuteCnt-1) + "_" + j, location++));
+
+                }
+
+                InputData.Children.Add(g1);
+            }
+            return 0;
+        }
 
         private void Monitoring_chuteid_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Bindings.Update();
-        }
-    }
-    public class MonitorData
-    {
-        public int[] HeartBest { get; set; }
-        public int[] SettingData { get; set; }
-        public int[] EventData { get; set; }
-        public MonitorData()
-        {
-            HeartBest = new int[13];
-            SettingData = new int[12];
-            EventData = new int[72];
         }
     }
 }

@@ -20,17 +20,41 @@ namespace CS_SMS_APP
 {
     /// <summary>
     /// 자체적으로 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
+    public class PlcData
+    {
+        public TextBlock m_control { get; set; } = null;
+        public string m_name { get; set; } = "";
+        public int m_location { get; set; } = -1;
+        public PlcData( TextBlock control, string name, int location)
+        {
+            m_control = control;
+            m_name = name;
+            m_location = location;
+        }
+
+    }
+
     /// </summary>
     public class global
     {
         public static UDPer udp  =  new UDPer();
         public static CModbus md = new CModbus();
         public static CBanner banner = new CBanner();
+        public static CApi api = new CApi();
 
         public static TextBox[] m_scanner = new TextBox[5];
         public static Queue<string> m_msgQueue = new Queue<string>();
+        public static List<PlcData> m_plcData = new List<PlcData>();
         public global()
         {
+        }
+        static public int ChangeText( string txt, int location)
+        {
+            PlcData item = m_plcData.Find(x => x.m_location == location);
+            if(item != null)
+                if (item.m_location != -1)
+                    item.m_control.Text = txt;
+            return 0;
         }
 
     }

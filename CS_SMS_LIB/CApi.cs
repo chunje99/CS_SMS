@@ -14,6 +14,12 @@ namespace CS_SMS_LIB
 {
     public class CApi
     {
+        //public string URL { get; set; } = "https://speech-api.kakao.com/demo/uploadState";
+        //public string urlParameters { get; set} = "?redis_key=files_db1bdd4cb8d55d08dc458cae0263bee2";
+        public string URL { get; set; } = "http://sms-api.wtest.biz/v1/product/barcode/";
+        public string urlParameters { get; set; } = "";
+        public int m_chute = -1;
+
         public CApi()
         {
             Debug.WriteLine("CApi");
@@ -32,61 +38,40 @@ namespace CS_SMS_LIB
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-    }
-
-    public class DataObject
-    {
-        public string Name { get; set; }
-    }
-
-    public class Class1
-    {
-        private const string URL = "https://speech-api.kakao.com/demo/uploadState";
-        private string urlParameters = "?redis_key=files_db1bdd4cb8d55d08dc458cae0263bee2";
-
-        public Class1()
+        public async void GetChute(string barcode)
         {
-            Debug.WriteLine("Class1");
-        }
-        async public void Start()
-        {
-            Debug.WriteLine("Start");
+            m_chute = -1;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
-            Debug.WriteLine("Here1");
+            client.BaseAddress = new Uri(URL+barcode);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
-            Debug.WriteLine("Here2");
 
             // List data response.
             HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
-            Debug.WriteLine("Here3");
             if (response.IsSuccessStatusCode)
             {
-                Debug.WriteLine("Here4");
                 // Parse the response body. Blocking!
                 var resp = response.Content.ReadAsStreamAsync();
                 //List<Contributor> contributors = JsonConvert.DeserializeObject<List<Contributor>>(resp);
                 //contributors.ForEach(Console.WriteLine);
                 var serializer = new DataContractJsonSerializer(typeof(Product));
                 var repositories = serializer.ReadObject(await resp) as Product;
-                Debug.WriteLine(repositories);
-                Debug.WriteLine(repositories.access_key);
+                Debug.WriteLine(barcode);
+                Debug.WriteLine(repositories.status);
+                Debug.WriteLine(repositories.chute);
+                m_chute = repositories.chute;
             }
             else
             {
-                Debug.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                Debug.WriteLine("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
             }
-            Debug.WriteLine("HERE6");
         }
     }
     public class Product
     {
-        public string access_key { get; set; }
-        public string state { get; set; }
-        public string filename { get; set; }
-        public string vtt_key { get; set; }
+        public string status { get; set; }
+        public int chute { get; set; }
     }
 }

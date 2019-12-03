@@ -10,5 +10,6 @@
 
     <Grid>
         <TextBlock>HOME</TextBlock>
+        <TextBlock Margin="100, 100, 0,0 ">실행 순서 >> 메인 스캐너 연결 >> 서치 스캐너 연결 >> PLC 연결 >> 모니터링 </TextBlock>
     </Grid>
 </Page>
