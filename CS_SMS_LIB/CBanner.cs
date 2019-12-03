@@ -103,6 +103,20 @@ namespace CS_SMS_LIB
                             continue;
 
                         }
+                        bool isPrintable = true;
+                        for (int i = 1; i < readLen - 2; i++)
+                        {
+                            if (bytes[i] < 32 || bytes[i] > 126)
+                            {
+                                isPrintable = false;
+                                break;
+                            }
+                        }
+                        if (!isPrintable)
+                        {
+                            Debug.WriteLine("Printable Error");
+                            continue;
+                        }
 
                         string retStr = Encoding.UTF8.GetString(bytes,1, readLen-3);
                         if(act0 != null)

@@ -32,9 +32,15 @@ namespace CS_SMS_APP
         {
             global.md.m_host = PLC_Host.Text;
             global.md.m_port = Int32.Parse(PLC_Port.Text);
-            global.md.Connection();
-            global.md.StartClient();
-            PLC_Status.Text = "Connected";
+            if( global.md.Connection() == -1 )
+            {
+                PLC_Status.Text = global.md.m_error;
+            }
+            else
+            {
+                global.md.StartClient();
+                PLC_Status.Text = "Connected";
+            }
         }
     }
 }

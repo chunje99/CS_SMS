@@ -75,6 +75,8 @@ namespace CS_SMS_APP
                                     switch(idx)
                                     {
                                         case 0:
+                                            global.api.GetChute(barcode);
+                                            global.md.MakePID(global.api.m_chute);
                                             UpdateUI(Monitoring_scanner1, barcode);
                                             break;
                                         case 1:

@@ -22,6 +22,7 @@ namespace CS_SMS_LIB
         public int m_pid { get; set; } = -1;
         public Action<int, int> act0 = null;
         public bool m_dist { get; set; } = true;
+        public string m_error { get; set; } = "";
 
         public CModbus()
         {
@@ -53,11 +54,12 @@ namespace CS_SMS_LIB
             catch (Exception e)
             {
                 Debug.WriteLine(e.ToString());
+                m_error = e.ToString();
                 Thread.Sleep(1000);
-                if (m_active)
-                    return Connection();
-                else
-                    return -1;
+                //if (m_active)
+                //    return Connection();
+                //else
+                return -1;
             }
             return 0;
         }
