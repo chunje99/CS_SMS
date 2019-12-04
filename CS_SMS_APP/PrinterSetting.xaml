@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="CS_SMS_APP.PrinterSetting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CS_SMS_APP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock>Printer Setting</TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="HOST " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="200,100,0,0" Text="192.168.0.13" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print1_Host"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,100,0,0" Text="9100" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print1_Port"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,100,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="Print1_Status"/>
+        <Button Content="접속" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="Print1_Connect" Click="Print1_Connect_Click"/>
+        <Button Content="프린트" Margin="800,200,0,0" VerticalAlignment="Top" Width="152" Name="Print1_Print" Click="Print1_Print_Click"/>
+    </Grid>
+</Page>
