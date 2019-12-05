@@ -108,7 +108,7 @@ namespace ConsoleApp1
             //Program.Test2();
             Program.Test3();
 
-            bool active = false;
+            bool active = true;
             while (active)
             {
 
