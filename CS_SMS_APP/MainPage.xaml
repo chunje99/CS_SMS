@@ -24,8 +24,8 @@
                 <NavigationViewItem x:Uid="AppsNavItem" Icon="Camera" Content="Main Sacnner" Tag="scanner"/>
                 <NavigationViewItem x:Uid="AppsNavItem" Icon="Scan" Content="Search Sacnners" Tag="scanners"/>
                 <NavigationViewItem x:Uid="GamesNavItem" Icon="Remote" Content="Connect PLC" Tag="plc"/>
-                <NavigationViewItem x:Uid="MusicNavItem" Icon="View" Content="Monitoring" Tag="monitoring"/>
                 <NavigationViewItem x:Uid="MusicNavItem" Icon="Print"  Content="Printer Setting" Tag="printer"/>
+                <NavigationViewItem x:Uid="MusicNavItem" Icon="View" Content="Monitoring" Tag="monitoring"/>
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" Margin="24">

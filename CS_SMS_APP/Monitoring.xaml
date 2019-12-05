@@ -25,9 +25,12 @@
         <TextBlock HorizontalAlignment="Left" Margin="230,150,0,0" Text="PID" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="260,150,0,0" Text="-1" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_pid"/>
         <TextBlock HorizontalAlignment="Left" Margin="220,200,0,0" Text="chute" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="260,200,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_chuteid" TextChanged="Monitoring_chuteid_TextChanged"/>
+        <TextBox HorizontalAlignment="Left" Margin="260,200,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_chuteid"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="650,200,0,0" Text="printer" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="720,200,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_printer"/>
         <ListView Margin="250,250,0,0" x:Name="listView">
-            <TextBlock Text="1. Heart Best" />
+            <!--TextBlock Text="1. Heart Best" />
             <Border BorderThickness="1" BorderBrush="Black">
                 <Grid x:Name="HeartBest">
                 </Grid>
@@ -55,6 +58,13 @@
             <TextBlock Text="6. Input Data" />
             <Grid>
                 <StackPanel x:Name="InputData">
+                </StackPanel>
+            </Grid-->
+            <TextBlock Text="7. LOGS" />
+            <Grid>
+                <StackPanel>
+                    <Button Click="Button_Click">새로고침</Button>
+                    <TextBox  x:Name="LOGS" TextWrapping="Wrap" AcceptsReturn="True" Text="" Width="1000" ></TextBox>
                 </StackPanel>
             </Grid>
         </ListView>

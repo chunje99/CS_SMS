@@ -10,12 +10,36 @@
 
     <Grid>
         <TextBlock>Printer Setting</TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="HOST " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="P1 HOST" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="200,100,0,0" Text="192.168.0.13" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print1_Host"/>
         <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="400,100,0,0" Text="9100" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print1_Port"/>
         <TextBlock HorizontalAlignment="Left" Margin="600,100,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="Print1_Status"/>
         <Button Content="접속" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="Print1_Connect" Click="Print1_Connect_Click"/>
         <Button Content="프린트" Margin="800,200,0,0" VerticalAlignment="Top" Width="152" Name="Print1_Print" Click="Print1_Print_Click"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="150,300,0,0" Text="P2 HOST" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="200,300,0,0" Text="192.168.0.13" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print2_Host"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,300,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,300,0,0" Text="9100" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print2_Port"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,300,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="Print2_Status"/>
+        <Button Content="접속" Margin="600,400,0,0" VerticalAlignment="Top" Width="152" Name="Print2_Connect" Click="Print2_Connect_Click"/>
+        <Button Content="프린트" Margin="800,400,0,0" VerticalAlignment="Top" Width="152" Name="Print2_Print" Click="Print2_Print_Click"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="150,500,0,0" Text="P3 HOST" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="200,500,0,0" Text="192.168.0.13" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print3_Host"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,500,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,500,0,0" Text="9100" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print3_Port"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,500,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="Print3_Status"/>
+        <Button Content="접속" Margin="600,600,0,0" VerticalAlignment="Top" Width="152" Name="Print3_Connect" Click="Print3_Connect_Click"/>
+        <Button Content="프린트" Margin="800,600,0,0" VerticalAlignment="Top" Width="152" Name="Print3_Print" Click="Print3_Print_Click"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="150,700,0,0" Text="P3 HOST" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="200,700,0,0" Text="192.168.0.13" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print4_Host"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,700,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,700,0,0" Text="9100" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Print4_Port"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,700,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="Print4_Status"/>
+        <Button Content="접속" Margin="600,800,0,0" VerticalAlignment="Top" Width="152" Name="Print4_Connect" Click="Print4_Connect_Click"/>
+        <Button Content="프린트" Margin="800,800,0,0" VerticalAlignment="Top" Width="152" Name="Print4_Print" Click="Print4_Print_Click"/>
     </Grid>
 </Page>

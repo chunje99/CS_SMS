@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Windows.UI.Core;
 using System.Collections.ObjectModel;
+using CS_SMS_LIB;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -27,35 +28,119 @@ namespace CS_SMS_APP
     /// </summary>
     public sealed partial class Monitoring : Page
     {
+        public string m_lastCode { get; set; } = "";
         public Monitoring()
         {
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
 
             SetMainScanner();
-            CheckMsg();
-            MakeTable();
-            ///Check plc data
-            CheckPLCData();
+            SetSUBScanner();
+            MakeEvent();
+            ShowLogs();
         }
 
-        private void CheckPLCData()
+        private void MakeEvent()
         {
-            global.md.act0 = (int address, int value) =>
+            global.md.onEvent = (MDS_EVENT eType, int id0, int id1, int id2) =>
             {
-                Debug.WriteLine("{0}, {1}", value.ToString(), address.ToString());
-                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                switch(eType)
                 {
-                    if(address == 900 || address == 901)
-                        UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
-                    else
-                        global.ChangeText(value.ToString(), address);
-
-                });
+                    case MDS_EVENT.PID:
+                        OnEvent_PID(id0);
+                        break;
+                    case MDS_EVENT.PRINT:
+                        OnEvent_PRINT(id0, id1, id2);
+                        break;
+                }
             };
         }
 
-        private void CheckMsg()
+        private void OnEvent_PID(int pid)
+        {
+            Debug.WriteLine("OnEvent_PID {0}", pid);
+            global.md.Distribution();
+            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                UpdateUI(Monitoring_pid, pid.ToString());
+                UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
+            });
+        }
+        private void OnEvent_PRINT(int module, int direct, int value)
+        {
+            if (value == 0)
+                return;
+
+            Debug.WriteLine("OnEvent_PRINT {0} {1} {2}", module, direct, value);
+            int locPrint = 0;
+            if( direct == 0 )
+            {
+                if( module == 0 )
+                {
+                    locPrint = 0;
+                    //1
+                }
+                else if( module == 1 )
+                {
+                    if(global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
+                    {
+                        locPrint = 0;
+                        //1
+                    }
+                    else
+                    {
+                        locPrint = 2;
+                        //3
+                    }
+                }
+                else if( module == 2 )
+                {
+                    locPrint = 2;
+                    //3
+                }
+            } else if( direct == 1 )
+            {
+                if( module == 0 )
+                {
+                    locPrint = 1;
+                    //2
+                }
+                else if( module == 1 )
+                {
+                    if(global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
+                    {
+                        locPrint = 3;
+                        //1
+                    }
+                    else
+                    {
+                        locPrint = 1;
+                        //3
+                    }
+                }
+                else if( module == 2 )
+                {
+                    locPrint = 3;
+                    //4
+                }
+            }
+
+            global.PrintSample(
+                global.m_printIP[locPrint],
+                global.m_printPORT[locPrint],
+                null,
+                "Printer " + (locPrint + 1).ToString()
+                );
+            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
+            });
+            //var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            //{
+            //});
+        }
+
+        private void SetSUBScanner()
         {
             Task.Run(() =>
             {
@@ -75,9 +160,17 @@ namespace CS_SMS_APP
                                     switch(idx)
                                     {
                                         case 0:
-                                            global.api.GetChute(barcode);
-                                            global.md.MakePID(global.api.m_chute);
-                                            UpdateUI(Monitoring_scanner1, barcode);
+                                            if(m_lastCode != barcode)
+                                            {
+                                                m_lastCode = barcode;
+                                                global.api.GetChute(m_lastCode);
+                                                global.md.MakePID(global.api.m_chute);
+                                                UpdateUI(Monitoring_scanner1, m_lastCode);
+                                            }
+                                            else
+                                            {
+                                                Debug.WriteLine("===Sampe Code======");
+                                            }
                                             break;
                                         case 1:
                                             UpdateUI(Monitoring_scanner2, barcode);
@@ -116,244 +209,121 @@ namespace CS_SMS_APP
         {
             global.banner.act0 = (string data) =>
             {
-                global.api.GetChute(data);
-                global.md.MakePID(global.api.m_chute);
-                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                if(m_lastCode != data)
                 {
-                    UpdateUI(Monitoring_scanner0, data);
-                    //UpdateUI(Monitoring_pid, global.md.m_pid.ToString());
-                    UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
-                });
+                    global.api.GetChute(data);
+                    global.md.MakePID(global.api.m_chute);
+                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        UpdateUI(Monitoring_scanner0, data);
+                    });
+                }
+                else
+                {
+                    Debug.WriteLine("===Sampe Code======");
+                }
 
             };
-            return 0;
-        }
-        public int MakeTable()
-        {
-            MakeTableHeartBest();
-            MakeTableSettingData();
-            MakeTableEventData();
-            MakeTableTrackingData();
-            MakeTableConfirmData();
-            MakeTableInputData();
-            return 0;
-        }
-        public int MakeTableHeartBest()
-        {
-            TextBlock t0 = new TextBlock();
-            t0.Text = "CNT";
-            t0.Margin = new Thickness(0, 0, 0, 0);
-            HeartBest.Children.Add(t0);
-            for (int i = 1; i < 13; i++)
-            {
-                TextBlock t2 = new TextBlock();
-                t2.Text = "Mod" + i;
-                t2.Margin = new Thickness(50*i, 0, 0, 0);
-                HeartBest.Children.Add(t2);
-            }
-            int location = 0;
-            TextBlock t1 = new TextBlock();
-            t1.Text = "0";
-            t1.Margin = new Thickness(0, 20, 0, 0);
-            HeartBest.Children.Add(t1);
-            global.m_plcData.Add(new PlcData(t1, "HeartBest_cnt" , location++));
-            for (int i = 1; i < 13; i++)
-            {
-                TextBlock t2 = new TextBlock();
-                t2.Text = "0";
-                t2.Margin = new Thickness(50*i, 20, 0, 0);
-                HeartBest.Children.Add(t2);
-                global.m_plcData.Add(new PlcData(t2, "HeartBest_modul" + i, location++));
-            }
-            return 0;
-        }
-        public int MakeTableSettingData()
-        {
-            int location = 21;
-            for (int i = 0; i < 12; i++)
-            {
-                TextBlock t1 = new TextBlock();
-                t1.Text = "Mod" + (i + 1);
-                t1.Margin = new Thickness(50*i, 0, 0, 0);
-                SettingData.Children.Add(t1);
-            }
-
-            for (int i = 0; i < 12; i++)
-            {
-                TextBlock t1 = new TextBlock();
-                t1.Text = "0";
-                t1.Margin = new Thickness(50*i, 20, 0, 0);
-                SettingData.Children.Add(t1);
-                global.m_plcData.Add(new PlcData(t1, "SettingData_modul" + (i+1), location++));
-            }
-            return 0;
-        }
-        public int MakeTableEventData()
-        {
-            int chuteCnt = 1;
-            int location = 41;
-            for( int i = 1; i < 13; i++)
-            {
-                Grid g1 = new Grid();
-                g1.BorderThickness = new Thickness(1);
-                g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
-
-                TextBlock t1 = new TextBlock();
-                t1.Margin = new Thickness(0, 0, 0, 0);
-                t1.Text = "Module #" + i.ToString();
-                g1.Children.Add(t1);
-
-                TextBlock t2 = new TextBlock();
-                t2.Text = "Alarm Code";
-                t2.Margin = new Thickness(100, 0, 0, 0);
-                g1.Children.Add(t2);
-
-                TextBlock t3 = new TextBlock();
-                t3.Text = "Speed";
-                t3.Margin = new Thickness(100, 20, 0, 0);
-                g1.Children.Add(t3);
-
-
-                for ( int j = 0; j < 4; j++)
-                {
-                    TextBlock t4 = new TextBlock();
-                    t4.Text = "Chute_" + (chuteCnt++).ToString() + " 만재";
-                    t4.Margin = new Thickness(100, j * 20 + 40, 0, 0);
-                    g1.Children.Add(t4);
-
-                }
-                for ( int j = 0; j < 6; j++)
-                { 
-                    TextBlock t5 = new TextBlock();
-                    t5.Text = "0";
-                    t5.Margin = new Thickness(500, j*20, 0, 0);
-                    g1.Children.Add(t5);
-                    global.m_plcData.Add(new PlcData(t5, "EventData_modul" + i + "_" + j, location++));
-                }
-
-                EventData.Children.Add(g1);
-            }
-            return 0;
-        }
-        public int MakeTableTrackingData()
-        {
-            int location = 200;
-            for ( int i = 0; i < 51; i++)
-            {
-                Grid g1 = new Grid();
-            g1.BorderThickness = new Thickness(1);
-            g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
-                TextBlock t1 = new TextBlock();
-                t1.Margin = new Thickness(0, 0, 0, 0);
-                t1.Text = i.ToString();
-                g1.Children.Add(t1);
-                TextBlock t2 = new TextBlock();
-                t2.Text = "PID";
-                t2.Margin = new Thickness(100, 0, 0, 0);
-                g1.Children.Add(t2);
-                TextBlock t3 = new TextBlock();
-                t3.Text = "ChuteNum";
-                t3.Margin = new Thickness(100, 20, 0, 0);
-                g1.Children.Add(t3);
-
-                TextBlock t4 = new TextBlock();
-                t4.Text = "0";
-                t4.Margin = new Thickness(500, 00, 0, 0);
-                g1.Children.Add(t4);
-                global.m_plcData.Add(new PlcData(t4, "TrackingData_" + i + "_0", location++));
-                location++; //dword
-                TextBlock t5 = new TextBlock();
-                t5.Text = "0";
-                t5.Margin = new Thickness(500, 20, 0, 0);
-                g1.Children.Add(t5);
-                global.m_plcData.Add(new PlcData(t5, "TrackingData_" + i + "_1", location++));
-
-                TrackingData.Children.Add(g1);
-            }
-            return 0;
-        }
-        public int MakeTableConfirmData()
-        {
-            int location = 500;
-            for( int i = 1; i < 49; i++)
-            {
-                Grid g1 = new Grid();
-                g1.BorderThickness = new Thickness(1);
-                g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
-
-                TextBlock t1 = new TextBlock();
-                t1.Margin = new Thickness(0, 0, 0, 0);
-                t1.Text = "Chute #" + i.ToString();
-                g1.Children.Add(t1);
-                TextBlock t2 = new TextBlock();
-                t2.Text = "PID";
-                t2.Margin = new Thickness(100, 0, 0, 0);
-                g1.Children.Add(t2);
-                TextBlock t3 = new TextBlock();
-                t3.Text = "Confirm Data";
-                t3.Margin = new Thickness(100, 20, 0, 0);
-                g1.Children.Add(t3);
-                TextBlock t4 = new TextBlock();
-                t4.Text = "Stack Count";
-                t4.Margin = new Thickness(100, 40, 0, 0);
-                g1.Children.Add(t4);
-                TextBlock t5 = new TextBlock();
-                t5.Text = "Stack Count";
-                t5.Margin = new Thickness(100, 60, 0, 0);
-                g1.Children.Add(t5);
-
-                for (int j = 0; j < 4; j++)
-                {
-                    TextBlock t6 = new TextBlock();
-                    t6.Margin = new Thickness(500, 20*j, 0, 0);
-                    t6.Text = "0";
-                    g1.Children.Add(t6);
-                    global.m_plcData.Add(new PlcData(t6, "ConfirmData_Chute" + i + "_" + j, location++));
-                    if (j == 0) location++;
-
-                }
-
-                ConfirmData.Children.Add(g1);
-            }
-
-            return 0;
-        }
-        public int MakeTableInputData()
-        {
-            int chuteCnt = 1;
-            int location = 800;
-            for( int i = 1; i < 13; i++)
-            {
-                Grid g1 = new Grid();
-                g1.BorderThickness = new Thickness(1);
-                g1.BorderBrush = new SolidColorBrush(Windows.UI.Colors.Black);
-
-                TextBlock t1 = new TextBlock();
-                t1.Margin = new Thickness(0, 0, 0, 0);
-                t1.Text = "Module #" + i.ToString() + "\n Pakced Data";
-                g1.Children.Add(t1);
-                for( int j = 0; j < 4; j++)
-                {
-                    TextBlock t2 = new TextBlock();
-                    t2.Text = "Chute_" + (chuteCnt++).ToString() + " Button";
-                    t2.Margin = new Thickness(100, j*20, 0, 0);
-                    g1.Children.Add(t2);
-
-                    TextBlock t3 = new TextBlock();
-                    t3.Text = "0";
-                    t3.Margin = new Thickness(500, j*20, 0, 0);
-                    g1.Children.Add(t3);
-                    global.m_plcData.Add(new PlcData(t3, "InputData_Chute" + (chuteCnt-1) + "_" + j, location++));
-
-                }
-
-                InputData.Children.Add(g1);
-            }
             return 0;
         }
 
         private void Monitoring_chuteid_TextChanged(object sender, TextChangedEventArgs e)
         {
+        }
+        private void ShowLogs()
+        {
+            Task.Run(() =>
+            {
+                while(true)
+                {
+                    try
+                    {
+                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            CheckLog();
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.ToString());
+                    }
+                    Thread.Sleep(5000);
+                }
+            });
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            CheckLog();
+        }
+        private void CheckLog()
+        {
+            string logs = "";
+            logs = "PID ";
+            logs += global.md.mdsData.pid.ToString() + "\n";
+            logs += "moduleCnt ";
+            logs += global.md.mdsData.moduleCnt.ToString() + "\n";
+            logs += "heartBest";
+            logs += global.md.mdsData.heartBest.ToString() + "\n";
+            logs += "moduleSpeed ";
+            logs += global.md.mdsData.settingData.moduleSpeed.ToString() + "\n";
+            for( int i = 0; i < 3; i++)
+            {
+                logs += "point" + i.ToString() + " ";
+                logs += global.md.mdsData.settingData.pointSpeed[i].ToString() + "\n";
+            }
+            logs += "ModuleInfo \n";
+            for( int i = 0; i < 12; i++)
+            {
+                logs += "Module" + (i+1).ToString() + "\n";
+                logs += "\t"+"status ";
+                logs += "\t"+global.md.mdsData.moduleInfos[i].status.ToString() + "\n";
+                logs += "\t"+"Speed ";
+                logs += "\t"+global.md.mdsData.moduleInfos[i].initSpeed.ToString() + "\n";
+                logs += "\t"+"EventSpeed ";
+                logs += "\t"+global.md.mdsData.moduleInfos[i].eventSpeed.ToString() + "\n";
+                logs += "\t"+"alarm ";
+                logs += "\t"+global.md.mdsData.moduleInfos[i].alarm.ToString() + "\n";
+                for(int j = 0; j < 4; j++)
+                {
+                    logs += "\t"+"chute" + (i*4+j+1).ToString() + "\n";
+                    logs += "\t"+"\t"+"confirmData ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].chuteInfos[j].confirmData.ToString() + "\n";
+                    logs += "\t"+"\t"+"stackCnt ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].chuteInfos[j].stackCount.ToString() + "\n";
+                    logs += "\t"+"\t"+"pidNum ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].chuteInfos[j].pidNum.ToString() + "\n";
+                    logs += "\t"+"\t"+"full ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].chuteInfos[j].full.ToString() + "\n";
+                }
+                for(int j = 0; j < 2; j++)
+                {
+                    logs += "\t"+"PrintInfo_" + (i*2+j).ToString();
+                    logs += "\t"+"\t"+"leftChute ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].printInfos[j].leftChute.ToString() + "\n";
+                    logs += "\t"+"\t"+"rightChute ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].printInfos[j].rightChute.ToString() + "\n";
+                    logs += "\t"+"\t"+"printButton ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].printInfos[j].printButton.ToString() + "\n";
+                    logs += "\t"+"\t"+"plusButton ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].printInfos[j].plusButton.ToString() + "\n";
+                    logs += "\t"+"\t"+"minusButton ";
+                    logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].printInfos[j].minusButton.ToString() + "\n";
+                }
+            }
+
+            logs += "TrackingData \n";
+            for(int i = 0; i < 40; i++ )
+            {
+                logs += "position" + (i+1).ToString() + "\n";
+                logs += "\t" + "chuteNum ";
+                logs += "\t"+global.md.mdsData.positions[i].chuteNum.ToString() + "\n";
+                logs += "\t"+"pid ";
+                logs += "\t"+global.md.mdsData.positions[i].pid.ToString() + "\n";
+            }
+
+            LOGS.Text = logs;
+
         }
     }
 }

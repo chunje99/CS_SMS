@@ -7,6 +7,18 @@ using System.Diagnostics;
 
 namespace CS_SMS_LIB
 {
+    public enum MDS_EVENT
+    {
+	    PID       = 0,
+	    ALARM     = 1,
+	    FULL      = 2,
+	    CONFIRM   = 3,
+	    CONFIRM_STACK = 4,
+	    CONFIRM_PID   = 5,
+	    PRINT     = 6,
+	    PLUS      = 7,
+	    MINUS     = 8,
+    }
     public class CModbus
     {
         static private int readLen = 902;
@@ -20,8 +32,11 @@ namespace CS_SMS_LIB
         private bool m_active  = true;
         public int m_chuteID { get; set; } = 0;
         private int conCnt = 0;
-        public int m_pid { get; set; } = -1;
         public Action<int, int> act0 = null;
+        /// <summary>
+        /// eventid, id0, id1, id2
+        /// </summary>
+        public Action<MDS_EVENT, int, int, int> onEvent = null;
         public bool m_dist { get; set; } = true;
         public string m_error { get; set; } = "";
 
@@ -135,6 +150,16 @@ namespace CS_SMS_LIB
                             mdsData.settingData.moduleSpeed = r[15];
                             for (int i = 0; i < 3; i++)
                                 mdsData.settingData.pointSpeed[i] = r[i + 16];
+                            mdsData.currentModuleSpeed = r[19];
+                            for( int i = 0; i < 12; i++)
+                            {
+                                mdsData.moduleInfos[i].alarm = r[i * 5 + 20];
+                                for (int j = 0; j < 4; j++)
+                                {
+                                    mdsData.moduleInfos[i].chuteInfos[j].full = r[i * 5 + j + 21];
+                                }
+
+                            }
                         }
                         //READ < confirm word data 176
                         {
@@ -148,8 +173,8 @@ namespace CS_SMS_LIB
                             {
                                 for (int j = 0; j < 4; j++) //chute
                                 {
-                                    mdsData.moduleInfos[i].chuteInfos[j].confirmData = r[i * 4 + j];
-                                    mdsData.moduleInfos[i].chuteInfos[j].stackCount = r[i * 4 + j + 1];
+                                    mdsData.moduleInfos[i].chuteInfos[j].confirmData = r[i*8 + j*2 ];
+                                    mdsData.moduleInfos[i].chuteInfos[j].stackCount = r[i*8 +  j*2 + 1];
                                 }
                             }
                         }
@@ -162,8 +187,18 @@ namespace CS_SMS_LIB
                                 break;
                             }
 
-                            mdsData.pid = r[0] + r[1] * 65536;
-                            for(int i = 0 ; i < 12 ; i++ ) //module
+                            int pid = r[0] + r[1] * 65536;
+                            if(pid != mdsData.pid)
+                            {
+                                mdsData.pid = pid;
+                                Debug.WriteLine("Reset 32010");
+                                m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
+
+                                if (onEvent != null)
+                                    onEvent(MDS_EVENT.PID, pid, 0, 0);
+                            }
+
+                            for (int i = 0 ; i < 12 ; i++ ) //module
                             {
                                 for (int j = 0; j < 4; j++) //chute
                                 {
@@ -180,21 +215,52 @@ namespace CS_SMS_LIB
                                 Debug.WriteLine("Read Error < 176 array" );
                                 break;
                             }
+                            int leftChute, rightChute, printButton, plusButton, minusButton;
                             for(int i = 0 ; i < 12 ; i++ ) //module
                             {
                                 for (int j = 0; j < 2; j++) //chute
                                 {
-                                    mdsData.moduleInfos[i].printInfos[j].leftChute = r[i*2+j];
-                                    mdsData.moduleInfos[i].printInfos[j].rightChute = r[i*2+j +1];
-                                    mdsData.moduleInfos[i].printInfos[j].printButton = r[i*2+j+2];
-                                    mdsData.moduleInfos[i].printInfos[j].plusButton = r[i*2+j+3];
-                                    mdsData.moduleInfos[i].printInfos[j].minusButton = r[i*2+j+4];
+                                    leftChute = r[i * 10 + j*5];
+                                    rightChute = r[i * 10 + j*5 + 1];
+                                    printButton = r[i * 10 + j*5 + 2];
+                                    plusButton = r[i * 10 + j*5 + 3];
+                                    minusButton = r[i * 10 + j*5 + 4];
+
+                                    if (leftChute != mdsData.moduleInfos[i].printInfos[j].leftChute)
+                                    {
+                                        mdsData.moduleInfos[i].printInfos[j].leftChute = leftChute;
+                                    }
+
+                                    if (rightChute != mdsData.moduleInfos[i].printInfos[j].rightChute)
+                                        mdsData.moduleInfos[i].printInfos[j].rightChute = rightChute;
+
+                                    if (printButton != mdsData.moduleInfos[i].printInfos[j].printButton)
+                                    {
+
+                                        mdsData.moduleInfos[i].printInfos[j].printButton = printButton;
+                                        if (onEvent != null)
+                                            onEvent(MDS_EVENT.PRINT, i, j, printButton);
+                                    }
+
+                                    if (plusButton != mdsData.moduleInfos[i].printInfos[j].plusButton)
+                                    {
+                                        mdsData.moduleInfos[i].printInfos[j].plusButton = plusButton;
+                                        if (onEvent != null)
+                                            onEvent(MDS_EVENT.PLUS, i, j, plusButton);
+                                    }
+
+                                    if (minusButton != mdsData.moduleInfos[i].printInfos[j].minusButton)
+                                    {
+                                        mdsData.moduleInfos[i].printInfos[j].minusButton = minusButton;
+                                        if (onEvent != null)
+                                            onEvent(MDS_EVENT.MINUS, i, j, minusButton);
+                                    }
                                 }
                             }
                         }
                         ///read tracking data word
                         {
-                            var r = m_modbusClient.ReadHoldingRegisters(598, 40);    //Read 10 Holding Registers from Server, starting with Address 1
+                            var r = m_modbusClient.ReadHoldingRegisters(296, 40);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 40)
                             {
                                 Debug.WriteLine("Read Error < 176 array" );
@@ -203,9 +269,9 @@ namespace CS_SMS_LIB
                             for(int i = 0 ; i < 40 ; i++ ) //module
                                 mdsData.positions[i].chuteNum = r[i];
                         }
-                        //READ < tracking data dword
+                        //READ < tracking data dword ??
                         {
-                            var r = m_modbusClient.ReadHoldingRegisters(500, 80);    //Read 10 Holding Registers from Server, starting with Address 1
+                            var r = m_modbusClient.ReadHoldingRegisters(598, 80);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 80 )
                             {
                                 Debug.WriteLine("Read Error < confirm dword" );
@@ -224,7 +290,7 @@ namespace CS_SMS_LIB
                         Debug.WriteLine(e.ToString());
                         Connection();
                     }
-                    await Task.Delay(100);
+                    await Task.Delay(200);
                 }
             });
         }
@@ -265,9 +331,9 @@ namespace CS_SMS_LIB
         public int StartClient()
         {
             Connection();
-            ReadArray();
+            //ReadArray();
             ReadMDS();
-            StartEvent();
+            //StartEvent();
 
             return 0;
         }
@@ -311,9 +377,9 @@ namespace CS_SMS_LIB
             int[] r = m_modbusClient.ReadHoldingRegisters(900, 2);    //Read 10 Holding Registers from Server, starting with Address 1
             int pid = r[1] * 65536 + r[0];
             Debug.WriteLine("Value of HoldingRegister: " + pid);
-            if (m_pid != pid)
+            if (mdsData.pid != pid)
             {
-                m_pid = pid;
+                mdsData.pid = pid;
                 Debug.WriteLine("Reset 32010");
                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
                 return 1;  /// update
@@ -323,8 +389,8 @@ namespace CS_SMS_LIB
         public int Distribution()
         {
             //todo Get chuteID
-            m_modbusClient.WriteMultipleRegisters(32000, new int[] { m_pid % 65536, m_pid / 65536, m_chuteID, 0 });
-            Debug.WriteLine("Set chute " + (m_chuteID + 1));
+            m_modbusClient.WriteMultipleRegisters(32000, new int[] { mdsData.pid % 65536, mdsData.pid / 65536, m_chuteID, 0 });
+            Debug.WriteLine("Set chute " + m_chuteID);
             m_dist = true;
             return 0;
         }
