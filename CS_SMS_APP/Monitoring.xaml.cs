@@ -301,7 +301,7 @@ namespace CS_SMS_APP
                 }
                 for(int j = 0; j < 2; j++)
                 {
-                    logs += "\t"+"PrintInfo_" + (i*2+j).ToString();
+                    logs += "\t"+"PrintInfo_" + (i*2+j).ToString() + "\n";
                     logs += "\t"+"\t"+"leftChute ";
                     logs += "\t"+"\t"+global.md.mdsData.moduleInfos[i].printInfos[j].leftChute.ToString() + "\n";
                     logs += "\t"+"\t"+"rightChute ";
