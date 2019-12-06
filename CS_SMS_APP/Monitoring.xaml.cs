@@ -268,6 +268,8 @@ namespace CS_SMS_APP
             logs += global.md.mdsData.heartBest.ToString() + "\n";
             logs += "moduleSpeed ";
             logs += global.md.mdsData.settingData.moduleSpeed.ToString() + "\n";
+            logs += "CurrentModuleSpeed ";
+            logs += global.md.mdsData.CurrentModuleSpeed.ToString() + "\n";
             for( int i = 0; i < 3; i++)
             {
                 logs += "point" + i.ToString() + " ";
