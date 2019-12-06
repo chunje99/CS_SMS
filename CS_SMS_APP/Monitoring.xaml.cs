@@ -211,6 +211,7 @@ namespace CS_SMS_APP
             {
                 if(m_lastCode != data)
                 {
+                    m_lastCode = data;
                     global.api.GetChute(data);
                     global.md.MakePID(global.api.m_chute);
                     var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
