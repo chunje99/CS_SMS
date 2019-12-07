@@ -8,14 +8,14 @@
 
   <Identity
     Name="64f5a97d-3870-450a-b5ed-430964219b22"
-    Publisher="CN=82109"
-    Version="1.0.2.0" />
+    Publisher="CN=sms"
+    Version="1.0.7.0" />
 
   <mp:PhoneIdentity PhoneProductId="64f5a97d-3870-450a-b5ed-430964219b22" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>CS_SMS_APP</DisplayName>
-    <PublisherDisplayName>82109</PublisherDisplayName>
+    <PublisherDisplayName>sms</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

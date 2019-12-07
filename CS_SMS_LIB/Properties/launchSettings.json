@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CS_SMS_LIB": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

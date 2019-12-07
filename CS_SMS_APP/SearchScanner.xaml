@@ -11,14 +11,18 @@
     <Grid>
         <TextBlock>Search Scanner</TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="152,101,0,0" Text="스캐너 MAC  -" TextWrapping="Wrap" VerticalAlignment="Top" Width="91" Height="26" TextAlignment="Left" />
-        <TextBox HorizontalAlignment="Left" Margin="494,57,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="148"  Name="Scanner_1"/>
-        <TextBox HorizontalAlignment="Left" Margin="494,121,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="148" Name="Scanner_2"/>
-        <TextBox HorizontalAlignment="Left" Margin="733,57,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="148"  Name="Scanner_3"/>
-        <TextBox HorizontalAlignment="Left" Margin="733,121,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="148" Name="Scanner_4"/>
-        <TextBlock HorizontalAlignment="Left" Margin="466,67,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="470,125,0,0" Text="2" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="706,67,0,0" Text="3" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="710,131,0,0" Text="4" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="300,60,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="320,60,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="140"  Name="Scanner_1"/>
+        <TextBlock HorizontalAlignment="Left" Margin="470,60,0,0" Text="Disconneted" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="100"  Name="ScannerStat_1"/>
+        <TextBlock HorizontalAlignment="Left" Margin="300,120,0,0" Text="2" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="320,120,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="140" Name="Scanner_2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="470,120,0,0" Text="Disconneted" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="100"  Name="ScannerStat_2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,60,0,0" Text="3" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="620,60,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="140"  Name="Scanner_3"/>
+        <TextBlock HorizontalAlignment="Left" Margin="770,60,0,0" Text="Disconneted" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="100"  Name="ScannerStat_3"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,120,0,0" Text="4" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="620,120,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="140" Name="Scanner_4"/>
+        <TextBlock HorizontalAlignment="Left" Margin="770,120,0,0" Text="Disconneted" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="100"  Name="ScannerStat_4"/>
 
         <Button Content="스캔" Margin="597,265,0,0" VerticalAlignment="Top" Height="47" Width="89" Click="Click_Scan"/>
         <Button Content="접속" Margin="762,265,0,0" VerticalAlignment="Top" Height="47" Width="89" Click="Click_Connection"/>

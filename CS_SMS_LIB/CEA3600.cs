@@ -40,12 +40,21 @@ namespace CS_SMS_LIB
         }
         public int Con()
         {
-            IPAddress ip = IPAddress.Parse(m_ip);
-            IPEndPoint bcScanner = new IPEndPoint(ip, m_port);
-            m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream,
-            ProtocolType.Tcp);
-            m_socket.Connect(bcScanner);
-            m_isCon = true; ;
+            Debug.WriteLine("IP:{0} PORT:{1}", m_ip, m_port);
+            try
+            {
+                IPAddress ip = IPAddress.Parse(m_ip);
+                IPEndPoint bcScanner = new IPEndPoint(ip, m_port);
+                m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream,
+                ProtocolType.Tcp);
+                m_socket.Connect(bcScanner);
+                m_isCon = true; ;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                return -1;
+            }
             return 0;
         }
         public int Close()
