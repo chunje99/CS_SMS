@@ -18,7 +18,7 @@ namespace CS_SMS_LIB
         //public string urlParameters { get; set} = "?redis_key=files_db1bdd4cb8d55d08dc458cae0263bee2";
         public string URL { get; set; } = "http://sms-api.wtest.biz/v1/product/barcode/";
         public string urlParameters { get; set; } = "";
-        public int m_chute = -1;
+        public int m_chute = 0;
 
         public CApi()
         {
@@ -40,7 +40,9 @@ namespace CS_SMS_LIB
         }
         public async void GetChute(string barcode)
         {
-            m_chute = -1;
+            m_chute = m_chute % 12;
+            m_chute++;
+            return;
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(URL+barcode);
 
