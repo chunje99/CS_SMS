@@ -25,7 +25,7 @@ namespace CS_SMS_LIB
         public int[] registers { get; } = new int[readLen * 2];
         public MDSData mdsData {get;} = new MDSData();
         private Queue<KeyValuePair<int, int>> m_changeQueue = new Queue<KeyValuePair<int, int>>();
-        private ModbusClient m_modbusClient = null;
+        public ModbusClient m_modbusClient { get; set; } = null;
         private EasyModbus.ModbusServer modbusServer = null;
         public int m_port { get; set; } = 502;
         public string m_host { get; set; } = "192.168.0.1";
@@ -39,6 +39,7 @@ namespace CS_SMS_LIB
         public Action<MDS_EVENT, int, int, int> onEvent = null;
         public bool m_dist { get; set; } = true;
         public string m_error { get; set; } = "";
+        public bool m_isCon { get; set; } = false;
 
         public CModbus()
         {
@@ -65,6 +66,7 @@ namespace CS_SMS_LIB
                 //modbusClient.StopBits = System.IO.Ports.StopBits.Two;
                 //modbusClient.ConnectionTimeout = 500;			
                 m_modbusClient.Connect();
+                m_isCon = true;
                 conCnt++;
             }
             catch (Exception e)
@@ -84,6 +86,7 @@ namespace CS_SMS_LIB
             try
             {
                 m_modbusClient.Disconnect();
+                m_isCon = false;
             }
             catch (Exception e)
             {

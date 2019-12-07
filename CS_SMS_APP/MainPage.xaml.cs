@@ -45,12 +45,13 @@ namespace CS_SMS_APP
 
         public static TextBox[] m_scanner = new TextBox[5];
         public static Queue<string> m_msgQueue = new Queue<string>();
-        public static List<PlcData> m_plcData = new List<PlcData>();
+        //public static List<PlcData> m_plcData = new List<PlcData>();
         public static List<string> m_printIP = new List<string>(new string[] {"", "", "", ""});
         public static List<string> m_printPORT = new List<string>(new string[] { "", "", "", "" });
         public global()
         {
         }
+        /*
         static public int ChangeText( string txt, int location)
         {
             PlcData item = m_plcData.Find(x => x.m_location == location);
@@ -59,6 +60,7 @@ namespace CS_SMS_APP
                     item.m_control.Text = txt;
             return 0;
         }
+        */
         static private string GetStatusMsg(int nStatus)
         {
             string errMsg = "";

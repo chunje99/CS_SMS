@@ -172,10 +172,13 @@ namespace CS_SMS_APP
                                             if (m_lastCode != barcode)
                                             {
                                                 m_lastCode = barcode;
-                                                global.api.GetChute(m_lastCode);
-                                                global.md.MakePID(global.api.m_chute);
+                                                if(global.md.m_isCon)
+                                                {
+                                                    global.api.GetChute(m_lastCode);
+                                                    global.md.MakePID(global.api.m_chute);
+                                                }
                                                 UpdateUI(Monitoring_scanner1, m_lastCode);
-                                                if(Monitoring_bundle.Flyout.IsOpen)
+                                                if (Monitoring_bundle.Flyout.IsOpen)
                                                 {
                                                     dataList.Clear();
                                                     CMPS p2 = new CMPS();
@@ -235,8 +238,11 @@ namespace CS_SMS_APP
                         p2.sku_barcd = m_lastCode;
                         dataList.Add(p2);
                     }
-                    global.api.GetChute(data);
-                    global.md.MakePID(global.api.m_chute);
+                    if (global.md.m_isCon)
+                    {
+                        global.api.GetChute(data);
+                        global.md.MakePID(global.api.m_chute);
+                    }
                     var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         UpdateUI(Monitoring_scanner0, data);
