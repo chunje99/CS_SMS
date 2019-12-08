@@ -1,67 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using CS_SMS_LIB;
 using System.Text;
 
-// 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
-
-namespace CS_SMS_APP
+namespace CS_SMS_LIB
 {
-    /// <summary>
-    /// 자체적으로 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
-    public class PlcData
+    public class CPrinter
     {
-        public TextBlock m_control { get; set; } = null;
-        public string m_name { get; set; } = "";
-        public int m_location { get; set; } = -1;
-        public PlcData( TextBlock control, string name, int location)
-        {
-            m_control = control;
-            m_name = name;
-            m_location = location;
-        }
+        public string m_host { get; set; }
+        public string m_port { get; set; }
 
-    }
-
-    /// </summary>
-    public class global
-    {
-        public static UDPer udp = new UDPer();
-        public static CModbus md = new CModbus();
-        public static CBanner banner = new CBanner();
-        public static CApi api = new CApi();
-
-        public static TextBox[] m_scanner = new TextBox[5];
-        public static Queue<string> m_msgQueue = new Queue<string>();
-        //public static List<PlcData> m_plcData = new List<PlcData>();
-        //public static List<string> m_printIP = new List<string>(new string[] {"", "", "", ""});
-        //public static List<string> m_printPORT = new List<string>(new string[] { "", "", "", "" });
-        public static List<CPrinter> m_printer = new List<CPrinter>(new CPrinter[] { new CPrinter(), new CPrinter(), new CPrinter(), new CPrinter()});
-        public global()
+        public CPrinter()
         {
         }
-        /*
-        static public int ChangeText( string txt, int location)
-        {
-            PlcData item = m_plcData.Find(x => x.m_location == location);
-            if(item != null)
-                if (item.m_location != -1)
-                    item.m_control.Text = txt;
-            return 0;
-        }
-        */
+
         static private string GetStatusMsg(int nStatus)
         {
             string errMsg = "";
@@ -91,7 +42,9 @@ namespace CS_SMS_APP
         public const int ILan = 3;
         public const int IBluetooth = 5;
 
-        static private bool ConnectPrinter(string host, string port, TextBlock status)
+        public Action<int, string> act0 { get; set; } = null;
+
+        private bool ConnectPrinter()
         {
             string strPort = "";
             int nInterface = ILan;
@@ -107,8 +60,8 @@ namespace CS_SMS_APP
             {
                 // NETWORK
                 //nInterface = ILan;
-                strPort = host;
-                nBaudrate = Convert.ToInt32(port);
+                strPort = m_host;
+                nBaudrate = Convert.ToInt32(m_port);
             }
 
             nStatus = BXLLApi.ConnectPrinterEx(nInterface, strPort, nBaudrate, nDatabits, nParity, nStopbits);
@@ -116,7 +69,8 @@ namespace CS_SMS_APP
             if (nStatus != (int)SLCS_ERROR_CODE.ERR_CODE_NO_ERROR)
             {
                 BXLLApi.DisconnectPrinter();
-                status.Text = GetStatusMsg(nStatus);
+                if(act0 != null)
+                    act0(nStatus, GetStatusMsg(nStatus));
                 return false;
             }
             return true;
@@ -129,9 +83,9 @@ namespace CS_SMS_APP
             return str;
         }
 
-        static public void PrintConnect(string host, string port, TextBlock status)
+        public void PrintConnect()
         {
-            if (!ConnectPrinter(host, port, status))
+            if (!ConnectPrinter())
                 return;
 
             int lResult = 0;
@@ -148,8 +102,8 @@ namespace CS_SMS_APP
                 if (BXLLApi.ReadBuff(byReadPrtName, byReadPrtName.Length, ref lResult) == true)
                 {
                     strResult = ByteToString(byReadPrtName);
-                    if(status != null)
-                        status.Text = strResult;
+                    if (act0 != null)
+                        act0(0, strResult);
                 }
             }
 
@@ -159,8 +113,10 @@ namespace CS_SMS_APP
 
         static private void SendPrinterSettingCommand()
         {
-            string Width = "101.6";
-            string Height = "152.4";
+            //string Width = "101.6";
+            //string Height = "152.4";
+            string Width = "100";
+            string Height = "80";
             string MarginX = "0";
             string MarginY = "0";
             string Density = "14";
@@ -201,9 +157,10 @@ namespace CS_SMS_APP
 
             BXLLApi.SetPaper(nMarginX, nMarginY, nPaper_Width, nPaper_Height, nSensorType, 0, 2 * dotsPer1mm);
         }
-        static public void PrintSample(string host, string port, TextBlock status, string printer)
+
+        public void PrintSample(string printer)
         {
-            if (!ConnectPrinter(host, port, status))
+            if (!ConnectPrinter())
                 return;
 
             int multiplier = 1;
@@ -216,19 +173,40 @@ namespace CS_SMS_APP
             SendPrinterSettingCommand();
 
             // Prints string using TrueFont
-            BXLLApi.PrintTrueFont(2 * dotsPer1mm, 5 * dotsPer1mm, "Arial", 14, 0, true, true, false, "Test Label", false);
+            //BXLLApi.PrintTrueFont(40 * dotsPer1mm, 5 * dotsPer1mm, "Arial", 20, 0, true, true, false, "여의도 CGV점(F020)", false);
+            BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 5 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "여의도 CGV점 (F020)");
+            //BXLLApi.PrintTrueFont(40 * dotsPer1mm, 5 * dotsPer1mm, "Arial", 14, 0, true, true, false, "Test Label", false);
 
             //	Draw Lines
-            BXLLApi.PrintBlock(1 * dotsPer1mm, 10 * dotsPer1mm, 71 * dotsPer1mm, 11 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.LINE_OVER_WRITING, 0);
+            BXLLApi.PrintBlock(5 * dotsPer1mm, 15 * dotsPer1mm, 95 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.LINE_OVER_WRITING, 0);
 
             //Print string using Vector Font
-            BXLLApi.PrintDeviceFont(2 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "배송지:" + printer);
+            BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 20 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "상품코드");
+            BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 20 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "상품명");
+            BXLLApi.PrintDeviceFont(80 * dotsPer1mm, 20 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "EA");
+
+            BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 30 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
+            BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 30 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
+            BXLLApi.PrintDeviceFont(80 * dotsPer1mm, 30 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
+
+            BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 40 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
+            BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 40 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
+            BXLLApi.PrintDeviceFont(80 * dotsPer1mm, 40 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
+
+            BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 50 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
+            BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 50 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
+            BXLLApi.PrintDeviceFont(80 * dotsPer1mm, 50 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
+
+            BXLLApi.Print1DBarcode(20 * dotsPer1mm, 60 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "MPIBR1003F0200017");
+
+            /*
             BXLLApi.PrintDeviceFont(2 * dotsPer1mm, 17 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "CJ 대한통운");
 
             BXLLApi.PrintDeviceFont(3 * dotsPer1mm, 24 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "바코드 CODE39");
             BXLLApi.Print1DBarcode(3 * dotsPer1mm, 28 * dotsPer1mm, (int)SLCS_BARCODE.CODE39, 4 * multiplier, 6 * multiplier, 48 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "1234567890");
             BXLLApi.PrintDeviceFont(3 * dotsPer1mm, 44 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "바코드 CODE128");
             BXLLApi.Print1DBarcode(3 * dotsPer1mm, 48 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 4 * multiplier, 6 * multiplier, 48 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "1234567890abcdefg");
+            */
 
             //	Print Command
             BXLLApi.Prints(1, 1);
@@ -236,73 +214,6 @@ namespace CS_SMS_APP
             // Disconnect printer
             BXLLApi.DisconnectPrinter();
 
-        }
-
-    }
-    public sealed partial class MainPage : Page
-    {
-        public MainPage()
-        {
-            global.udp.Start();
-            this.InitializeComponent();
-        }
-
-        private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-        {
-            if (args.IsSettingsInvoked)
-            {
-                ContentFrame.Navigate(typeof(Setting));
-            }
-            else
-            {
-                // find NavigationViewItem with Content that equals InvokedItem
-                var item = sender.MenuItems.OfType<NavigationViewItem>().First(x => (string)x.Content == (string)args.InvokedItem);
-                NavView_Navigate(item as NavigationViewItem);
-            }
-        }
-
-        private void NavView_Loaded(object sender, RoutedEventArgs e)
-        {
-            // you can also add items in code behind
-            NavView.MenuItems.Add(new NavigationViewItemSeparator());
-            NavView.MenuItems.Add(new NavigationViewItem()
-            { Content = "My content", Icon = new SymbolIcon(Symbol.Folder), Tag = "content" });
-
-            // set the initial SelectedItem 
-            foreach (NavigationViewItemBase item in NavView.MenuItems)
-            {
-                if (item is NavigationViewItem && item.Tag.ToString() == "home")
-                {
-                    NavView.SelectedItem = item;
-                    break;
-                }
-            }
-            ContentFrame.Navigate(typeof(Home));
-        }
-        private void NavView_Navigate(NavigationViewItem item)
-        {
-            switch (item.Tag)
-            {
-                case "home":
-                    ContentFrame.Navigate(typeof(Home));
-                    break;
-                case "scanner":
-                    ContentFrame.Navigate(typeof(MainScanner));
-                    break;
-                case "scanners":
-                    ContentFrame.Navigate(typeof(SearchScanner));
-                    break;
-                case "plc":
-                    ContentFrame.Navigate(typeof(ConnectPLC));
-                    break;
-                case "monitoring":
-                    ContentFrame.Navigate(typeof(Monitoring));
-                    break;
-                case "printer":
-                    ContentFrame.Navigate(typeof(PrinterSetting));
-                    break;
-
-            }
         }
     }
 }

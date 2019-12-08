@@ -93,7 +93,8 @@ namespace ConsoleApp1
         static public void Test3()
         {
             CApi api = new CApi();
-            api.GetChute("asdfsf");
+            var p = api.GetChute("asdfsf");
+            
         }
         static void Main(string[] args)
         {

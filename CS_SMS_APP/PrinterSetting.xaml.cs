@@ -12,8 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using CS_SMS_LIB;
-using System.Text;
+using Windows.UI.Core;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -32,47 +31,84 @@ namespace CS_SMS_APP
 
         private void Print1_Connect_Click(object sender, RoutedEventArgs e)
         {
-            global.m_printPORT[0] = Print1_Port.Text;
-            global.m_printIP[0] = Print1_Host.Text;
-            global.PrintConnect(Print1_Host.Text, Print1_Port.Text, Print1_Status);
+            global.m_printer[0].m_port = Print1_Port.Text;
+            global.m_printer[0].m_host = Print1_Host.Text;
+            global.m_printer[0].act0 = (int error, string data) =>
+            {
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateUI(Print1_Status, data);
+                });
+            };
+            global.m_printer[0].PrintConnect();
         }
         private void Print2_Connect_Click(object sender, RoutedEventArgs e)
         {
-            global.m_printPORT[1] = Print2_Port.Text;
-            global.m_printIP[1] = Print2_Host.Text;
-            global.PrintConnect(Print2_Host.Text, Print2_Port.Text, Print2_Status);
+            global.m_printer[1].m_port = Print2_Port.Text;
+            global.m_printer[1].m_host = Print2_Host.Text;
+            global.m_printer[1].act0 = (int error, string data) =>
+            {
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateUI(Print2_Status, data);
+                });
+            };
+            global.m_printer[1].PrintConnect();
         }
         private void Print3_Connect_Click(object sender, RoutedEventArgs e)
         {
-            global.m_printPORT[2] = Print3_Port.Text;
-            global.m_printIP[2] = Print3_Host.Text;
-            global.PrintConnect(Print3_Host.Text, Print3_Port.Text, Print3_Status);
+            global.m_printer[2].m_port = Print3_Port.Text;
+            global.m_printer[2].m_host = Print3_Host.Text;
+            global.m_printer[2].act0 = (int error, string data) =>
+            {
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateUI(Print3_Status, data);
+                });
+            };
+            global.m_printer[2].PrintConnect();
         }
         private void Print4_Connect_Click(object sender, RoutedEventArgs e)
         {
-            global.m_printPORT[3] = Print4_Port.Text;
-            global.m_printIP[3] = Print4_Host.Text;
-            global.PrintConnect(Print4_Host.Text, Print4_Port.Text, Print4_Status);
+            global.m_printer[3].m_port = Print4_Port.Text;
+            global.m_printer[3].m_host = Print4_Host.Text;
+            global.m_printer[3].act0 = (int error, string data) =>
+            {
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateUI(Print4_Status, data);
+                });
+            };
+            global.m_printer[3].PrintConnect();
         }
 
 
         private void Print1_Print_Click(object sender, RoutedEventArgs e)
         {
-            global.PrintSample(Print1_Host.Text, Print1_Port.Text, Print1_Status, "Printer1");
+            global.m_printer[0].PrintSample("Printer1");
         }
 
         private void Print2_Print_Click(object sender, RoutedEventArgs e)
         {
-            global.PrintSample(Print2_Host.Text, Print2_Port.Text, Print2_Status, "Printer2");
+            global.m_printer[1].PrintSample("Printer2");
         }
         private void Print3_Print_Click(object sender, RoutedEventArgs e)
         {
-            global.PrintSample(Print3_Host.Text, Print3_Port.Text, Print3_Status, "Printer3");
+            global.m_printer[2].PrintSample("Printer3");
         }
 
         private void Print4_Print_Click(object sender, RoutedEventArgs e)
         {
-            global.PrintSample(Print4_Host.Text, Print4_Port.Text, Print4_Status, "Printer4");
+            global.m_printer[3].PrintSample("Printer4");
+        }
+
+        private async void UpdateUI(TextBlock tbox, string data)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            () =>
+            {
+                tbox.Text = data;
+            });
         }
     }
 }
