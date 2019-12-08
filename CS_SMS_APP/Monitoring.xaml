@@ -146,7 +146,7 @@
                                 Grid.Column="12" VerticalAlignment="Center"/>
                                         <TextBlock Text="{x:Bind rgter}" Foreground="Teal" FontSize="14" 
                                 Grid.Column="13" VerticalAlignment="Center"/>
-                                        <TextBox Text="" Foreground="Teal" FontSize="14" Grid.Column="14" VerticalAlignment="Center"/>
+                                        <TextBox Text="" Foreground="Teal" FontSize="14" Grid.Column="14" VerticalAlignment="Center" KeyDown="Bundle_Keydown"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

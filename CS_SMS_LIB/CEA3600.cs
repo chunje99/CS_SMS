@@ -97,7 +97,7 @@ namespace CS_SMS_LIB
                         //Debug.WriteLine(bytes[0]);
                         Debug.WriteLine("{0} : {1}", m_name, data);
                         if(act0 != null)
-                            act0(m_name, data);
+                            act0(m_ip, data);
                         m_msgQueue.Enqueue(data);
                     }
                 }
@@ -209,6 +209,16 @@ namespace CS_SMS_LIB
                 scaner.Con();
                 scaner.Start();
             }
+            return 0;
+        }
+        public int StartScaner(string host, int port, string name)
+        {
+            Debug.WriteLine("==============");
+            Debug.WriteLine("StartScaner {0} {1}", host, port.ToString());
+            CEA3600 cea = new CEA3600(host, port, name);
+            m_scaner.Add(cea);
+            cea.Con();
+            cea.Start();
             return 0;
         }
         public int StopScanner()

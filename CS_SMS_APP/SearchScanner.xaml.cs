@@ -84,7 +84,9 @@ namespace CS_SMS_APP
             int i = 0;
             foreach( var device in devices)
             {
-                names[i] = device.Key.Replace("MAC=", "").Replace("PORT=54321","");
+                //names[i] = device.Key.Replace("MAC=", "").Replace("PORT=54321","");
+                //names[i] = device.Key.Replace("MAC=", "").Replace("PORT=54321","") + "  IP" + device.Value.Key;
+                names[i] = device.Value.Key;
                 i++;
             }
             Scanner_1.Text = names[0];
@@ -96,7 +98,16 @@ namespace CS_SMS_APP
         private void Click_Connection(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Connect Scanner");
-            global.udp.StartScaner();
+            //global.udp.StartScaner();
+            if (Scanner_1.Text != "")
+                global.udp.StartScaner(Scanner_1.Text, 54321, "Scanner_1");
+            if(Scanner_2.Text != "" )
+                global.udp.StartScaner(Scanner_2.Text, 54321, "Scanner_2");
+            if(Scanner_3.Text != "" )
+                global.udp.StartScaner(Scanner_3.Text, 54321, "Scanner_3");
+            if(Scanner_4.Text != "" )
+                global.udp.StartScaner(Scanner_4.Text, 54321, "Scanner_4");
+
             foreach (var scaner in global.udp.m_scaner)
             {
                 scaner.act0 = (name, barcode) =>
@@ -106,20 +117,36 @@ namespace CS_SMS_APP
                     Debug.WriteLine(name);
                     Debug.WriteLine(barcode);
                     global.m_msgQueue.Enqueue(barcode);
+                    var devices = global.udp.m_deviceTable;
+                    int i = 0;
+                    foreach (var device in devices)
+                    {
+                        if(name == device.Value.Key)
+                            break;
+                        i++;
+                    }
                     var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        UpdateUI(barcode);
+                        UpdateUI(i, barcode);
                     });
                     Debug.WriteLine("==============");
                     //global.md.MakePID();
                 };
             }
         }
-        private async void UpdateUI(string barcode)
+        private async void UpdateUI(int idx, string barcode)
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
             () =>
             {
+                if (idx == 0)
+                    ScannerStat_1.Text = barcode;
+                if(idx == 1)
+                    ScannerStat_2.Text = barcode;
+                if(idx == 2)
+                    ScannerStat_3.Text = barcode;
+                if(idx == 3)
+                    ScannerStat_4.Text = barcode;
                 //code to update UI
             });
         }

@@ -19,6 +19,7 @@ using Windows.UI.Core;
 using System.Collections.ObjectModel;
 using CS_SMS_LIB;
 using System.ComponentModel;
+using Windows.System;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -158,17 +159,15 @@ namespace CS_SMS_APP
                     try
                     {
                         ///scanner msg
-                        for (int i = 0; i < global.udp.m_scaner.Count(); i++)
+                        foreach( var scanner in global.udp.m_scaner)
                         {
-                            int idx = i;
-                            if (global.udp.m_scaner[i].m_msgQueue.Count() > 0)
+                            if (scanner.m_msgQueue.Count() > 0)
                             {
-                                var barcode = global.udp.m_scaner[i].m_msgQueue.Dequeue();
+                                var barcode = scanner.m_msgQueue.Dequeue();
                                 var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                 {
-                                    switch (idx)
+                                    if( scanner.m_name == "Scanner_1")
                                     {
-                                        case 0:
                                             if (m_lastCode != barcode)
                                             {
                                                 m_lastCode = barcode;
@@ -190,16 +189,18 @@ namespace CS_SMS_APP
                                             {
                                                 Debug.WriteLine("===Sampe Code======");
                                             }
-                                            break;
-                                        case 1:
-                                            UpdateUI(Monitoring_scanner2, barcode);
-                                            break;
-                                        case 2:
-                                            UpdateUI(Monitoring_scanner3, barcode);
-                                            break;
-                                        case 3:
-                                            UpdateUI(Monitoring_scanner4, barcode);
-                                            break;
+                                    }
+                                    else if( scanner.m_name == "Scanner_2")
+                                    {
+                                        UpdateUI(Monitoring_scanner2, barcode);
+                                    }
+                                    else if( scanner.m_name == "Scanner_3")
+                                    {
+                                        UpdateUI(Monitoring_scanner2, barcode);
+                                    }
+                                    else if( scanner.m_name == "Scanner_4")
+                                    {
+                                        UpdateUI(Monitoring_scanner4, barcode);
                                     }
                                 });
                             }
@@ -359,6 +360,16 @@ namespace CS_SMS_APP
         }
         private void Bundle_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void Bundle_Keydown(object sender, KeyRoutedEventArgs e)
+        {
+            if( e.Key == VirtualKey.Enter )
+            {
+                TextBox box = sender as TextBox;
+                Debug.WriteLine(box.Text);
+                Monitoring_bundle.Flyout.Hide();
+            }
         }
     }
 
