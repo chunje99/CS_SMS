@@ -97,7 +97,7 @@
                             <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" 
                                 Grid.Column="14" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="1"  x:Name="ListData" ItemsSource="{x:Bind dataList}">
+                        <ListView Grid.Row="1"  x:Name="BundleData" ItemsSource="{x:Bind bundleList}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:CMPS">
                                     <Grid>
@@ -155,7 +155,243 @@
                 </Flyout>
             </Button.Flyout>
         </Button>
+
+        <Button Content="잔류처리" Margin="400,250,0,0" VerticalAlignment="Top" Name="Monitoring_remain" Click="Remain_Click">
+            <Button.Flyout>
+                <Flyout>
+                    <Flyout.FlyoutPresenterStyle>
+                        <Style TargetType="FlyoutPresenter">
+                            <Setter Property="MinHeight" Value="300"/>
+                            <Setter Property="MinWidth" Value="1100"/>
+                            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
+                            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+                            <Setter Property="IsTabStop" Value="True"/>
+                            <Setter Property="TabNavigation" Value="Cycle"/>
+                        </Style>
+                    </Flyout.FlyoutPresenterStyle>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="주문번호" Foreground="Teal" FontSize="14" 
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                            <TextBlock Text="ORDRE_LINE_NUM" Foreground="Teal" FontSize="14" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                            <TextBlock Text="고객코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                            <TextBlock Text="상품코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                            <TextBlock Text="상품명" Foreground="Teal" FontSize="14" 
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                            <TextBlock Text="상품바코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                            <TextBlock Text="거래코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                            <TextBlock Text="거래처명" Foreground="Teal" FontSize="14" 
+                                Grid.Column="7" VerticalAlignment="Center"/>
+                            <TextBlock Text="로케이션번호" Foreground="Teal" FontSize="14" 
+                                Grid.Column="8" VerticalAlignment="Center"/>
+                            <TextBlock Text="수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="9" VerticalAlignment="Center"/>
+                            <TextBlock Text="검수수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="10" VerticalAlignment="Center"/>
+                            <TextBlock Text="박스내 상품수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="11" VerticalAlignment="Center"/>
+                            <TextBlock Text="차수" Foreground="Teal" FontSize="14" 
+                                Grid.Column="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="RGTER" Foreground="Teal" FontSize="14" 
+                                Grid.Column="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="14" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ListView Grid.Row="1"  x:Name="RemainData" ItemsSource="{x:Bind remainList}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="CS_SMS_LIB:CMPS">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{x:Bind order_key}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind order_line_num}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind com_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind sku_barcd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="7" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind loc_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="8" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind pick_qty}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="9" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind picked_qty}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="10" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind box_in_qty}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="11" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind seq_no}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind rgter}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="13" VerticalAlignment="Center"/>
+                                        <TextBox Text="" Foreground="Teal" FontSize="14" Grid.Column="14" VerticalAlignment="Center" KeyDown="Remain_Keydown"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
         <ListView Margin="250,300,0,0" x:Name="listView">
+            <TextBlock Text="1. LOGS" />
+                    <Grid Margin="0,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="주문번호" Foreground="Teal" FontSize="14" 
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                            <TextBlock Text="ORDRE_LINE_NUM" Foreground="Teal" FontSize="14" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                            <TextBlock Text="고객코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                            <TextBlock Text="상품코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                            <TextBlock Text="상품명" Foreground="Teal" FontSize="14" 
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                            <TextBlock Text="상품바코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                            <TextBlock Text="거래코드" Foreground="Teal" FontSize="14" 
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                            <TextBlock Text="거래처명" Foreground="Teal" FontSize="14" 
+                                Grid.Column="7" VerticalAlignment="Center"/>
+                            <TextBlock Text="로케이션번호" Foreground="Teal" FontSize="14" 
+                                Grid.Column="8" VerticalAlignment="Center"/>
+                            <TextBlock Text="수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="9" VerticalAlignment="Center"/>
+                            <TextBlock Text="검수수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="10" VerticalAlignment="Center"/>
+                            <TextBlock Text="박스내 상품수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="11" VerticalAlignment="Center"/>
+                            <TextBlock Text="차수" Foreground="Teal" FontSize="14" 
+                                Grid.Column="12" VerticalAlignment="Center"/>
+                            <TextBlock Text="RGTER" Foreground="Teal" FontSize="14" 
+                                Grid.Column="13" VerticalAlignment="Center"/>
+                            <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" 
+                                Grid.Column="14" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="CS_SMS_LIB:CMPS">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="70"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{x:Bind order_key}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind order_line_num}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind com_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind sku_barcd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="7" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind loc_cd}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="8" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind pick_qty}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="9" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind picked_qty}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="10" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind box_in_qty}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="11" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind seq_no}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="12" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{x:Bind rgter}" Foreground="Teal" FontSize="14" 
+                                Grid.Column="13" VerticalAlignment="Center"/>
+                                        <TextBox Text="" Foreground="Teal" FontSize="14" Grid.Column="14" VerticalAlignment="Center" KeyDown="Bundle_Keydown"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
             <!--TextBlock Text="1. Heart Best" />
             <Border BorderThickness="1" BorderBrush="Black">
                 <Grid x:Name="HeartBest">

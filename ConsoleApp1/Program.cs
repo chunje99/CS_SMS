@@ -47,7 +47,7 @@ namespace ConsoleApp1
                         md.Distribution();
                         break;
                     case 'p':  //get pid
-                        Debug.WriteLine(md.m_pid);
+                        //Debug.WriteLine(md.m_pid);
                         break;
                     case 'r':
                         md.GetDistribution();
@@ -93,7 +93,7 @@ namespace ConsoleApp1
         static public void Test3()
         {
             CApi api = new CApi();
-            api.GetChute("abcasdfasdfasdf");
+            api.GetChute("asdfsf");
         }
         static void Main(string[] args)
         {

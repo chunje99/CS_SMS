@@ -36,7 +36,10 @@ namespace CS_SMS_APP
     /// </summary>
     public sealed partial class Monitoring : Page
     {
-        ObservableCollection<CMPS> dataList = new ObservableCollection<CMPS>();
+        ObservableCollection<CMPS> bundleList = new ObservableCollection<CMPS>();
+        ObservableCollection<CMPS> remainList = new ObservableCollection<CMPS>();
+        ObservableCollection<CMPS> mdsList = new ObservableCollection<CMPS>();
+
         public string m_lastCode { get; set; } = "";
         public Monitoring()
         {
@@ -159,50 +162,36 @@ namespace CS_SMS_APP
                     try
                     {
                         ///scanner msg
-                        foreach( var scanner in global.udp.m_scaner)
+                        foreach (var scanner in global.udp.m_scaner)
                         {
                             if (scanner.m_msgQueue.Count() > 0)
                             {
                                 var barcode = scanner.m_msgQueue.Dequeue();
-                                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                                if (scanner.m_name == "Scanner_1")
                                 {
-                                    if( scanner.m_name == "Scanner_1")
-                                    {
-                                            if (m_lastCode != barcode)
-                                            {
-                                                m_lastCode = barcode;
-                                                if(global.md.m_isCon)
-                                                {
-                                                    global.api.GetChute(m_lastCode);
-                                                    global.md.MakePID(global.api.m_chute);
-                                                }
-                                                UpdateUI(Monitoring_scanner1, m_lastCode);
-                                                if (Monitoring_bundle.Flyout.IsOpen)
-                                                {
-                                                    dataList.Clear();
-                                                    CMPS p2 = new CMPS();
-                                                    p2.sku_barcd = m_lastCode;
-                                                    dataList.Add(p2);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                Debug.WriteLine("===Sampe Code======");
-                                            }
-                                    }
-                                    else if( scanner.m_name == "Scanner_2")
+                                    Scanner_Process(barcode, Monitoring_scanner1);
+                                }
+                                else if (scanner.m_name == "Scanner_2")
+                                {
+                                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                     {
                                         UpdateUI(Monitoring_scanner2, barcode);
-                                    }
-                                    else if( scanner.m_name == "Scanner_3")
+                                    });
+                                }
+                                else if (scanner.m_name == "Scanner_3")
+                                {
+                                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                     {
-                                        UpdateUI(Monitoring_scanner2, barcode);
-                                    }
-                                    else if( scanner.m_name == "Scanner_4")
+                                        UpdateUI(Monitoring_scanner3, barcode);
+                                    });
+                                }
+                                else if (scanner.m_name == "Scanner_4")
+                                {
+                                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                     {
                                         UpdateUI(Monitoring_scanner4, barcode);
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
 
@@ -229,31 +218,7 @@ namespace CS_SMS_APP
         {
             global.banner.act0 = (string data) =>
             {
-                if (m_lastCode != data)
-                {
-                    m_lastCode = data;
-                    if (Monitoring_bundle.Flyout.IsOpen)
-                    {
-                        dataList.Clear();
-                        CMPS p2 = new CMPS();
-                        p2.sku_barcd = m_lastCode;
-                        dataList.Add(p2);
-                    }
-                    if (global.md.m_isCon)
-                    {
-                        global.api.GetChute(data);
-                        global.md.MakePID(global.api.m_chute);
-                    }
-                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        UpdateUI(Monitoring_scanner0, data);
-                    });
-                }
-                else
-                {
-                    Debug.WriteLine("===Sampe Code======");
-                }
-
+                Scanner_Process(data, Monitoring_scanner0);
             };
             return 0;
         }
@@ -369,7 +334,80 @@ namespace CS_SMS_APP
                 TextBox box = sender as TextBox;
                 Debug.WriteLine(box.Text);
                 Monitoring_bundle.Flyout.Hide();
+                if (global.md.m_isCon)
+                {
+                    Debug.WriteLine("=======Get Chute======");
+                    global.api.GetChute(m_lastCode);
+                    Debug.WriteLine("=======Make PID======");
+                    global.md.MakePID(global.api.m_chute);
+                    /// pid 받고 해야할까?
+                    Debug.WriteLine("=======TODO CALL bundle api======");
+
+                }
             }
+        }
+
+        private void Remain_Keydown(object sender, KeyRoutedEventArgs e)
+        {
+            if( e.Key == VirtualKey.Enter )
+            {
+                TextBox box = sender as TextBox;
+                Debug.WriteLine(box.Text);
+                Monitoring_remain.Flyout.Hide();
+                Debug.WriteLine("=======TODO CALL remain api======");
+            }
+        }
+
+        private int Scanner_Process(string barcode, TextBox textBox)
+        {
+            if (m_lastCode != barcode)
+            {
+                Debug.WriteLine("===Change Code======");
+                m_lastCode = barcode;
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    UpdateUI(textBox, m_lastCode);
+                    if (Monitoring_bundle.Flyout.IsOpen)
+                    {
+                        Debug.WriteLine("=======Bundle Processing======");
+                        bundleList.Clear();
+                        CMPS p2 = new CMPS();
+                        p2.sku_barcd = m_lastCode;
+                        bundleList.Add(p2);
+                    }
+                    else if( Monitoring_remain.Flyout.IsOpen)
+                    {
+                        Debug.WriteLine("=======Remain Processing======");
+                        remainList.Clear();
+                        CMPS p2 = new CMPS();
+                        p2.sku_barcd = m_lastCode;
+                        remainList.Add(p2);
+                    }
+                    else if (global.md.m_isCon)
+                    {
+                        Debug.WriteLine("=======Get Chute======");
+                        global.api.GetChute(m_lastCode);
+                        Debug.WriteLine("=======Make PID======");
+                        global.md.MakePID(global.api.m_chute);
+
+                        mdsList.Clear();
+                        CMPS p2 = new CMPS();
+                        p2.sku_barcd = m_lastCode;
+                        mdsList.Add(p2);
+                    }
+                });
+            }
+            else
+            {
+                Debug.WriteLine("===Sampe Code======");
+            }
+
+            return 0;
+        }
+
+        private void Remain_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

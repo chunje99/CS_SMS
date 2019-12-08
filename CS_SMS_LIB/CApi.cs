@@ -9,14 +9,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CS_SMS_LIB
 {
     public class CApi
     {
-        //public string URL { get; set; } = "https://speech-api.kakao.com/demo/uploadState";
-        //public string urlParameters { get; set} = "?redis_key=files_db1bdd4cb8d55d08dc458cae0263bee2";
-        public string URL { get; set; } = "http://sms-api.wtest.biz/v1/product/barcode/";
+        public string Domain { get; set; } = "http://sms-api.wtest.biz";
         public string urlParameters { get; set; } = "";
         public int m_chute = 0;
 
@@ -44,7 +43,8 @@ namespace CS_SMS_LIB
             m_chute++;
             return;
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL+barcode);
+            string url  = "/v1/product/barcode/";
+            client.BaseAddress = new Uri(Domain + url + barcode);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(
@@ -68,6 +68,36 @@ namespace CS_SMS_LIB
             else
             {
                 Debug.WriteLine("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
+            }
+        }
+
+        public void SetTest(string j)
+        {
+            //return;
+            Debug.WriteLine("===SetTest==="); 
+            HttpClient client = new HttpClient();
+            string url = "/v1/product/arrived";
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            var json = new JObject();
+            json.Add("barcode", "1231823");
+            json.Add("pid", "12");
+            json.Add("chute", "6");
+            var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response body. Blocking!
+                Debug.WriteLine("===OK===");
+            }
+            else
+            {
+                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
         }
     }

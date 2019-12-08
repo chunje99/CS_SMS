@@ -19,6 +19,7 @@
     <Reference Include="EasyModbus">
       <HintPath>..\ConsoleApp1\dll\EasyModbus.dll</HintPath>
     </Reference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <!--PackageReference Include="Newtonsoft.Json" Version="12.0.3" /-->
     <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
