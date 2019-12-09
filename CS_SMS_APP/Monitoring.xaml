@@ -12,6 +12,8 @@
     <Grid>
         <TextBlock>Monitoring</TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="150,50,0,0" Text="스캐너 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="200,100,0,0" Text="직접입력 " TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="260,100,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_input" KeyDown="Input_Keydown"/>
         <TextBlock HorizontalAlignment="Left" Margin="250,50,0,0" Text="0 " TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="260,50,0,0" Text="스캐너0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner0"/>
         <TextBlock HorizontalAlignment="Left" Margin="480,50,0,0" Text="1 " TextWrapping="Wrap" VerticalAlignment="Top"/>

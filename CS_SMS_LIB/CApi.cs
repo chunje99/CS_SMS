@@ -15,7 +15,8 @@ namespace CS_SMS_LIB
 {
     public class CApi
     {
-        public string Domain { get; set; } = "http://sms-api.wtest.biz";
+        //public string Domain { get; set; } = "http://sms-api.wtest.biz";
+        public string Domain { get; set; } = "http://127.0.0.1";
         public string urlParameters { get; set; } = "";
         public int m_chute = 0;
 
@@ -43,8 +44,12 @@ namespace CS_SMS_LIB
             //m_chute++;
             //return;
             //test
-            barcode = "8809681702713";
+            //barcode = "8809681702713";
             Product product = new Product();
+            ///test
+            //DateTime dt = DateTime.Now;
+            //product.chute_num = dt.Millisecond % 12 + 1;
+            //return product;
             HttpClient client = new HttpClient();
             string url  = "/v1/product/barcode/";
             client.BaseAddress = new Uri(Domain + url + barcode);

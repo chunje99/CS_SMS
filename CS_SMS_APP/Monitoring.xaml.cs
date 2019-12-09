@@ -274,7 +274,7 @@ namespace CS_SMS_APP
                     {
                         Debug.WriteLine(e.ToString());
                     }
-                    Thread.Sleep(5000);
+                    Thread.Sleep(300);
                 }
             });
         }
@@ -492,6 +492,17 @@ namespace CS_SMS_APP
             Debug.WriteLine("===Cancel confirm======");
             global.api.Cancel(global.md.mdsData.pid);
             global.md.CancelPID();
+        }
+
+        private void Input_Keydown(object sender, KeyRoutedEventArgs e)
+        {
+            if( e.Key == VirtualKey.Enter )
+            {
+                TextBox box = sender as TextBox;
+                Debug.WriteLine(box.Text);
+                Scanner_Process(box.Text, Monitoring_scanner0);
+                box.Text = "";
+            }
         }
     }
 }

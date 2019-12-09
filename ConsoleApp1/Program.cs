@@ -41,10 +41,10 @@ namespace ConsoleApp1
                 switch (cki.KeyChar)
                 {
                     case 'w':  //make pid
-                        md.MakePID(chuteid++);
+                        md.MakePID();
                         break;
                     case 'W':  //Distribution
-                        md.Distribution();
+                        md.Distribution(chuteid++);
                         break;
                     case 'p':  //get pid
                         //Debug.WriteLine(md.m_pid);
@@ -66,7 +66,7 @@ namespace ConsoleApp1
                                 Debug.WriteLine(name);
                                 Debug.WriteLine(barcode);
                                 Debug.WriteLine("==============");
-                                md.MakePID(chuteid++);
+                                md.MakePID();
                             };
                         }
                         break;
