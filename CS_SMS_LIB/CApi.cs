@@ -59,40 +59,58 @@ namespace CS_SMS_LIB
             new MediaTypeWithQualityHeaderValue("application/json"));
 
             // List data response.
-            HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
-            if (response.IsSuccessStatusCode)
+            try
             {
-                //var resp = response.Content.ReadAsStringAsync();
-                //Debug.WriteLine(await resp);
-                var resp = response.Content.ReadAsStreamAsync();
-                //List<Contributor> contributors = JsonConvert.DeserializeObject<List<Contributor>>(resp);
-                //contributors.ForEach(Console.WriteLine);
-                try
+                HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
                 {
+                    //var resp = response.Content.ReadAsStringAsync();
+                    //Debug.WriteLine(await resp);
+                    var resp = response.Content.ReadAsStreamAsync();
+                    //List<Contributor> contributors = JsonConvert.DeserializeObject<List<Contributor>>(resp);
+                    //contributors.ForEach(Console.WriteLine);
                     var serializer = new DataContractJsonSerializer(typeof(Product));
                     var repositories = serializer.ReadObject(await resp) as Product;
                     Debug.WriteLine(barcode);
                     Debug.WriteLine(repositories.status);
-                    Debug.WriteLine(repositories.chute_num);
-                    m_chute = repositories.chute_num;
-                    return repositories;
+                    Debug.WriteLine(repositories.msg);
+                    if(repositories.status == "OK")
+                    {
+                        Debug.WriteLine(repositories.chute_num);
+                        m_chute = repositories.chute_num;
+                        foreach( var item in repositories.list)
+                        {
+                            Debug.WriteLine(item.cust_nm);
+                            Debug.WriteLine(item.sku_nm);
+                        }
+                        return repositories;
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Debug.WriteLine(e.ToString());
+                    Debug.WriteLine("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
                 }
             }
-            else
+            catch (Exception e)
             {
-                Debug.WriteLine("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
+                Debug.WriteLine(e.ToString());
             }
             return product;
         }
 
-        public void Leave(int seq, int pid)
+        /// <summary>
+        /// 바코드 찍어서 슈트에 할당할때
+        /// seq == -1 and pid == -1 일때 +.- 버튼 누름
+        /// pid == -1 일때 잔류 상품 처리
+        /// </summary>
+        /// <param name="seq"></param> 
+        /// <param name="pid"></param>
+        /// <param name="cnt"></param>
+        /// <param name="chute_num"></param>
+        public void Leave(int seq, int pid, int cnt, int chute_num)
         {
-            Debug.WriteLine("===Release===");
-            Debug.WriteLine("seq {0}  pid {1}", seq, pid);
+            Debug.WriteLine("===Leave===");
+            Debug.WriteLine("seq {0}  pid {1} cnt {2} chute_num {3}", seq, pid, cnt, chute_num);
             HttpClient client = new HttpClient();
             string url = "/v1/product/leave";
             client.BaseAddress = new Uri(Domain + url);
@@ -105,6 +123,8 @@ namespace CS_SMS_LIB
             var json = new JObject();
             json.Add("seq", seq);
             json.Add("pid", pid);
+            json.Add("cnt", cnt);
+            json.Add("chute_num", chute_num);
             var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
             HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
             if (response.IsSuccessStatusCode)
@@ -281,7 +301,12 @@ namespace CS_SMS_LIB
         public string cust_cd { get; set; }
         public string cust_nm { get; set; }
         public int total_qty { get; set; }
+        public int leave_qty { get; set; }
         public int remain_qty { get; set; }
+        public string msg { get; set; }
+        public int send_cnt { get; set; }
+        public List<PListData> list { get; set; }
+
         public Product()
         {
             status = "";
@@ -292,6 +317,48 @@ namespace CS_SMS_LIB
             cust_cd = "";
             cust_nm = "";
             total_qty = 0;
+            leave_qty = 0;
+            remain_qty = 0;
+            msg = "";
+            send_cnt = 1;
+            list = new List<PListData>();
+        }
+        public void Set(PListData p)
+        {
+            seq = p.seq;
+            chute_num = p.chute_num;
+            sku_cd = p.sku_cd;
+            sku_nm = p.sku_nm;
+            cust_cd = p.cust_cd;
+            cust_nm = p.cust_nm;
+            total_qty = p.total_qty;
+            leave_qty = p.leave_qty;
+            remain_qty = p.remain_qty;
+        }
+    }
+    public class PListData
+    {
+        public int seq { get; set; }
+        public string highlight { get; set; }
+        public int chute_num { get; set; }
+        public string sku_cd { get; set; }
+        public string sku_nm { get; set; }
+        public string cust_cd { get; set; }
+        public string cust_nm { get; set; }
+        public int total_qty { get; set; }
+        public int leave_qty { get; set; }
+        public int remain_qty { get; set; }
+        public PListData()
+        {
+            seq = 0;
+            highlight = "";
+            chute_num = 0;
+            sku_cd = "";
+            sku_nm = "";
+            cust_cd = "";
+            cust_nm = "";
+            total_qty = 0;
+            leave_qty = 0;
             remain_qty = 0;
         }
     }

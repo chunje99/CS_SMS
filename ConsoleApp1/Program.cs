@@ -59,11 +59,12 @@ namespace ConsoleApp1
                         udp.StartScaner();
                         foreach (CEA3600 scaner in udp.m_scaner)
                         {
-                            scaner.act0 = (name, barcode) =>
+                            scaner.act0 = (name, chute_num, barcode) =>
                             {
                                 Debug.WriteLine("==============");
                                 Debug.WriteLine("MAIN");
                                 Debug.WriteLine(name);
+                                Debug.WriteLine(chute_num);
                                 Debug.WriteLine(barcode);
                                 Debug.WriteLine("==============");
                                 md.MakePID();

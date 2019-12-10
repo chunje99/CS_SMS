@@ -15,14 +15,17 @@ namespace CS_SMS_LIB
         private Socket m_socket;
         public string m_name { get; } = "";
         private bool m_isCon;
-        public Action<string, string> act0 = null;
+        public Action<string, int, string> act0 = null;
         public Queue<string> m_msgQueue = new Queue<string>();
+        public int m_chute_num { get; set; }
+
         public CEA3600(string ip, int port, string name)
         {
             m_ip = ip;
             m_port = port;
             m_name = name;
             m_isCon = false;
+            m_chute_num = -1;
         }
         protected virtual void Dispose(bool disposing)
         {
@@ -77,6 +80,7 @@ namespace CS_SMS_LIB
                     while (m_isCon)
                     {
                         bytesRec = m_socket.Receive(header);
+                        Debug.WriteLine("{0} : Length {1}", m_name, bytesRec);
                         if (header[0] != 0)
                         {
                             Debug.WriteLine("{0} : 프로토콜 에러", m_name);
@@ -84,21 +88,39 @@ namespace CS_SMS_LIB
                         }
                         if (bytesRec < 3)
                         {
-                            Debug.WriteLine("{0} : size < 3", m_name);
+                            Debug.WriteLine("{0} : size < 3  header len = {1}", m_name, header[1]);
                             break;
                         }
                         int barcodeSize = header[1] - 3;
                         int barcodeType = header[2];
                         Debug.WriteLine("{0} : Length {1} Type {2}",
                             m_name, barcodeSize.ToString(), barcodeType.ToString());
+                        if( barcodeSize <= 0 )
+                            continue;
                         byte[] body = new byte[barcodeSize];
                         bytesRec = m_socket.Receive(body);
                         string data = Encoding.ASCII.GetString(body, 0, bytesRec);
                         //Debug.WriteLine(bytes[0]);
                         Debug.WriteLine("{0} : {1}", m_name, data);
-                        if(act0 != null)
-                            act0(m_ip, data);
-                        m_msgQueue.Enqueue(data);
+                        if( barcodeType == 3 ) // code128
+                        {
+                            if (act0 != null)
+                                act0(m_name, m_chute_num, data);
+                        }
+                        else if( barcodeType == 28 ) // qr code - chute 분배
+                        {
+                            string prefix = data.Substring(0, 6);
+                            if( prefix == "CHUTE_")
+                            {
+                                m_chute_num = Int32.Parse(data.Substring(6, data.Length - 6));
+                                Debug.WriteLine("스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
+                            }
+                            else
+                            {
+                                Debug.WriteLine("QR code error :" + data);
+                            }
+                        }
+                        //m_msgQueue.Enqueue(data);
                     }
                 }
                 catch (Exception e)

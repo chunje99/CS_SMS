@@ -292,6 +292,15 @@ namespace CS_SMS_LIB
                                 mdsData.positions[i].pid = num;
                             }
                         }
+                        {
+                            var r = m_modbusClient.ReadHoldingRegisters(499, 1);    //Read Remain Cnt
+                            if( r.Length != 1 )
+                            {
+                                Debug.WriteLine("Read Error < remain word" );
+                                break;
+                            }
+                            mdsData.remainCnt = r[0];
+                        }
                     }
                     catch (Exception e)
                     {

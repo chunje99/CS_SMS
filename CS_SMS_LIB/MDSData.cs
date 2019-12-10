@@ -15,6 +15,7 @@ namespace CS_SMS_LIB
         public int heartBest {get;set;} = 0;
         public SettingData settingData = new SettingData();
         public int currentModuleSpeed {get;set;} = 0;
+        public int remainCnt {get;set;} = 0;
         public List<ModuleInfo> moduleInfos = new List<ModuleInfo>();
         public List<TrackingData> positions {get;set;} = new List<TrackingData>();
 

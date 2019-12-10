@@ -85,7 +85,7 @@ namespace CS_SMS_APP
 
         private void Print1_Print_Click(object sender, RoutedEventArgs e)
         {
-            global.m_printer[0].PrintSample("Printer1");
+            global.m_printer[0].PrintSample("QRCode");
         }
 
         private void Print2_Print_Click(object sender, RoutedEventArgs e)

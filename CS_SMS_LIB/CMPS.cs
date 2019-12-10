@@ -7,7 +7,6 @@ namespace CS_SMS_LIB
 {
     public class CMPS
     {
-        public int seq { get; set; }                //db 시퀀스
         public string order_key { get; set; }       // 주문번호
         public string order_line_num { get; set; }  
         public string com_cd { get; set; }          // 고객코드
@@ -17,15 +16,19 @@ namespace CS_SMS_LIB
         public string cust_cd { get; set; }         // 거래코드
         public string cust_nm { get; set; }         // 거래처명
         public string loc_cd { get; set; }          // 로케이션번호
-        public int pick_qty { get; set; }        // 수량
-        public int picked_qty { get; set; }      // 검수수량
-        public int box_in_qty { get; set; }      // 박스내 상품수량
+        public int pick_qty { get; set; }           // 수량
+        public int picked_qty { get; set; }         // 검수수량
+        public int box_in_qty { get; set; }         // 박스내 상품수량
         public int seq_no { get; set; }             //차수
         public string rgter { get; set; } 
+        /// <summary>
+        /// 추가 데이터
+        /// </summary>
+        public int seq { get; set; }                //db 시퀀스
         public int chute_num { get; set; }          //수트 번호
+        public string highlight { get; set; }       //수트 번호
         public CMPS()
         {
-            seq = 0;
             order_key = "";
             order_line_num = "";
             com_cd = "";
@@ -40,7 +43,9 @@ namespace CS_SMS_LIB
             box_in_qty = 0;
             seq_no = 0;
             rgter = "";
+            seq = 0;
             chute_num = 0;
+            highlight = "";
         }
         public CMPS(Product p)
         {

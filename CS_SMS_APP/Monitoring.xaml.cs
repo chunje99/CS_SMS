@@ -35,9 +35,17 @@ namespace CS_SMS_APP
         ObservableCollection<CMPS> mdsList = new ObservableCollection<CMPS>();
         ObservableCollection<CMPS> cancelList = new ObservableCollection<CMPS>();
 
+        ObservableCollection<PListData> bundleList2 = new ObservableCollection<PListData>();
+        ObservableCollection<PListData> remainList2 = new ObservableCollection<PListData>();
+        ObservableCollection<PListData> mdsList2 = new ObservableCollection<PListData>();
+        //ObservableCollection<PListData> cancelList2 = new ObservableCollection<PListData>();
+
+
+
         public string m_lastCode { get; set; } = "";
         public DateTime m_lastTime = DateTime.Now;
-        public CMPS m_lastData = new CMPS();
+        //public CMPS m_lastData = new CMPS();
+        public Product m_lastData = new Product();
         public Monitoring()
         {
             this.InitializeComponent();
@@ -87,7 +95,7 @@ namespace CS_SMS_APP
                 UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
             });
             ///call Leave api
-            global.api.Leave(m_lastData.seq, pid);
+            global.api.Leave(m_lastData.seq, pid, m_lastData.send_cnt, m_lastData.chute_num);
         }
         private void OnEvent_CONFIRM_PID(int module, int chute_num, int pid)
         {
@@ -184,8 +192,32 @@ namespace CS_SMS_APP
             //});
         }
 
+
         private void SetSUBScanner()
         {
+            foreach (var scanner in global.udp.m_scaner)
+            {
+                scanner.act0 = (string name, int chute_num, string data) =>
+                {
+                    if (chute_num == -1)
+                    {
+                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            UpdateUI(Monitoring_scanner1, "스캐너를 할당하세요.!");
+                        });
+                    }
+                    else if (chute_num == 0)
+                        Scanner_Process(data, Monitoring_scanner0);
+                    else
+                    {
+                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            UpdateUI(Monitoring_scanner1, "슈터 " + chute_num.ToString() + " : " + data);
+                        });
+                    }
+                };
+            }
+            return;
             Task.Run(() =>
             {
                 while (true)
@@ -296,6 +328,8 @@ namespace CS_SMS_APP
             logs += global.md.mdsData.settingData.moduleSpeed.ToString() + "\n";
             logs += "currentModuleSpeed ";
             logs += global.md.mdsData.currentModuleSpeed.ToString() + "\n";
+            logs += "remainCnt";
+            logs += global.md.mdsData.remainCnt.ToString() + "\n";
             for (int i = 0; i < 3; i++)
             {
                 logs += "point" + i.ToString() + " ";
@@ -364,16 +398,23 @@ namespace CS_SMS_APP
             {
                 TextBox box = sender as TextBox;
                 Debug.WriteLine(box.Text);
+                foreach( var data in bundleList2)
+                {
+                    if(data.seq.ToString() == box.Name)
+                    {
+                        Debug.WriteLine("=======send leave api ====== {0}", data.seq);
+                        m_lastData.Set(data);
+                        m_lastData.send_cnt = Int32.Parse(box.Text);
+                        mdsList2.Clear();
+                        foreach (var d in m_lastData.list)
+                            mdsList2.Add(d);
+                    }
+                }
                 Monitoring_bundle.Flyout.Hide();
                 if (global.md.m_isCon)
                 {
-                    Debug.WriteLine("=======Get Chute======");
-                    Product p = await global.api.GetChute(m_lastCode);
-                    Debug.WriteLine("======={0}======",  p.sku_nm);
                     Debug.WriteLine("=======Make PID======");
                     global.md.MakePID();
-                    /// pid 받고 해야할까?
-                    Debug.WriteLine("=======TODO CALL bundle api======");
 
                 }
             }
@@ -385,33 +426,44 @@ namespace CS_SMS_APP
             {
                 TextBox box = sender as TextBox;
                 Debug.WriteLine(box.Text);
+                foreach( var data in remainList2)
+                {
+                    if(data.seq.ToString() == box.Name)
+                    {
+                        Debug.WriteLine("=======send leave api ====== {0}", data.seq);
+                        m_lastData.Set(data);
+                        m_lastData.send_cnt = Int32.Parse(box.Text);
+                        mdsList2.Clear();
+                        foreach (var d in m_lastData.list)
+                            mdsList2.Add(d);
+                        global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
+                    }
+                }
                 Monitoring_remain.Flyout.Hide();
-                Debug.WriteLine("=======TODO CALL remain api======");
             }
         }
 
         private async void Bundle_Processing()
         {
             Debug.WriteLine("=======Bundle Processing======");
-            bundleList.Clear();
+            bundleList2.Clear();
             ///TODO API
             Debug.WriteLine("=======Get Chute======");
-            Product p = await global.api.GetChute(m_lastCode);
-            CMPS p2 = new CMPS();
-            p2.sku_barcd = m_lastCode;
-            bundleList.Add(p2);
+            m_lastData = await global.api.GetChute(m_lastCode);
+
+            foreach( var data in m_lastData.list)
+                bundleList2.Add(data);
         }
 
         private async void Remain_Processing()
         {
             Debug.WriteLine("=======Remain Processing======");
-            remainList.Clear();
+            remainList2.Clear();
             ///TODO API
             Debug.WriteLine("=======Get Chute======");
-            Product p = await global.api.GetChute(m_lastCode);
-            CMPS p2 = new CMPS(p);
-            p2.sku_barcd = m_lastCode;
-            remainList.Add(p2);
+            m_lastData = await global.api.GetChute(m_lastCode);
+            foreach (var data in m_lastData.list)
+                remainList2.Add(data);
         }
 
         private async void MDS_Processing()
@@ -419,16 +471,21 @@ namespace CS_SMS_APP
             Debug.WriteLine("=======MDS_Processing======");
 
             Debug.WriteLine("=======Get Chute======");
-            Product p = await global.api.GetChute(m_lastCode);
-            m_lastData.Set(p);
-            Debug.WriteLine(p.chute_num);
-            Debug.WriteLine("======={0}======", p.sku_nm);
+            m_lastData = await global.api.GetChute(m_lastCode);
+            m_lastData.send_cnt = 1;
+            Debug.WriteLine(m_lastData.chute_num);
+            Debug.WriteLine("======={0}======", m_lastData.sku_nm);
             Debug.WriteLine("=======Make PID======");
             global.md.MakePID();
 
+            mdsList2.Clear();
+            foreach (var data in m_lastData.list)
+                mdsList2.Add(data);
+            /*
             mdsList.Clear();
             //CMPS p2 = new CMPS(p);
             mdsList.Add(m_lastData);
+            */
             Debug.WriteLine("=======MDS_Processing end======");
         }
 
@@ -482,8 +539,8 @@ namespace CS_SMS_APP
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("===Cancel======");
-            cancelList.Clear();
-            cancelList.Add(m_lastData);
+            //cancelList2.Clear();
+            //cancelList2.Add(m_lastData);
         }
 
         private void Cancel_Confirm(object sender, RoutedEventArgs e)

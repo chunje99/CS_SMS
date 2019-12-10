@@ -110,43 +110,36 @@ namespace CS_SMS_APP
 
             foreach (var scaner in global.udp.m_scaner)
             {
-                scaner.act0 = (name, barcode) =>
+                scaner.act0 = (name, chute_num, barcode) =>
                 {
                     Debug.WriteLine("==============");
                     Debug.WriteLine("MAIN");
                     Debug.WriteLine(name);
                     Debug.WriteLine(barcode);
-                    global.m_msgQueue.Enqueue(barcode);
-                    var devices = global.udp.m_deviceTable;
-                    int i = 0;
-                    foreach (var device in devices)
-                    {
-                        if(name == device.Value.Key)
-                            break;
-                        i++;
-                    }
+                    //global.m_msgQueue.Enqueue(barcode);
+                    //var devices = global.udp.m_deviceTable;
                     var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        UpdateUI(i, barcode);
+                        UpdateUI(name, chute_num, barcode);
                     });
                     Debug.WriteLine("==============");
                     //global.md.MakePID();
                 };
             }
         }
-        private async void UpdateUI(int idx, string barcode)
+        private async void UpdateUI(string name, int chute_num, string barcode)
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
             () =>
             {
-                if (idx == 0)
-                    ScannerStat_1.Text = barcode;
-                if(idx == 1)
-                    ScannerStat_2.Text = barcode;
-                if(idx == 2)
-                    ScannerStat_3.Text = barcode;
-                if(idx == 3)
-                    ScannerStat_4.Text = barcode;
+                if (name == "Scanner_1")
+                    ScannerStat_1.Text = chute_num.ToString() + " : "  + barcode;
+                if (name == "Scanner_2")
+                    ScannerStat_2.Text = chute_num.ToString() + " : "  + barcode;
+                if (name == "Scanner_3")
+                    ScannerStat_3.Text = chute_num.ToString() + " : "  + barcode;
+                if (name == "Scanner_4")
+                    ScannerStat_4.Text = chute_num.ToString() + " : "  + barcode;
                 //code to update UI
             });
         }
