@@ -6,9 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+    SizeChanged="PageSizeChanged"
+    >
 
-    <Grid Width="1500" Height="930">
+    <Grid MinWidth="1100" Width="auto" Height="930">
         <NavigationView x:Name="NavView"
     ItemInvoked="NavView_ItemInvoked"
     Loaded="NavView_Loaded">
@@ -21,14 +23,16 @@
                 </NavigationViewItem>
                 <NavigationViewItemSeparator/>
                 <NavigationViewItemHeader Content="Main pages"/>
-                <NavigationViewItem x:Uid="AppsNavItem" Icon="Camera" Content="Main Sacnner" Tag="scanner"/>
-                <NavigationViewItem x:Uid="AppsNavItem" Icon="Scan" Content="Search Sacnners" Tag="scanners"/>
-                <NavigationViewItem x:Uid="GamesNavItem" Icon="Remote" Content="Connect PLC" Tag="plc"/>
-                <NavigationViewItem x:Uid="MusicNavItem" Icon="Print"  Content="Printer Setting" Tag="printer"/>
-                <NavigationViewItem x:Uid="MusicNavItem" Icon="View" Content="Monitoring" Tag="monitoring"/>
+                <NavigationViewItem x:Uid="MainScanner" Icon="Camera" Content="Main Sacnner" Tag="scanner"/>
+                <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="Search Sacnners" Tag="scanners"/>
+                <NavigationViewItem x:Uid="ConnectPLC" Icon="Remote" Content="Connect PLC" Tag="plc"/>
+                <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="Printer Setting" Tag="printer"/>
+                <NavigationViewItem x:Uid="Monitoring" Icon="View" Content="Monitoring" Tag="monitoring"/>
+                <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처할당" Tag="webview"/>
+                <NavigationViewItem x:Uid="Logs" Icon="Library" Content="Logs" Tag="logs"/>
             </NavigationView.MenuItems>
 
-            <Frame x:Name="ContentFrame" Margin="24">
+            <Frame x:Name="ContentFrame" Width="auto" Margin="24">
                 <Frame.ContentTransitions>
                     <TransitionCollection>
                         <NavigationThemeTransition/>

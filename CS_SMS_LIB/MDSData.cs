@@ -53,8 +53,6 @@ namespace CS_SMS_LIB
     public class ModuleInfo
     {
         public int status {get;set;} = 0;
-        public int initSpeed {get;set;} = 0;
-        public int eventSpeed {get;set;} = 0;
         public int alarm {get;set;} = 0;
         public List<ChuteInfo> chuteInfos {get;set;} = new List<ChuteInfo>();
         public List<PrintInfo> printInfos {get;set;} = new List<PrintInfo>();

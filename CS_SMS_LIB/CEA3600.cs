@@ -5,18 +5,18 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Serilog;
 
 namespace CS_SMS_LIB
 {
     public class CEA3600 : IDisposable
     {
-        string m_ip;
+        public string m_ip { get; set; }
         private int m_port;
         private Socket m_socket;
         public string m_name { get; } = "";
-        private bool m_isCon;
+        public bool m_isCon { get; set; }
         public Action<string, int, string> act0 = null;
-        public Queue<string> m_msgQueue = new Queue<string>();
         public int m_chute_num { get; set; }
 
         public CEA3600(string ip, int port, string name)
@@ -43,7 +43,7 @@ namespace CS_SMS_LIB
         }
         public int Con()
         {
-            Debug.WriteLine("IP:{0} PORT:{1}", m_ip, m_port);
+            Log.Information("IP:{0} PORT:{1}", m_ip, m_port);
             try
             {
                 IPAddress ip = IPAddress.Parse(m_ip);
@@ -55,7 +55,7 @@ namespace CS_SMS_LIB
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Log.Information(e.ToString());
                 return -1;
             }
             return 0;
@@ -68,8 +68,8 @@ namespace CS_SMS_LIB
         }
         public int Start()
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("Scaner START {0}", m_name);
+            Log.Information("==============");
+            Log.Information("Scaner START {0}", m_name);
             Task.Run(() =>
             {
                 // we got the client attempting to connect
@@ -80,52 +80,51 @@ namespace CS_SMS_LIB
                     while (m_isCon)
                     {
                         bytesRec = m_socket.Receive(header);
-                        Debug.WriteLine("{0} : Length {1}", m_name, bytesRec);
+                        Log.Information("{0} : Length {1}", m_name, bytesRec);
                         if (header[0] != 0)
                         {
-                            Debug.WriteLine("{0} : 프로토콜 에러", m_name);
+                            Log.Information("{0} : 프로토콜 에러", m_name);
                             break;
                         }
                         if (bytesRec < 3)
                         {
-                            Debug.WriteLine("{0} : size < 3  header len = {1}", m_name, header[1]);
+                            Log.Information("{0} : size < 3  header len = {1}", m_name, header[1]);
                             break;
                         }
                         int barcodeSize = header[1] - 3;
                         int barcodeType = header[2];
-                        Debug.WriteLine("{0} : Length {1} Type {2}",
+                        Log.Information("{0} : Length {1} Type {2}",
                             m_name, barcodeSize.ToString(), barcodeType.ToString());
                         if( barcodeSize <= 0 )
                             continue;
                         byte[] body = new byte[barcodeSize];
                         bytesRec = m_socket.Receive(body);
                         string data = Encoding.ASCII.GetString(body, 0, bytesRec);
-                        //Debug.WriteLine(bytes[0]);
-                        Debug.WriteLine("{0} : {1}", m_name, data);
-                        if( barcodeType == 3 ) // code128
-                        {
-                            if (act0 != null)
-                                act0(m_name, m_chute_num, data);
-                        }
-                        else if( barcodeType == 28 ) // qr code - chute 분배
+                        //Log.Information(bytes[0]);
+                        Log.Information("{0} : {1}", m_name, data);
+                        if( barcodeType == 28 ) // qr code - chute 분배
                         {
                             string prefix = data.Substring(0, 6);
                             if( prefix == "CHUTE_")
                             {
                                 m_chute_num = Int32.Parse(data.Substring(6, data.Length - 6));
-                                Debug.WriteLine("스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
+                                Log.Information("스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
                             }
                             else
                             {
-                                Debug.WriteLine("QR code error :" + data);
+                                Log.Information("QR code error :" + data);
                             }
                         }
-                        //m_msgQueue.Enqueue(data);
+                        else //if( barcodeType == 3 ) // code128
+                        {
+                            if (act0 != null)
+                                act0(m_name, m_chute_num, data);
+                        }
                     }
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.ToString());
+                    Log.Information(e.ToString());
                 }
             });
 
@@ -142,16 +141,16 @@ namespace CS_SMS_LIB
 
         public UDPer()
         {
-            Debug.WriteLine("UDPer");
+            Log.Information("UDPer");
             udpClient = new UdpClient();
-            Debug.WriteLine("udpClient");
+            Log.Information("udpClient");
             m_deviceTable = new Dictionary<string, KeyValuePair<string, int>>();
-            Debug.WriteLine("m_deviceTalbe");
+            Log.Information("Device {@Dictionary<string,KeyValuePair<string,int>>}", m_deviceTable);
             Bind();
         }
         public void Print()
         {
-            Debug.WriteLine("Print");
+            Log.Information("Print");
         }
         protected virtual void Dispose(bool disposing)
         {
@@ -170,13 +169,13 @@ namespace CS_SMS_LIB
         }
         public int Bind()
         {
-            Debug.WriteLine("Bind()");
+            Log.Information("Bind()");
             udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
             return 0;
         }
         public int Start()
         {
-            Debug.WriteLine("Start()");
+            Log.Information("Start()");
             Task.Run(() =>
             {
                 while (true)
@@ -186,13 +185,13 @@ namespace CS_SMS_LIB
                         var from = new IPEndPoint(0, 0);
                         var recvBuffer = udpClient.Receive(ref from);
                         string MAC = Encoding.UTF8.GetString(recvBuffer);
-                        Debug.WriteLine(MAC);
+                        Log.Information(MAC);
                         if (!m_deviceTable.ContainsKey(MAC))
                             m_deviceTable.Add(MAC, new KeyValuePair<string, int>(from.Address.ToString(), 54321));
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e.ToString());
+                        Log.Information(e.ToString());
                     }
                 }
             });
@@ -200,8 +199,8 @@ namespace CS_SMS_LIB
         }
         public int Scan()
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("SCAN");
+            Log.Information("==============");
+            Log.Information("SCAN");
             m_deviceTable.Clear();
             byte[] bytes = Encoding.ASCII.GetBytes("MVP\x0d");
             udpClient.Send(bytes, bytes.Length, "255.255.255.255", DEVICE_PORT);
@@ -209,18 +208,18 @@ namespace CS_SMS_LIB
         }
         public int Tables()
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("Tables");
+            Log.Information("==============");
+            Log.Information("Tables");
             foreach (KeyValuePair<string, KeyValuePair<string, int>> kv in m_deviceTable)
             {
-                Debug.WriteLine("MAC : {0}, IP : {1}, PORT : {2}", kv.Key, kv.Value.Key, kv.Value.ToString());
+                Log.Information("MAC : {0}, IP : {1}, PORT : {2}", kv.Key, kv.Value.Key, kv.Value.ToString());
             }
             return 0;
         }
         public int StartScaner()
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("StartScaner");
+            Log.Information("==============");
+            Log.Information("StartScaner");
             StopScanner();
             foreach (KeyValuePair<string, KeyValuePair<string, int>> kv in m_deviceTable)
             {
@@ -235,8 +234,8 @@ namespace CS_SMS_LIB
         }
         public int StartScaner(string host, int port, string name)
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("StartScaner {0} {1}", host, port.ToString());
+            Log.Information("==============");
+            Log.Information("StartScaner {0} {1}", host, port.ToString());
             CEA3600 cea = new CEA3600(host, port, name);
             m_scaner.Add(cea);
             cea.Con();

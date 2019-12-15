@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Serilog;
 
 namespace CS_SMS_LIB
 {
@@ -19,7 +20,7 @@ namespace CS_SMS_LIB
 
         public CBanner()
         {
-            Debug.WriteLine("CBanner");
+            Log.Information("CBanner");
             tcpClient = new TcpClient();
         }
         protected virtual void Dispose(bool disposing)
@@ -47,7 +48,7 @@ namespace CS_SMS_LIB
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Log.Information(e.ToString());
                 return -1;
             }
             return 0;
@@ -60,14 +61,14 @@ namespace CS_SMS_LIB
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Log.Information(e.ToString());
                 return -1;
             }
             return 0;
         }
         public int Start()
         {
-            Debug.WriteLine("Start()");
+            Log.Information("Start()");
             Task.Run(() =>
             {
                 NetworkStream netStream = tcpClient.GetStream();
@@ -77,29 +78,29 @@ namespace CS_SMS_LIB
                     {
                         byte[] bytes = new byte[1024];
                         int readLen = netStream.Read(bytes, 0, 1024);
-                        //Debug.WriteLine("readLen " + readLen);
+                        //Log.Information("readLen " + readLen);
                         if (readLen <= 3)
                             continue;
                         if (bytes[0] == 2)
-                            ;// Debug.WriteLine("<STX>");
+                            ;// Log.Information("<STX>");
                         else
                         {
-                            Debug.WriteLine("<STX> Error");
+                            Log.Information("<STX> Error");
                             continue;
                         }
                         if (bytes[readLen - 2] == 13)
-                            ;// Debug.WriteLine("<CR>");
+                            ;// Log.Information("<CR>");
                         else
                         {
-                            Debug.WriteLine("<CR> Error");
+                            Log.Information("<CR> Error");
                             continue;
 
                         }
                         if (bytes[readLen - 1] == 10)
-                            ;// Debug.WriteLine("<LF>");
+                            ;// Log.Information("<LF>");
                         else
                         {
-                            Debug.WriteLine("<LF> Error");
+                            Log.Information("<LF> Error");
                             continue;
 
                         }
@@ -114,18 +115,18 @@ namespace CS_SMS_LIB
                         }
                         if (!isPrintable)
                         {
-                            //Debug.WriteLine("Printable Error");
+                            //Log.Information("Printable Error");
                             continue;
                         }
 
                         string retStr = Encoding.UTF8.GetString(bytes,1, readLen-3);
                         if(act0 != null)
                             act0(retStr);
-                        Debug.WriteLine(retStr);
+                        Log.Information(retStr);
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e.ToString());
+                        Log.Information(e.ToString());
                     }
                 }
             });

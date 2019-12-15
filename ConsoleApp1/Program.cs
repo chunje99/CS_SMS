@@ -1,6 +1,7 @@
 ﻿using System;
 using CS_SMS_LIB;
 using System.Diagnostics;
+using Serilog;
 
 
 namespace ConsoleApp1
@@ -11,15 +12,15 @@ namespace ConsoleApp1
         {
             UDPer udp = new UDPer();
             udp.Start();
-            Debug.WriteLine("==============");
-            Debug.WriteLine("Find Zebra");
-            Debug.WriteLine("==============");
+            Log.Information("==============");
+            Log.Information("Find Zebra");
+            Log.Information("==============");
             udp.Scan();
             udp.Tables();
 
-            Debug.WriteLine("==============");
-            Debug.WriteLine("PLC");
-            Debug.WriteLine("==============");
+            Log.Information("==============");
+            Log.Information("PLC");
+            Log.Information("==============");
             CModbus md = new CModbus("127.0.0.1", 502);
             md.StartClient();
             //md.startServer();
@@ -29,14 +30,14 @@ namespace ConsoleApp1
             while (active)
             {
 
-                Debug.WriteLine("Press any key to continue . . . ");
-                Debug.WriteLine("w : make pid");
-                Debug.WriteLine("W : Distribution");
-                Debug.WriteLine("p : get pid");
-                Debug.WriteLine("r : read distribution state");
-                Debug.WriteLine("a : read all");
-                Debug.WriteLine("s : scaner start");
-                Debug.WriteLine("x : exit");
+                Log.Information("Press any key to continue . . . ");
+                Log.Information("w : make pid");
+                Log.Information("W : Distribution");
+                Log.Information("p : get pid");
+                Log.Information("r : read distribution state");
+                Log.Information("a : read all");
+                Log.Information("s : scaner start");
+                Log.Information("x : exit");
                 var cki = Console.ReadKey(true);
                 switch (cki.KeyChar)
                 {
@@ -47,7 +48,7 @@ namespace ConsoleApp1
                         md.Distribution(chuteid++);
                         break;
                     case 'p':  //get pid
-                        //Debug.WriteLine(md.m_pid);
+                        //Log.Information(md.m_pid);
                         break;
                     case 'r':
                         md.GetDistribution();
@@ -61,12 +62,12 @@ namespace ConsoleApp1
                         {
                             scaner.act0 = (name, chute_num, barcode) =>
                             {
-                                Debug.WriteLine("==============");
-                                Debug.WriteLine("MAIN");
-                                Debug.WriteLine(name);
-                                Debug.WriteLine(chute_num);
-                                Debug.WriteLine(barcode);
-                                Debug.WriteLine("==============");
+                                Log.Information("==============");
+                                Log.Information("MAIN");
+                                Log.Information(name);
+                                Log.Information(chute_num.ToString());
+                                Log.Information(barcode);
+                                Log.Information("==============");
                                 md.MakePID();
                             };
                         }
@@ -85,27 +86,34 @@ namespace ConsoleApp1
             CBanner banner = new CBanner();
             banner.m_ip = "192.168.0.100";
             banner.m_port = 5123;
-            Debug.WriteLine( "Connect : " + banner.Connect());
+            Log.Information( "Connect : " + banner.Connect());
             banner.m_port = 51236;
-            Debug.WriteLine( "Connect : " + banner.Connect());
+            Log.Information( "Connect : " + banner.Connect());
             banner.Start();
 
         }
         static public void Test3()
         {
             CApi api = new CApi();
-            var p = api.GetChute("asdfsf");
+            //var p = await api.Print(2);
+            api.Cancel(15);
+            api.AddGoods(3, "12391283");
+            api.AddStatus(1, "+");
+            api.AddStatus(3, "+");
             
         }
         static void Main(string[] args)
         {
-            Debug.WriteLine("==============");
-            Debug.WriteLine("START");
-            Debug.WriteLine("==============");
+            //Log.Logger = new LoggerConfiguration().WriteTo.Debug().CreateLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.Debug().CreateLogger();
+            Log.Information("==============");
+            Log.Information("START");
+            Log.Information("==============");
 
-            Debug.WriteLine("==============");
-            Debug.WriteLine("Scaner");
-            Debug.WriteLine("==============");
+            Log.Information("==============");
+            Log.Information("Scaner");
+            Log.Information("==============");
+            Log.Information("Serilog");
             //Program.Test1();
             //Program.Test2();
             Program.Test3();
@@ -114,8 +122,8 @@ namespace ConsoleApp1
             while (active)
             {
 
-                Debug.WriteLine("Press any key to continue . . . ");
-                Debug.WriteLine("x : exit");
+                Log.Information("Press any key to continue . . . ");
+                Log.Information("x : exit");
                 var cki = Console.ReadKey(true);
                 switch (cki.KeyChar)
                 {

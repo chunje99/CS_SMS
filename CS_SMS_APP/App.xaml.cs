@@ -14,6 +14,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Serilog;
+using Windows.Storage;
+using System.Diagnostics;
 
 namespace CS_SMS_APP
 {
@@ -30,6 +33,11 @@ namespace CS_SMS_APP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            Log.Logger = new LoggerConfiguration().WriteTo.Debug(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
+            //Log.Logger = new LoggerConfiguration().WriteTo.File(
+            //    ApplicationData.Current.LocalCacheFolder.Path + "\\log.txt",
+            //    rollingInterval: RollingInterval.Hour, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
         }
 
         /// <summary>

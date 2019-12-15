@@ -282,6 +282,89 @@ namespace CS_SMS_LIB
 
         }
 
+        public void PrintData(PrintList printList)
+        {
+
+            if (!ConnectPrinter())
+                return;
+
+            int multiplier = 1;
+
+            int resolution = BXLLApi.GetPrinterDPI();
+            int dotsPer1mm = (int)Math.Round((float)resolution / 25.4f);
+            if (resolution >= 600)
+                multiplier = 3;
+
+            SendPrinterSettingCommand();
+
+            for (int j = 0; j < printList.list.Count ;)
+            {
+
+                // Prints string using TrueFont
+                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true,
+                    printList.cust_cd + " (" + printList.cust_nm + ")");
+
+                //	Draw Lines
+                BXLLApi.PrintBlock(1 * dotsPer1mm, 1 * dotsPer1mm, 99 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+
+
+                //Print string using Vector Font
+                //BXLLApi.PrintVectorFont(5*dotsPer1mm, 16*dotsPer1mm, "K", 34, 34, "0", false, false, false, (int)SLCS_ROTATION.ROTATE_0, SLCS_FONT_ALIGNMENT.LEFTALIGN.ToString(), (int)SLCS_FONT_DIRECTION.LEFTTORIGHT, "Sample Label-2");
+                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품코드");
+                BXLLApi.PrintDeviceFont(43 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품명");
+                BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "EA");
+
+                for(int i = 0; i < 3 && j < printList.list.Count; i++, j++)
+                {
+                    string sku_cd = printList.list[j].sku_cd;
+                    string sku_nm = printList.list[j].sku_nm;
+                    string cnt = printList.list[j].cnt;
+                    BXLLApi.PrintDeviceFont(3 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, sku_cd );
+                    if (sku_nm.Length <= 25)
+                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, sku_nm);
+                    else if (sku_nm.Length > 25 && sku_nm.Length < 50)
+                    {
+                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                            sku_nm.Substring(0, 25));
+                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                            sku_nm.Substring(25, sku_nm.Length - 25));
+                    }
+                    else
+                    {
+                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                            sku_nm.Substring(0, 25));
+                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                            sku_nm.Substring(25, 25));
+                    }
+                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, cnt);
+                }
+
+
+                BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, 
+                    printList.barcode);
+                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, 
+                    printList.barcode);
+
+                BXLLApi.PrintBlock(1 * dotsPer1mm, 66 * dotsPer1mm, 99 * dotsPer1mm, 67 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+
+                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "No.");
+                BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.no);
+                BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "배송");
+                BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.delivery_date);
+                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "LOC");
+                BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.loc);
+                BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "차수");
+                BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.no2);
+
+                //	Print Command
+                BXLLApi.Prints(1, 1);
+            }
+
+            // Disconnect printer
+            BXLLApi.DisconnectPrinter();
+
+        }
+
         public void PrintSample(string printer)
         {
             if(printer == "QRCode")

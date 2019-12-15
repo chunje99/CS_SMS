@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace CS_SMS_LIB
 {
@@ -22,7 +23,7 @@ namespace CS_SMS_LIB
 
         public CApi()
         {
-            Debug.WriteLine("CApi");
+            Log.Information("CApi");
         }
         protected virtual void Dispose(bool disposing)
         {
@@ -65,42 +66,41 @@ namespace CS_SMS_LIB
                 if (response.IsSuccessStatusCode)
                 {
                     //var resp = response.Content.ReadAsStringAsync();
-                    //Debug.WriteLine(await resp);
+                    //Log.Information(await resp);
                     var resp = response.Content.ReadAsStreamAsync();
                     //List<Contributor> contributors = JsonConvert.DeserializeObject<List<Contributor>>(resp);
                     //contributors.ForEach(Console.WriteLine);
                     var serializer = new DataContractJsonSerializer(typeof(Product));
                     var repositories = serializer.ReadObject(await resp) as Product;
-                    Debug.WriteLine(barcode);
-                    Debug.WriteLine(repositories.status);
-                    Debug.WriteLine(repositories.msg);
-                    if(repositories.status == "OK")
+                    Log.Information(barcode);
+                    Log.Information(repositories.status);
+                    Log.Information(repositories.msg);
+                    if (repositories.status == "OK")
                     {
-                        Debug.WriteLine(repositories.chute_num);
+                        Log.Information(repositories.chute_num.ToString());
                         m_chute = repositories.chute_num;
-                        foreach( var item in repositories.list)
+                        foreach (var item in repositories.list)
                         {
-                            Debug.WriteLine(item.cust_nm);
-                            Debug.WriteLine(item.sku_nm);
+                            Log.Information(item.cust_nm);
+                            Log.Information(item.sku_nm);
                         }
-                        return repositories;
                     }
+                    return repositories;
                 }
                 else
                 {
-                    Debug.WriteLine("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
+                    Log.Information("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
                 }
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Log.Information(e.ToString());
             }
             return product;
         }
 
         /// <summary>
         /// 바코드 찍어서 슈트에 할당할때
-        /// seq == -1 and pid == -1 일때 +.- 버튼 누름
         /// pid == -1 일때 잔류 상품 처리
         /// </summary>
         /// <param name="seq"></param> 
@@ -109,8 +109,8 @@ namespace CS_SMS_LIB
         /// <param name="chute_num"></param>
         public void Leave(int seq, int pid, int cnt, int chute_num)
         {
-            Debug.WriteLine("===Leave===");
-            Debug.WriteLine("seq {0}  pid {1} cnt {2} chute_num {3}", seq, pid, cnt, chute_num);
+            Log.Information("===Leave===");
+            Log.Information("seq {0}  pid {1} cnt {2} chute_num {3}", seq, pid, cnt, chute_num);
             HttpClient client = new HttpClient();
             string url = "/v1/product/leave";
             client.BaseAddress = new Uri(Domain + url);
@@ -130,18 +130,18 @@ namespace CS_SMS_LIB
             if (response.IsSuccessStatusCode)
             {
                 // Parse the response body. Blocking!
-                Debug.WriteLine("===OK===");
+                Log.Information("===OK===");
             }
             else
             {
-                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
         }
 
         public void Cancel(int pid)
         {
-            Debug.WriteLine("===Cancel===");
-            Debug.WriteLine("pid {0}", pid);
+            Log.Information("===Cancel===");
+            Log.Information("pid {0}", pid);
             HttpClient client = new HttpClient();
             string url = "/v1/product/cancel";
             client.BaseAddress = new Uri(Domain + url);
@@ -158,18 +158,18 @@ namespace CS_SMS_LIB
             if (response.IsSuccessStatusCode)
             {
                 // Parse the response body. Blocking!
-                Debug.WriteLine("===OK===");
+                Log.Information("===OK===");
             }
             else
             {
-                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
         }
 
         public void Release(int pid, int confirm_data, int stack_count, int chute_num)
         {
-            Debug.WriteLine("===Release===");
-            Debug.WriteLine("pid {0} confirm_data {1} stack_count {2} chute_num {3}", pid, confirm_data, stack_count, chute_num);
+            Log.Information("===Release===");
+            Log.Information("pid {0} confirm_data {1} stack_count {2} chute_num {3}", pid, confirm_data, stack_count, chute_num);
             HttpClient client = new HttpClient();
             string url = "/v1/product/release";
             client.BaseAddress = new Uri(Domain + url);
@@ -189,18 +189,18 @@ namespace CS_SMS_LIB
             if (response.IsSuccessStatusCode)
             {
                 // Parse the response body. Blocking!
-                Debug.WriteLine("===OK===");
+                Log.Information("===OK===");
             }
             else
             {
-                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
         }
 
         public void FullManual(int chute_num, int onoff)
         {
-            Debug.WriteLine("===FullManual===");
-            Debug.WriteLine("chute_num {0} onoff{1}", chute_num, onoff);
+            Log.Information("===FullManual===");
+            Log.Information("chute_num {0} onoff{1}", chute_num, onoff);
             HttpClient client = new HttpClient();
             string url = "/v1/module/fullmanual";
             client.BaseAddress = new Uri(Domain + url);
@@ -212,7 +212,9 @@ namespace CS_SMS_LIB
             // List data response.
             var json = new JObject();
             json.Add("chute_num", chute_num);
-            if (onoff == 1)
+            if (onoff == 2)
+                json.Add("full", "gap");
+            else if (onoff == 1)
                 json.Add("full", "on");
             else
                 json.Add("full", "off");
@@ -221,18 +223,18 @@ namespace CS_SMS_LIB
             if (response.IsSuccessStatusCode)
             {
                 // Parse the response body. Blocking!
-                Debug.WriteLine("===OK===");
+                Log.Information("===OK===");
             }
             else
             {
-                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
         }
 
         public void FullAuto(int chute_num, int onoff)
         {
-            Debug.WriteLine("===FullAuto===");
-            Debug.WriteLine("chute_num {0} onoff{1}", chute_num, onoff);
+            Log.Information("===FullAuto===");
+            Log.Information("chute_num {0} onoff{1}", chute_num, onoff);
             HttpClient client = new HttpClient();
             string url = "/v1/module/fullauto";
             client.BaseAddress = new Uri(Domain + url);
@@ -244,7 +246,9 @@ namespace CS_SMS_LIB
             // List data response.
             var json = new JObject();
             json.Add("chute_num", chute_num);
-            if (onoff == 1)
+            if (onoff == 2)
+                json.Add("full", "gap");
+            else if (onoff == 1)
                 json.Add("full", "on");
             else
                 json.Add("full", "off");
@@ -253,18 +257,125 @@ namespace CS_SMS_LIB
             if (response.IsSuccessStatusCode)
             {
                 // Parse the response body. Blocking!
-                Debug.WriteLine("===OK===");
+                Log.Information("===OK===");
             }
             else
             {
-                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
+        }
+
+        //plus or minus
+        public void AddStatus(int chute_num, string status)
+        {
+            Log.Information("===AddStatus===");
+            Log.Information("chute_num {0} status {1}", chute_num, status);
+
+            HttpClient client = new HttpClient();
+            string url = "/v1/module/addstatus";
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            var json = new JObject();
+            json.Add("chute_num", chute_num);
+            json.Add("status", status);
+            var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response body. Blocking!
+                Log.Information("===OK===");
+            }
+            else
+            {
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+            }
+        }
+
+        public void AddGoods(int chute_num, string barcode)
+        {
+            Log.Information("===AddGoods===");
+            Log.Information("chute_num {0} barcode {1}", chute_num, barcode);
+
+            HttpClient client = new HttpClient();
+            string url = "/v1/module/addgoods";
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            var json = new JObject();
+            json.Add("chute_num", chute_num);
+            json.Add("barcode", barcode);
+            var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response body. Blocking!
+                Log.Information("===OK===");
+            }
+            else
+            {
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+            }
+        }
+
+        public async Task<PrintList> Print(int chute_num)
+        {
+            Log.Information("===Print===");
+            Log.Information("chute_num {0}", chute_num);
+            PrintList printList = null;
+            try
+            {
+
+                HttpClient client = new HttpClient();
+                string url = "/v1/module/print";
+                client.BaseAddress = new Uri(Domain + url);
+
+                // Add an Accept header for JSON format.
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // List data response.
+                var json = new JObject();
+                json.Add("chute_num", chute_num);
+                var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync(Domain + url, content).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStreamAsync();
+                    var serializer = new DataContractJsonSerializer(typeof(PrintList));
+                    printList = serializer.ReadObject(await resp) as PrintList;
+                    Log.Information(printList.status);
+                    Log.Information(printList.msg);
+                    if (printList.status == "OK")
+                    {
+                        Log.Information("Printer {@PrintList}", printList);
+                    }
+                    return printList;
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+            }
+            return printList;
         }
 
         public void SetTest(string j)
         {
             //return;
-            Debug.WriteLine("===SetTest==="); 
+            Log.Information("===SetTest===");
             HttpClient client = new HttpClient();
             string url = "/v1/product/arrived";
             client.BaseAddress = new Uri(Domain + url);
@@ -283,11 +394,11 @@ namespace CS_SMS_LIB
             if (response.IsSuccessStatusCode)
             {
                 // Parse the response body. Blocking!
-                Debug.WriteLine("===OK===");
+                Log.Information("===OK===");
             }
             else
             {
-                Debug.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
             }
         }
     }
@@ -348,6 +459,8 @@ namespace CS_SMS_LIB
         public int total_qty { get; set; }
         public int leave_qty { get; set; }
         public int remain_qty { get; set; }
+        public string color { get; set; } = "White";
+        public int cnt { get; set; } = 0;
         public PListData()
         {
             seq = 0;
@@ -360,6 +473,35 @@ namespace CS_SMS_LIB
             total_qty = 0;
             leave_qty = 0;
             remain_qty = 0;
+            color = "White";
+            cnt = 0;
+        }
+    }
+
+    public class PrintData
+    {
+        public string sku_cd { get; set; } = "";
+        public string sku_nm { get; set; } = "";
+        public string cnt { get; set; } = "";
+        public PrintData()
+        {
+
+        }
+    }
+    public class PrintList
+    {
+        public string status { get; set; } = "";
+        public string msg { get; set; } = "";
+        public string cust_nm { get; set; } = "";
+        public string cust_cd { get; set; } = "";
+        public string barcode { get; set; } = "";
+        public string no { get; set; } = "";
+        public string delivery_date { get; set; } = "";
+        public string loc { get; set; } = "";
+        public string no2 { get; set; } = "";
+        public List<PrintData> list { get; set; } = new List<PrintData>();
+        public PrintList()
+        {
         }
     }
 }

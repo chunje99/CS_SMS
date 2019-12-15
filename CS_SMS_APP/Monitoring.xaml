@@ -7,7 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Loaded"  >
 
     <Grid>
         <TextBlock>Monitoring</TextBlock>
@@ -18,27 +19,21 @@
         <TextBox HorizontalAlignment="Left" Margin="260,50,0,0" Text="스캐너0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner0"/>
         <TextBlock HorizontalAlignment="Left" Margin="480,50,0,0" Text="1 " TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="490,50,0,0" Text="스캐너1" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner1"/>
-        <TextBlock HorizontalAlignment="Left" Margin="710,50,0,0" Text="2 " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="720,50,0,0" Text="스캐너2" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner2"/>
-        <TextBlock HorizontalAlignment="Left" Margin="480,100,0,0" Text="3 " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="490,100,0,0" Text="스캐너3" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner3"/>
-        <TextBlock HorizontalAlignment="Left" Margin="710,100,0,0" Text="4 " TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="720,100,0,0" Text="스캐너4" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_scanner4"/>
 
-        <TextBlock HorizontalAlignment="Left" Margin="230,150,0,0" Text="PID" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="260,150,0,0" Text="-1" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_pid"/>
-        <TextBlock HorizontalAlignment="Left" Margin="220,200,0,0" Text="chute" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="260,200,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_chuteid"/>
+        <TextBlock HorizontalAlignment="Left" Margin="230,200,0,0" Text="PID" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="260,200,0,0" Text="-1" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" Name="Monitoring_pid"/>
+        <TextBlock HorizontalAlignment="Left" Margin="420,200,0,0" Text="chute" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="460,200,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" Name="Monitoring_chuteid"/>
 
         <TextBlock HorizontalAlignment="Left" Margin="650,200,0,0" Text="printer" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="720,200,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Monitoring_printer"/>
+        <TextBox HorizontalAlignment="Left" Margin="720,200,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" Name="Monitoring_printer"/>
         <Button Content="묶음처리" Margin="260,250,0,0" VerticalAlignment="Top" Name="Monitoring_bundle" Click="Bundle_Click">
             <Button.Flyout>
-                <Flyout>
+                <Flyout LightDismissOverlayMode="On">
                     <Flyout.FlyoutPresenterStyle>
                         <Style TargetType="FlyoutPresenter">
                             <Setter Property="MinHeight" Value="300"/>
-                            <Setter Property="MinWidth" Value="700"/>
+                            <Setter Property="MinWidth" Value="1100"/>
                             <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
                             <Setter Property="IsTabStop" Value="True"/>
@@ -53,66 +48,66 @@
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="70"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                            <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                            <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                            <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                            <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                            <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                            <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="1"  x:Name="BundleData" ItemsSource="{x:Bind bundleList2}">
+                        <ListView Grid.Row="1"  x:Name="BundleData" ItemsSource="{x:Bind bundleList}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
                                             <ColumnDefinition Width="100"/>
                                             <ColumnDefinition Width="100"/>
                                             <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="50"/>
-                                            <ColumnDefinition Width="50"/>
-                                            <ColumnDefinition Width="50"/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                        <TextBox Text="" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind seq}" />
+                                        <TextBox Text="{x:Bind cnt}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind seq}" />
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -122,13 +117,13 @@
             </Button.Flyout>
         </Button>
 
-        <Button Content="잔류처리" Margin="400,250,0,0" VerticalAlignment="Top" Name="Monitoring_remain" Click="Remain_Click">
+        <Button Content="미처리" Margin="400,250,0,0" VerticalAlignment="Top" Name="Monitoring_remain" Click="Remain_Click">
             <Button.Flyout>
-                <Flyout>
+                <Flyout LightDismissOverlayMode="On">
                     <Flyout.FlyoutPresenterStyle>
                         <Style TargetType="FlyoutPresenter">
                             <Setter Property="MinHeight" Value="300"/>
-                            <Setter Property="MinWidth" Value="700"/>
+                            <Setter Property="MinWidth" Value="1100"/>
                             <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
                             <Setter Property="IsTabStop" Value="True"/>
@@ -137,72 +132,76 @@
                     </Flyout.FlyoutPresenterStyle>
                     <Grid>
                         <Grid.RowDefinitions>
+                            <!--RowDefinition/ -->
                             <RowDefinition Height="50"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
+                        <!--Grid Grid.Row="0">
+                            <Button Click="TmpClick">버튼/>
+                        </ -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="70"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                            <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                            <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                            <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                            <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                            <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                            <TextBlock Text="잔류수량" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="잔류수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="1"  x:Name="RemainData" ItemsSource="{x:Bind remainList2}">
+                        <ListView Grid.Row="1"  x:Name="RemainData" ItemsSource="{x:Bind remainList}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                        <TextBox Text="" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind seq}"/>
+                                        <TextBox Text="{x:Bind cnt}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind seq}"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -213,11 +212,11 @@
         </Button>
         <Button Content="취소하기" Margin="800,250,0,0" VerticalAlignment="Top" Name="Monitoring_cancel" Click="Cancel_Click">
             <Button.Flyout>
-                <Flyout>
+                <Flyout LightDismissOverlayMode="On">
                     <Flyout.FlyoutPresenterStyle>
                         <Style TargetType="FlyoutPresenter">
                             <Setter Property="MinHeight" Value="100"/>
-                            <Setter Property="MinWidth" Value="700"/>
+                            <Setter Property="MinWidth" Value="1100"/>
                             <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
                             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
                             <Setter Property="IsTabStop" Value="True"/>
@@ -232,61 +231,61 @@
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="70"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                            <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                            <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                            <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                            <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                            <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                            <TextBlock Text="취소" Foreground="Teal" FontSize="14" 
+                            <TextBlock Text="취소" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
                                     <Grid Grid.Row="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
                                             <ColumnDefinition Width="100"/>
                                             <ColumnDefinition Width="100"/>
                                             <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="50"/>
-                                            <ColumnDefinition Width="50"/>
-                                            <ColumnDefinition Width="50"/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{x:Bind m_lastData.chute_num}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.sku_cd}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.sku_nm}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.cust_cd}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.cust_nm}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.total_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.leave_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.remain_qty}" Foreground="Teal" FontSize="14" 
+                                        <TextBlock Text="{x:Bind m_lastData.remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
                                         <Button Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" Click="Cancel_Confirm">취소</Button>
                                     </Grid>
@@ -294,7 +293,7 @@
                 </Flyout>
             </Button.Flyout>
         </Button>
-        <ListView Margin="250,300,0,0" x:Name="listView">
+        <ListView Margin="50,300,0,0" x:Name="listView">
             <TextBlock Text="1. LOGS" />
             <Grid Margin="0,0,0,0">
                 <Grid.RowDefinitions>
@@ -304,60 +303,60 @@
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="150"/>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="CHUTE" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="SKU_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                    <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="SKU_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                    <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="CUST_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                    <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="CUST_NM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                    <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                    <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                    <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" 
+                    <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="7" VerticalAlignment="Center"/>
                 </Grid>
-                <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList2}">
+                <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="CS_SMS_LIB:PListData">
-                            <Grid>
+                            <Grid Background="{x:Bind color}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150"/>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="50"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" 
+                                <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="7" VerticalAlignment="Center"/>
                             </Grid>
                         </DataTemplate>
@@ -394,13 +393,6 @@
                 <StackPanel x:Name="InputData">
                 </StackPanel>
             </Grid-->
-            <TextBlock Text="7. LOGS" />
-            <Grid>
-                <StackPanel>
-                    <Button Click="Button_Click">새로고침</Button>
-                    <TextBox  x:Name="LOGS" TextWrapping="Wrap" AcceptsReturn="True" Text="" Width="1000" ></TextBox>
-                </StackPanel>
-            </Grid>
         </ListView>
     </Grid>
 </Page>

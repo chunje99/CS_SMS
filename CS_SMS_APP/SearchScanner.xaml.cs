@@ -16,6 +16,7 @@ using Windows.UI.Popups;
 using System.Threading;
 using System.Diagnostics;
 using Windows.UI.Core;
+using Serilog;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -73,12 +74,12 @@ namespace CS_SMS_APP
 
         private void Click_Scan(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Click_Scan");
+            Log.Information("Click_Scan");
             global.udp.Print();
             global.udp.Scan();
             Thread.Sleep(1000);
             var devices = global.udp.m_deviceTable;
-            Debug.WriteLine(devices.Count().ToString());
+            Log.Information(devices.Count().ToString());
             //// todo refactory
             string[] names = { "", "", "", "", "", "" };
             int i = 0;
@@ -97,7 +98,7 @@ namespace CS_SMS_APP
 
         private void Click_Connection(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Connect Scanner");
+            Log.Information("Connect Scanner");
             //global.udp.StartScaner();
             if (Scanner_1.Text != "")
                 global.udp.StartScaner(Scanner_1.Text, 54321, "Scanner_1");
@@ -108,23 +109,32 @@ namespace CS_SMS_APP
             if(Scanner_4.Text != "" )
                 global.udp.StartScaner(Scanner_4.Text, 54321, "Scanner_4");
 
-            foreach (var scaner in global.udp.m_scaner)
+            foreach (var scanner in global.udp.m_scaner)
             {
-                scaner.act0 = (name, chute_num, barcode) =>
+                if (scanner.m_isCon)
                 {
-                    Debug.WriteLine("==============");
-                    Debug.WriteLine("MAIN");
-                    Debug.WriteLine(name);
-                    Debug.WriteLine(barcode);
-                    //global.m_msgQueue.Enqueue(barcode);
-                    //var devices = global.udp.m_deviceTable;
+                    scanner.act0 = (name, chute_num, barcode) =>
+                    {
+                        Log.Information("==============");
+                        Log.Information("MAIN");
+                        Log.Information(name);
+                        Log.Information(barcode);
+                        //global.m_msgQueue.Enqueue(barcode);
+                        //var devices = global.udp.m_deviceTable;
+                        var ig = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                UpdateUI(name, chute_num, barcode);
+                            });
+                        Log.Information("==============");
+                    };
+
+                    //global.md.MakePID();
                     var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        UpdateUI(name, chute_num, barcode);
+                        UpdateUI(scanner.m_name, 0, "접속");
                     });
-                    Debug.WriteLine("==============");
-                    //global.md.MakePID();
-                };
+                }
+
             }
         }
         private async void UpdateUI(string name, int chute_num, string barcode)

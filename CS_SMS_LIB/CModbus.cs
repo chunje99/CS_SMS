@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Serilog;
 
 namespace CS_SMS_LIB
 {
@@ -74,7 +75,7 @@ namespace CS_SMS_LIB
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Log.Information(e.ToString());
                 m_error = e.ToString();
                 Thread.Sleep(1000);
                 //if (m_active)
@@ -93,7 +94,7 @@ namespace CS_SMS_LIB
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Log.Information(e.ToString());
             }
             return 0;
 
@@ -111,7 +112,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(0, 80);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 80 )
                             {
-                                Debug.WriteLine("Read Error < 79 array" );
+                                Log.Information("Read Error < 79 array" );
                                 break;
                             }
                             mdsData.moduleCnt = r[1];
@@ -153,7 +154,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(80, 96);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 96 )
                             {
-                                Debug.WriteLine("Read Error < 176 array" );
+                                Log.Information("Read Error < 176 array" );
                                 break;
                             }
                             for(int i = 0 ; i < 12 ; i++ ) //module
@@ -170,7 +171,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(500, 98);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 98 )
                             {
-                                Debug.WriteLine("Read Error < confirm dword" );
+                                Log.Information("Read Error < confirm dword" );
                                 break;
                             }
 
@@ -178,7 +179,7 @@ namespace CS_SMS_LIB
                             if(pid != mdsData.pid)
                             {
                                 mdsData.pid = pid;
-                                Debug.WriteLine("Reset 32010");
+                                Log.Information("Reset 32010");
                                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
 
                                 if (onEvent != null)
@@ -204,7 +205,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(176, 120);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 120 )
                             {
-                                Debug.WriteLine("Read Error < 176 array" );
+                                Log.Information("Read Error < 176 array" );
                                 break;
                             }
                             int leftChute, rightChute, printButton, plusButton, minusButton;
@@ -226,7 +227,7 @@ namespace CS_SMS_LIB
                                         if (onEvent != null)
                                         {
                                             int chute_num = i * 4 + j * 2 + (j+1) % 2;
-                                            Debug.WriteLine("module {0} size {1} left {2}", i, j, chute_num);
+                                            Log.Information("module {0} size {1} left {2}", i, j, chute_num);
                                             onEvent(MDS_EVENT.CHUTECHOICE, chute_num, 0, leftChute);
                                         }
                                     }
@@ -237,7 +238,7 @@ namespace CS_SMS_LIB
                                         if (onEvent != null)
                                         {
                                             int chute_num = i * 4 + j * 2 + 2 + (j+1)%2;
-                                            Debug.WriteLine("module {0} size {1} right chute {2}", i, j, chute_num);
+                                            Log.Information("module {0} size {1} right chute {2}", i, j, chute_num);
                                             onEvent(MDS_EVENT.CHUTECHOICE, chute_num, 0, rightChute);
                                         }
                                     }
@@ -271,7 +272,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(296, 40);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 40)
                             {
-                                Debug.WriteLine("Read Error < 176 array" );
+                                Log.Information("Read Error < 176 array" );
                                 break;
                             }
                             for(int i = 0 ; i < 40 ; i++ ) //module
@@ -282,7 +283,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(598, 80);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 80 )
                             {
-                                Debug.WriteLine("Read Error < confirm dword" );
+                                Log.Information("Read Error < confirm dword" );
                                 break;
                             }
 
@@ -296,7 +297,7 @@ namespace CS_SMS_LIB
                             var r = m_modbusClient.ReadHoldingRegisters(499, 1);    //Read Remain Cnt
                             if( r.Length != 1 )
                             {
-                                Debug.WriteLine("Read Error < remain word" );
+                                Log.Information("Read Error < remain word" );
                                 break;
                             }
                             mdsData.remainCnt = r[0];
@@ -304,7 +305,7 @@ namespace CS_SMS_LIB
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e.ToString());
+                        Log.Information(e.ToString());
                         Connection();
                     }
                     await Task.Delay(200);
@@ -334,23 +335,23 @@ namespace CS_SMS_LIB
 
         public void HoldingRegistersChanged(int startingAddress, int quantity)
         {
-            Debug.WriteLine(startingAddress);
-            Debug.WriteLine(quantity);
+            Log.Information(startingAddress.ToString());
+            Log.Information(quantity.ToString());
             for (int i = 0; i < quantity; i++)
-                Debug.WriteLine(modbusServer.holdingRegisters[startingAddress + i]);
+                Log.Information(modbusServer.holdingRegisters[startingAddress + i].ToString());
         }
         public int MakePID()
         {
             if(!m_isCon)
             {
-                Debug.WriteLine("MakePID: ConError");
+                Log.Information("MakePID: ConError");
                 return -1;
             }
 
             if(!m_dist)
             {
-                Debug.WriteLine("========== Error ==========");
-                Debug.WriteLine("pid 받기 전에 다시 들어왔음");
+                Log.Information("========== Error ==========");
+                Log.Information("pid 받기 전에 다시 들어왔음");
             }
             m_modbusClient.WriteMultipleRegisters(32010, new int[] { 1 });
             m_dist = false;
@@ -360,10 +361,10 @@ namespace CS_SMS_LIB
         {
             if(!m_isCon)
             {
-                Debug.WriteLine("Cancel: ConError");
+                Log.Information("Cancel: ConError");
                 return -1;
             }
-            Debug.WriteLine("Cancel:");
+            Log.Information("Cancel:");
             m_modbusClient.WriteMultipleRegisters(32010, new int[] { 2 });
             return 0;
         }
@@ -371,13 +372,13 @@ namespace CS_SMS_LIB
         {
             if(!m_isCon)
             {
-                Debug.WriteLine("Distribution: ConError");
+                Log.Information("Distribution: ConError");
                 return -1;
             }
 
             m_chuteID = chuteID;
             m_modbusClient.WriteMultipleRegisters(32000, new int[] { mdsData.pid % 65536, mdsData.pid / 65536, chuteID, 0 });
-            Debug.WriteLine("Set chute " + chuteID);
+            Log.Information("Set chute " + chuteID);
             m_dist = true;
             return 0;
         }
@@ -385,29 +386,29 @@ namespace CS_SMS_LIB
         {
             if(!m_isCon)
             {
-                Debug.WriteLine("GetDistribution: ConError");
+                Log.Information("GetDistribution: ConError");
                 return -1;
             }
 
             int[] r = m_modbusClient.ReadHoldingRegisters(32000, 4);    //Read 10 Holding Registers from Server, starting with Address 1
             int pid = r[1] * 65536 + r[0];
             int chute = r[3] * 65536 + r[2];
-            Debug.WriteLine("pid : " + pid + " , cute : " + chute);
+            Log.Information("pid : " + pid + " , cute : " + chute);
             return 0;
         }
         public int PrintAll()
         {
-            Debug.WriteLine("===================");
+            Log.Information("===================");
             Debug.Write("Value of HoldingRegister ");
             for (int i = 0; i < readLen; i++)
             {
                 if (i % 10 == 0)
-                    Debug.WriteLine("");
+                    Log.Information("");
                 Debug.Write(registers[i] + ", ");
 
             }
-            Debug.WriteLine("");
-            Debug.WriteLine("===================");
+            Log.Information("");
+            Log.Information("===================");
             return 0;
         }
         public void SetActive(bool active)

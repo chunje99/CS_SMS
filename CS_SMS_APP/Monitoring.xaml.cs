@@ -20,6 +20,9 @@ using System.Collections.ObjectModel;
 using CS_SMS_LIB;
 using System.ComponentModel;
 using Windows.System;
+using Serilog;
+using Windows.UI.Popups;
+
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -30,15 +33,9 @@ namespace CS_SMS_APP
     /// </summary>
     public sealed partial class Monitoring : Page
     {
-        ObservableCollection<CMPS> bundleList = new ObservableCollection<CMPS>();
-        ObservableCollection<CMPS> remainList = new ObservableCollection<CMPS>();
-        ObservableCollection<CMPS> mdsList = new ObservableCollection<CMPS>();
-        ObservableCollection<CMPS> cancelList = new ObservableCollection<CMPS>();
-
-        ObservableCollection<PListData> bundleList2 = new ObservableCollection<PListData>();
-        ObservableCollection<PListData> remainList2 = new ObservableCollection<PListData>();
-        ObservableCollection<PListData> mdsList2 = new ObservableCollection<PListData>();
-        //ObservableCollection<PListData> cancelList2 = new ObservableCollection<PListData>();
+        ObservableCollection<PListData> bundleList = new ObservableCollection<PListData>();
+        ObservableCollection<PListData> remainList = new ObservableCollection<PListData>();
+        ObservableCollection<PListData> mdsList = new ObservableCollection<PListData>();
 
 
 
@@ -51,10 +48,41 @@ namespace CS_SMS_APP
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
 
+            // Show the message dialog
+        }
+        private void Loaded(object sender, RoutedEventArgs e)
+        {
+            Log.Information("Loaded");
             SetMainScanner();
             SetSUBScanner();
             MakeEvent();
-            ShowLogs();
+        }
+        private async void Alert(string msg)
+        {
+            // Create the message dialog and set its content
+            var messageDialog = new MessageDialog(msg);
+
+           // Add commands and set their callbacks; both buttons use the same callback function instead of inline event handlers
+           // messageDialog.Commands.Add(new UICommand(
+           //     "Try again",
+           //     new UICommandInvokedHandler(this.CommandInvokedHandler)));
+            messageDialog.Commands.Add(new UICommand(
+                "Close",
+                new UICommandInvokedHandler(this.CommandInvokedHandler)));
+
+            // Set the command that will be invoked by default
+            messageDialog.DefaultCommandIndex = 0;
+
+            // Set the command to be invoked when escape is pressed
+            messageDialog.CancelCommandIndex = 1;
+
+            // Show the message dialog
+            await messageDialog.ShowAsync();
+        }
+
+        private void CommandInvokedHandler(IUICommand command)
+        {
+            // Display message showing the label of the command that was invoked
         }
 
         private void MakeEvent()
@@ -74,8 +102,13 @@ namespace CS_SMS_APP
                         OnEvent_CONFIRM_PID(id0, id1, id2);
                         break;
                     case MDS_EVENT.CHUTECHOICE:
-                        ///chute_num, 0, onoff
                         OnEvent_CHUTECHOICE(id0, id1, id2);
+                        break;
+                    case MDS_EVENT.PLUS:
+                        OnEvent_PLUS(id0, id1, id2);
+                        break;
+                    case MDS_EVENT.MINUS:
+                        OnEvent_MINUS(id0, id1, id2);
                         break;
                     case MDS_EVENT.FULL:
                         ///chute_num, 0, onoff
@@ -87,7 +120,9 @@ namespace CS_SMS_APP
 
         private void OnEvent_PID(int pid)
         {
-            Debug.WriteLine("OnEvent_PID {0}", pid);
+            Log.Information("OnEvent_PID {0}", pid);
+            if (pid <= 0)
+                return;
             global.md.Distribution(m_lastData.chute_num);
             var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -99,7 +134,10 @@ namespace CS_SMS_APP
         }
         private void OnEvent_CONFIRM_PID(int module, int chute_num, int pid)
         {
-            Debug.WriteLine("OnEvent_CONFIRM_PID module {0} chute_num{1} pid {2}", module, chute_num, pid );
+            Log.Information("OnEvent_CONFIRM_PID module {0} chute_num{1} pid {2}", module, chute_num, pid );
+            if (pid <= 0)
+                return;
+
             int confirm_data = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].confirmData;
             int t_pid = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].pidNum;
             int stack_count = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].stackCount;
@@ -107,20 +145,20 @@ namespace CS_SMS_APP
         }
         private void OnEvent_CHUTECHOICE(int chute_num, int id1, int onoff)
         {
-            Debug.WriteLine("OnEvent_CHUTECHOICE chute_num {0} data {1}", chute_num, onoff);
+            Log.Information("OnEvent_CHUTECHOICE chute_num {0} data {1}", chute_num, onoff);
             global.api.FullManual(chute_num, onoff);
         }
         private void OnEvent_FULL(int module, int chuteid, int onoff)
         {
-            Debug.WriteLine("OnEvent_FULL module {0} chuteidx {1} data {2}", module, chuteid, onoff);
+            Log.Information("OnEvent_FULL module {0} chuteidx {1} data {2}", module, chuteid, onoff);
             global.api.FullAuto(module*12 + chuteid + 1, onoff);
         }
-        private void OnEvent_PRINT(int module, int direct, int value)
+        private async void OnEvent_PRINT(int module, int direct, int value)
         {
+            Log.Information("OnEvent_PRINT {0} {1} {2}", module, direct, value);
             if (value == 0)
                 return;
 
-            Debug.WriteLine("OnEvent_PRINT {0} {1} {2}", module, direct, value);
             int locPrint = 0;
             if (direct == 0)
             {
@@ -174,22 +212,38 @@ namespace CS_SMS_APP
                     //4
                 }
             }
-            global.m_printer[locPrint].PrintSample("Printer" + (locPrint + 1).ToString());
-            /*
-            global.PrintSample(
-                global.m_printIP[locPrint],
-                global.m_printPORT[locPrint],
-                null,
-                "Printer " + (locPrint + 1).ToString()
-                );
-                */
+            int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
+            int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
+            PrintList p = await global.api.Print(chute_num1);
+            global.m_printer[locPrint].PrintData(p);
+            PrintList p2 = await global.api.Print(chute_num2);
+            global.m_printer[locPrint].PrintData(p2);
             var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
             });
-            //var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            //{
-            //});
+        }
+        private void OnEvent_PLUS(int module, int direct, int value)
+        {
+            Log.Information("OnEvent_PLUS module {0} direct {1} value {2}", module, direct, value);
+            if (value == 0)
+                return;
+
+            int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
+            int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
+            global.api.AddStatus(chute_num1, "+");
+            global.api.AddStatus(chute_num2, "+");
+        }
+        private void OnEvent_MINUS(int module, int direct, int value)
+        {
+            Log.Information("OnEvent_MINUS module {0} direct {1} value {2}", module, direct, value);
+            if (value == 0)
+                return;
+
+            int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
+            int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
+            global.api.AddStatus(chute_num1, "-");
+            global.api.AddStatus(chute_num2, "-");
         }
 
 
@@ -197,76 +251,37 @@ namespace CS_SMS_APP
         {
             foreach (var scanner in global.udp.m_scaner)
             {
-                scanner.act0 = (string name, int chute_num, string data) =>
+                scanner.act0 = (string name, int chute_num, string barcode ) =>
                 {
                     if (chute_num == -1)
                     {
                         var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
-                            UpdateUI(Monitoring_scanner1, "스캐너를 할당하세요.!");
+                            Alert("스캐너를 할당하세요!(" + barcode + ")");
                         });
                     }
                     else if (chute_num == 0)
-                        Scanner_Process(data, Monitoring_scanner0);
+                    {
+                        Scanner_Process(barcode, Monitoring_scanner0, 0);
+                    }
+                    else if (chute_num >= 1 && chute_num <= 48)
+                    {
+                        global.api.AddGoods(chute_num, barcode);
+                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            UpdateUI(Monitoring_scanner1, "슈터 " + chute_num.ToString() + " : " + barcode);
+                        });
+                    }
                     else
                     {
                         var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
-                            UpdateUI(Monitoring_scanner1, "슈터 " + chute_num.ToString() + " : " + data);
+                            Alert("(" + barcode + ")할당이 잘못 되었습니다.! chute = " + chute_num.ToString());
                         });
                     }
                 };
             }
             return;
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        ///scanner msg
-                        foreach (var scanner in global.udp.m_scaner)
-                        {
-                            if (scanner.m_msgQueue.Count() > 0)
-                            {
-                                var barcode = scanner.m_msgQueue.Dequeue();
-                                if (scanner.m_name == "Scanner_1")
-                                {
-                                    Scanner_Process(barcode, Monitoring_scanner1);
-                                }
-                                else if (scanner.m_name == "Scanner_2")
-                                {
-                                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                    {
-                                        UpdateUI(Monitoring_scanner2, barcode);
-                                    });
-                                }
-                                else if (scanner.m_name == "Scanner_3")
-                                {
-                                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                    {
-                                        UpdateUI(Monitoring_scanner3, barcode);
-                                    });
-                                }
-                                else if (scanner.m_name == "Scanner_4")
-                                {
-                                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                    {
-                                        UpdateUI(Monitoring_scanner4, barcode);
-                                    });
-                                }
-                            }
-                        }
-
-                        Thread.Sleep(100);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.ToString());
-                    }
-                }
-            });
-
         }
         private async void UpdateUI(TextBox tbox, string barcode)
         {
@@ -279,9 +294,9 @@ namespace CS_SMS_APP
         }
         public int SetMainScanner()
         {
-            global.banner.act0 = (string data) =>
+            global.banner.act0 = (string barcode) =>
             {
-                Scanner_Process(data, Monitoring_scanner0);
+                Scanner_Process(barcode, Monitoring_scanner0, 500);
             };
             return 0;
         }
@@ -289,221 +304,182 @@ namespace CS_SMS_APP
         private void Monitoring_chuteid_TextChanged(object sender, TextChangedEventArgs e)
         {
         }
-        private void ShowLogs()
-        {
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                        {
-                            CheckLog();
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.ToString());
-                    }
-                    Thread.Sleep(300);
-                }
-            });
-        }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            CheckLog();
-        }
-        private void CheckLog()
-        {
-            string logs = "";
-            logs = "PID ";
-            logs += global.md.mdsData.pid.ToString() + "\n";
-            logs += "moduleCnt ";
-            logs += global.md.mdsData.moduleCnt.ToString() + "\n";
-            logs += "heartBest";
-            logs += global.md.mdsData.heartBest.ToString() + "\n";
-            logs += "moduleSpeed ";
-            logs += global.md.mdsData.settingData.moduleSpeed.ToString() + "\n";
-            logs += "currentModuleSpeed ";
-            logs += global.md.mdsData.currentModuleSpeed.ToString() + "\n";
-            logs += "remainCnt";
-            logs += global.md.mdsData.remainCnt.ToString() + "\n";
-            for (int i = 0; i < 3; i++)
-            {
-                logs += "point" + i.ToString() + " ";
-                logs += global.md.mdsData.settingData.pointSpeed[i].ToString() + "\n";
-            }
-            logs += "ModuleInfo \n";
-            for (int i = 0; i < 12; i++)
-            {
-                logs += "Module" + (i + 1).ToString() + "\n";
-                logs += "\t" + "status ";
-                logs += "\t" + global.md.mdsData.moduleInfos[i].status.ToString() + "\n";
-                logs += "\t" + "Speed ";
-                logs += "\t" + global.md.mdsData.moduleInfos[i].initSpeed.ToString() + "\n";
-                logs += "\t" + "EventSpeed ";
-                logs += "\t" + global.md.mdsData.moduleInfos[i].eventSpeed.ToString() + "\n";
-                logs += "\t" + "alarm ";
-                logs += "\t" + global.md.mdsData.moduleInfos[i].alarm.ToString() + "\n";
-                for (int j = 0; j < 4; j++)
-                {
-                    logs += "\t" + "chute" + (i * 4 + j + 1).ToString() + "\n";
-                    logs += "\t" + "\t" + "confirmData ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].chuteInfos[j].confirmData.ToString() + "\n";
-                    logs += "\t" + "\t" + "stackCnt ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].chuteInfos[j].stackCount.ToString() + "\n";
-                    logs += "\t" + "\t" + "pidNum ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].chuteInfos[j].pidNum.ToString() + "\n";
-                    logs += "\t" + "\t" + "full ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].chuteInfos[j].full.ToString() + "\n";
-                }
-                for (int j = 0; j < 2; j++)
-                {
-                    logs += "\t" + "PrintInfo_" + (i * 2 + j).ToString() + "\n";
-                    logs += "\t" + "\t" + "leftChute ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].leftChute.ToString() + "\n";
-                    logs += "\t" + "\t" + "rightChute ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].rightChute.ToString() + "\n";
-                    logs += "\t" + "\t" + "printButton ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].printButton.ToString() + "\n";
-                    logs += "\t" + "\t" + "plusButton ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].plusButton.ToString() + "\n";
-                    logs += "\t" + "\t" + "minusButton ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].minusButton.ToString() + "\n";
-                }
-            }
-
-            logs += "TrackingData \n";
-            for (int i = 0; i < 40; i++)
-            {
-                logs += "position" + (i + 1).ToString() + "\n";
-                logs += "\t" + "chuteNum ";
-                logs += "\t" + global.md.mdsData.positions[i].chuteNum.ToString() + "\n";
-                logs += "\t" + "pid ";
-                logs += "\t" + global.md.mdsData.positions[i].pid.ToString() + "\n";
-            }
-
-            LOGS.Text = logs;
-
-        }
         private void Bundle_Click(object sender, RoutedEventArgs e)
         {
+            bundleList.Clear();
         }
 
-        private async void Bundle_Keydown(object sender, KeyRoutedEventArgs e)
+        private void Bundle_Keydown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {
+                if (!global.md.m_isCon)
+                {
+                    Alert("MDS 접속에러");
+                    return;
+                }
                 TextBox box = sender as TextBox;
-                Debug.WriteLine(box.Text);
-                foreach( var data in bundleList2)
+                Log.Information(box.Text);
+                foreach( var data in bundleList)
                 {
                     if(data.seq.ToString() == box.Name)
                     {
-                        Debug.WriteLine("=======send leave api ====== {0}", data.seq);
+                        Log.Information("=======send leave api ====== {0}", data.seq);
                         m_lastData.Set(data);
                         m_lastData.send_cnt = Int32.Parse(box.Text);
-                        mdsList2.Clear();
+                        mdsList.Clear();
                         foreach (var d in m_lastData.list)
-                            mdsList2.Add(d);
+                        {
+                            if (data.seq == d.seq)
+                                data.color = "Aqua";
+                            mdsList.Add(d);
+                        }
                     }
                 }
                 Monitoring_bundle.Flyout.Hide();
-                if (global.md.m_isCon)
-                {
-                    Debug.WriteLine("=======Make PID======");
-                    global.md.MakePID();
-
-                }
+                Log.Information("=======Make PID======");
+                global.md.MakePID();
             }
+        }
+
+        private void Remain_Click(object sender, RoutedEventArgs e)
+        {
+            remainList.Clear();
         }
 
         private void Remain_Keydown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {
+                if (!global.md.m_isCon)
+                {
+                    Alert("MDS 접속에러");
+                    return;
+                }
                 TextBox box = sender as TextBox;
-                Debug.WriteLine(box.Text);
-                foreach( var data in remainList2)
+                Log.Information(box.Text);
+                foreach( var data in remainList)
                 {
                     if(data.seq.ToString() == box.Name)
                     {
-                        Debug.WriteLine("=======send leave api ====== {0}", data.seq);
+                        Log.Information("=======send leave api ====== {0}", data.seq);
                         m_lastData.Set(data);
                         m_lastData.send_cnt = Int32.Parse(box.Text);
-                        mdsList2.Clear();
+                        mdsList.Clear();
                         foreach (var d in m_lastData.list)
-                            mdsList2.Add(d);
+                        {
+
+                            if (data.seq == d.seq)
+                                data.color = "Aqua";
+                            mdsList.Add(d);
+                        }
                         global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
                     }
                 }
-                Monitoring_remain.Flyout.Hide();
+                remainList.Clear();
+                //Monitoring_remain.Flyout.Hide();
             }
         }
 
         private async void Bundle_Processing()
         {
-            Debug.WriteLine("=======Bundle Processing======");
-            bundleList2.Clear();
+            Log.Information("=======Bundle Processing======");
+            if (!global.md.m_isCon)
+            {
+                Alert("MDS 접속에러");
+                return;
+            }
+
+            bundleList.Clear();
             ///TODO API
-            Debug.WriteLine("=======Get Chute======");
+            Log.Information("=======Get Chute======");
             m_lastData = await global.api.GetChute(m_lastCode);
+            if(m_lastData.status != "OK")
+                Alert(m_lastData.msg);
 
             foreach( var data in m_lastData.list)
-                bundleList2.Add(data);
+                bundleList.Add(data);
         }
 
         private async void Remain_Processing()
         {
-            Debug.WriteLine("=======Remain Processing======");
-            remainList2.Clear();
+            Log.Information("=======Remain Processing======");
+            if (!global.md.m_isCon)
+            {
+                Alert("MDS 접속에러");
+                return;
+            }
+            remainList.Clear();
             ///TODO API
-            Debug.WriteLine("=======Get Chute======");
+            Log.Information("=======Get Chute======");
             m_lastData = await global.api.GetChute(m_lastCode);
+            if(m_lastData.status != "OK")
+                Alert(m_lastData.msg);
+
             foreach (var data in m_lastData.list)
-                remainList2.Add(data);
+                remainList.Add(data);
         }
 
         private async void MDS_Processing()
         {
-            Debug.WriteLine("=======MDS_Processing======");
+            Log.Information("=======MDS_Processing======");
+            if (!global.md.m_isCon)
+            {
+                Alert("MDS 접속에러");
+                return;
+            }
 
-            Debug.WriteLine("=======Get Chute======");
+            Log.Information("=======Get Chute======");
             m_lastData = await global.api.GetChute(m_lastCode);
-            m_lastData.send_cnt = 1;
-            Debug.WriteLine(m_lastData.chute_num);
-            Debug.WriteLine("======={0}======", m_lastData.sku_nm);
-            Debug.WriteLine("=======Make PID======");
-            global.md.MakePID();
+            if(m_lastData.status == "OK")
+            {
+                Log.Information("=======Make PID======");
+                global.md.MakePID();
+            }
+            else
+                Alert(m_lastData.msg);
 
-            mdsList2.Clear();
+            m_lastData.send_cnt = 1;
+            Log.Information(m_lastData.chute_num.ToString());
+            Log.Information("======={0}======", m_lastData.sku_nm);
+
+            mdsList.Clear();
             foreach (var data in m_lastData.list)
-                mdsList2.Add(data);
+            {
+                if (data.highlight == "ON")
+                    data.color = "Aqua";
+                mdsList.Add(data);
+            }
+
             /*
             mdsList.Clear();
             //CMPS p2 = new CMPS(p);
             mdsList.Add(m_lastData);
             */
-            Debug.WriteLine("=======MDS_Processing end======");
+            Log.Information("=======MDS_Processing end======");
         }
 
-        private void Scanner_Process(string barcode, TextBox textBox)
+        private void Scanner_Process(string barcode, TextBox textBox, int delay_ms)
         {
             DateTime dt2 = DateTime.Now;
             TimeSpan span = dt2 - m_lastTime;
             int ms = (int)span.TotalMilliseconds;
-            Debug.WriteLine("SacnTime : " + ms.ToString());
+            Log.Information("SacnTime : " + ms.ToString());
             m_lastTime = dt2;
 
-            if (ms > 500 || m_lastCode != barcode)
+            if (ms > delay_ms || m_lastCode != barcode)
             {
-                Debug.WriteLine("===Change Code======");
+                Log.Information("===Change Code======");
                 m_lastCode = barcode;
 
                 var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
+                    if (!global.md.m_isCon)
+                    {
+                        Alert("MDS 접속에러");
+                        return;
+                    }
                     UpdateUI(textBox, m_lastCode);
                     if (Monitoring_bundle.Flyout.IsOpen)
                     {
@@ -519,34 +495,32 @@ namespace CS_SMS_APP
                     }
                     else
                     {
-                        Debug.WriteLine("=======ERROR======");
-                        Debug.WriteLine("=======ERROR======");
-                        Debug.WriteLine("=======ERROR======");
+                        Log.Information("=======ERROR======");
+                        Log.Information("=======ERROR======");
+                        Log.Information("=======ERROR======");
                     }
                 });
             }
             else
             {
-                Debug.WriteLine("===Same Code======");
+                Log.Information("===Same Code======");
             }
-        }
-
-        private void Remain_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("===Cancel======");
-            //cancelList2.Clear();
-            //cancelList2.Add(m_lastData);
+            Log.Information("===Cancel======");
         }
 
         private void Cancel_Confirm(object sender, RoutedEventArgs e)
         {
+            if (!global.md.m_isCon)
+            {
+                Alert("MDS 접속에러");
+                return;
+            }
             Monitoring_cancel.Flyout.Hide();
-            Debug.WriteLine("===Cancel confirm======");
+            Log.Information("===Cancel confirm======");
             global.api.Cancel(global.md.mdsData.pid);
             global.md.CancelPID();
         }
@@ -555,11 +529,22 @@ namespace CS_SMS_APP
         {
             if( e.Key == VirtualKey.Enter )
             {
+                if (!global.md.m_isCon)
+                {
+                    Alert("MDS 접속에러");
+                    return;
+                }
                 TextBox box = sender as TextBox;
-                Debug.WriteLine(box.Text);
-                Scanner_Process(box.Text, Monitoring_scanner0);
+                Log.Information(box.Text);
+                Scanner_Process(box.Text, Monitoring_scanner0, 100);
                 box.Text = "";
             }
         }
+
+        private void TmpClick(object sender, RoutedEventArgs e)
+        {
+            Scanner_Process("8809681702713", Monitoring_scanner0, 100);
+        }
+
     }
 }
