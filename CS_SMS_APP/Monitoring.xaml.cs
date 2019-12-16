@@ -52,7 +52,7 @@ namespace CS_SMS_APP
         }
         private void Loaded(object sender, RoutedEventArgs e)
         {
-            Log.Information("Loaded");
+            //Log.Information("Loaded");
             SetMainScanner();
             SetSUBScanner();
             MakeEvent();

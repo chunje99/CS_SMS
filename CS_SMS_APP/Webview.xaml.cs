@@ -26,14 +26,13 @@ namespace CS_SMS_APP
         public Webview()
         {
             this.InitializeComponent();
-        }
-
-        private void GridSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            Log.Information("GridSizeChanged");
-            //double remainingWidth = Windows.UI.Xaml.Window.Current.Bounds.Width - 50;
-            //MyWebview.Width = remainingWidth;
-            //MyWebview.Height = e.NewSize.Height;
+            Uri siteUri;
+#if DEBUG
+            siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
+#else
+            siteUri = new Uri("http://127.0.0.1/config/chute_allocation.php");
+#endif
+            MyWebview.Source = siteUri;
         }
     }
 }

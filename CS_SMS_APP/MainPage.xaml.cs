@@ -110,7 +110,6 @@ namespace CS_SMS_APP
 
         private void PageSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //Log.Information("Main PageSizeChange");
             ContentFrame.Width = e.NewSize.Width;
         }
     }

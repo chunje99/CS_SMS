@@ -12,7 +12,8 @@ namespace CS_SMS_LIB
     public class CBanner
     {
         public int m_port { get; set; } = 51236;
-        public string m_ip { get; set; } = "192.168.0.100";
+        public string m_ip { get; set; } = "192.168.0.220";
+        public bool m_isCon { get; set; } = false;
 
         private TcpClient tcpClient = null;
 
@@ -45,6 +46,7 @@ namespace CS_SMS_LIB
                 IPAddress ip = IPAddress.Parse(m_ip);
                 IPEndPoint ipEndPoint = new IPEndPoint(ip, m_port);
                 tcpClient.Connect(ipEndPoint);
+                m_isCon = true;
             }
             catch (Exception e)
             {
@@ -58,6 +60,7 @@ namespace CS_SMS_LIB
             try
             {
                 tcpClient.Close();
+                m_isCon = false;
             }
             catch (Exception e)
             {

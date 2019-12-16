@@ -9,8 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     >
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="auto"
-        SizeChanged="GridSizeChanged"
         >
-        <WebView Source="http://127.0.0.1/config/chute_allocation.php" Name="MyWebview"></WebView>
+        <WebView Name="MyWebview"></WebView>
     </Grid>
 </Page>

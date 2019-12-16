@@ -69,9 +69,9 @@
                                 Grid.Column="4" VerticalAlignment="Center"/>
                             <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                            <TextBlock Text="확정수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                            <TextBlock Text="남은수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
                             <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
@@ -163,9 +163,9 @@
                                 Grid.Column="4" VerticalAlignment="Center"/>
                             <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                            <TextBlock Text="확정수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                            <TextBlock Text="남은수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
                             <TextBlock Text="잔류수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
@@ -252,9 +252,9 @@
                                 Grid.Column="4" VerticalAlignment="Center"/>
                             <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                            <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                            <TextBlock Text="확정수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                            <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                            <TextBlock Text="남은수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
                             <TextBlock Text="취소" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
@@ -323,9 +323,9 @@
                                 Grid.Column="4" VerticalAlignment="Center"/>
                     <TextBlock Text="TOTAL_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                    <TextBlock Text="LEAVE_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                    <TextBlock Text="확정수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                    <TextBlock Text="REMAIN_QTY" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                    <TextBlock Text="남은수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="7" VerticalAlignment="Center"/>
                 </Grid>
                 <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList}">

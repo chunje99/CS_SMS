@@ -42,5 +42,13 @@ namespace CS_SMS_APP
                 PLC_Status.Text = "Connected";
             }
         }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            if(global.md.m_isCon)
+            {
+                PLC_Status.Text = "Connected";
+            }
+        }
     }
 }

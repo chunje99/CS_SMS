@@ -47,5 +47,13 @@ namespace CS_SMS_APP
                 }
             }
         }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            if(global.banner.m_isCon)
+            {
+                Scanner_Status.Text = "Connected";
+            }
+        }
     }
 }

@@ -25,7 +25,7 @@
                 <NavigationViewItemHeader Content="Main pages"/>
                 <NavigationViewItem x:Uid="MainScanner" Icon="Camera" Content="Main Sacnner" Tag="scanner"/>
                 <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="Search Sacnners" Tag="scanners"/>
-                <NavigationViewItem x:Uid="ConnectPLC" Icon="Remote" Content="Connect PLC" Tag="plc"/>
+                <NavigationViewItem x:Uid="ConnectMDS" Icon="Remote" Content="Connect MDS" Tag="plc"/>
                 <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="Printer Setting" Tag="printer"/>
                 <NavigationViewItem x:Uid="Monitoring" Icon="View" Content="Monitoring" Tag="monitoring"/>
                 <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처할당" Tag="webview"/>
