@@ -334,7 +334,7 @@ namespace CS_SMS_LIB
         {
             Log.Information("===Print===");
             Log.Information("chute_num {0}", chute_num);
-            PrintList printList = null;
+            PrintList printList = new PrintList();
             try
             {
 
@@ -361,8 +361,8 @@ namespace CS_SMS_LIB
                     if (printList.status == "OK")
                     {
                         Log.Information("Printer {@PrintList}", printList);
+                        return printList;
                     }
-                    return printList;
                 }
                 else
                 {
