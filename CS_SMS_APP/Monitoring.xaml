@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Loaded="Loaded"  >
+    >
 
     <Grid>
         <TextBlock>Monitoring</TextBlock>
@@ -210,7 +210,7 @@
                 </Flyout>
             </Button.Flyout>
         </Button>
-        <Button Content="취소하기" Margin="800,250,0,0" VerticalAlignment="Top" Name="Monitoring_cancel" Click="Cancel_Click">
+        <Button Content="일괄취소" Margin="800,250,0,0" VerticalAlignment="Top" Name="Monitoring_cancel" Click="Cancel_Click">
             <Button.Flyout>
                 <Flyout LightDismissOverlayMode="On">
                     <Flyout.FlyoutPresenterStyle>
@@ -271,21 +271,21 @@
                                             <ColumnDefinition Width="100"/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{x:Bind m_lastData.chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_lastData.remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind m_cancelData.remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
                                         <Button Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" Click="Cancel_Confirm">취소</Button>
                                     </Grid>

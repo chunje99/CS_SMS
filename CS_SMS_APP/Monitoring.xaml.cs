@@ -43,6 +43,7 @@ namespace CS_SMS_APP
         public DateTime m_lastTime = DateTime.Now;
         //public CMPS m_lastData = new CMPS();
         public Product m_lastData = new Product();
+        public Product m_cancelData = new Product();
         public Monitoring()
         {
             this.InitializeComponent();
@@ -53,13 +54,7 @@ namespace CS_SMS_APP
             SetSUBScanner();
             MakeEvent();
         }
-        private void Loaded(object sender, RoutedEventArgs e)
-        {
-            //Log.Information("Loaded");
-            //SetMainScanner();
-            //SetSUBScanner();
-            //MakeEvent();
-        }
+
         private async void Alert(string msg)
         {
             // Create the message dialog and set its content
@@ -331,18 +326,25 @@ namespace CS_SMS_APP
                         Log.Information("=======send leave api ====== {0}", data.seq);
                         m_lastData.Set(data);
                         m_lastData.send_cnt = Int32.Parse(box.Text);
-                        mdsList.Clear();
-                        foreach (var d in m_lastData.list)
+                        if( data.remain_qty < Int32.Parse(box.Text))
                         {
-                            if (data.seq == d.seq)
-                                data.color = "Aqua";
-                            mdsList.Add(d);
+                            Alert("잔류 수량 초과");
+                        }
+                        else
+                        {
+                            mdsList.Clear();
+                            foreach (var d in m_lastData.list)
+                            {
+                                if (data.seq == d.seq)
+                                    data.color = "Aqua";
+                                mdsList.Add(d);
+                            }
+                            Log.Information("=======Make PID======");
+                            global.md.MakePID();
                         }
                     }
                 }
                 Monitoring_bundle.Flyout.Hide();
-                Log.Information("=======Make PID======");
-                global.md.MakePID();
             }
         }
 
@@ -362,25 +364,33 @@ namespace CS_SMS_APP
                 }
                 TextBox box = sender as TextBox;
                 Log.Information(box.Text);
-                foreach( var data in remainList)
+                foreach ( var data in remainList)
                 {
                     if(data.seq.ToString() == box.Name)
                     {
                         Log.Information("=======send leave api ====== {0}", data.seq);
                         m_lastData.Set(data);
                         m_lastData.send_cnt = Int32.Parse(box.Text);
-                        mdsList.Clear();
-                        foreach (var d in m_lastData.list)
+                        if( data.remain_qty < Int32.Parse(box.Text))
                         {
-
-                            if (data.seq == d.seq)
-                                data.color = "Aqua";
-                            mdsList.Add(d);
+                            Alert("잔류 수량 초과");
                         }
-                        global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
+                        else
+                        {
+                            mdsList.Clear();
+                            foreach (var d in m_lastData.list)
+                            {
+
+                                if (data.seq == d.seq)
+                                    data.color = "Aqua";
+                                mdsList.Add(d);
+                            }
+                            global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
+                        }
                     }
                 }
-                remainList.Clear();
+                //remainList.Clear();
+                Remain_Processing();
                 //Monitoring_remain.Flyout.Hide();
             }
         }
@@ -439,6 +449,7 @@ namespace CS_SMS_APP
             {
                 Log.Information("=======Make PID======");
                 global.md.MakePID();
+                m_cancelData = m_lastData;
             }
             else
                 Alert(m_lastData.msg);
