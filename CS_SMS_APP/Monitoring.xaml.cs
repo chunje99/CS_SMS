@@ -407,7 +407,7 @@ namespace CS_SMS_APP
             bundleList.Clear();
             ///TODO API
             Log.Information("=======Get Chute======");
-            m_lastData = await global.api.GetChute(m_lastCode);
+            m_lastData = await global.api.GetChute(m_lastCode, "bundle");
             if(m_lastData.status != "OK")
                 Alert(m_lastData.msg);
 
@@ -426,7 +426,7 @@ namespace CS_SMS_APP
             remainList.Clear();
             ///TODO API
             Log.Information("=======Get Chute======");
-            m_lastData = await global.api.GetChute(m_lastCode);
+            m_lastData = await global.api.GetChute(m_lastCode, "remain");
             if(m_lastData.status != "OK")
                 Alert(m_lastData.msg);
 
@@ -444,7 +444,7 @@ namespace CS_SMS_APP
             }
 
             Log.Information("=======Get Chute======");
-            m_lastData = await global.api.GetChute(m_lastCode);
+            m_lastData = await global.api.GetChute(m_lastCode, "single");
             if(m_lastData.status == "OK")
             {
                 Log.Information("=======Make PID======");

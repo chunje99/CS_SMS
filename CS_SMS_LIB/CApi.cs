@@ -43,7 +43,14 @@ namespace CS_SMS_LIB
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        public async Task<Product> GetChute(string barcode)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="barcode"></param>
+        /// <param name="scan_type"></param> single, bundle, remain
+        /// <returns></returns>
+        public async Task<Product> GetChute(string barcode, string scan_type)
         {
             //m_chute = m_chute % 12;
             //m_chute++;
@@ -56,8 +63,9 @@ namespace CS_SMS_LIB
             //product.chute_num = dt.Millisecond % 12 + 1;
             //return product;
             HttpClient client = new HttpClient();
-            string url  = "/v1/product/barcode/";
-            client.BaseAddress = new Uri(Domain + url + barcode);
+            string url  = "/v1/product/barcode/" + barcode + "?scan_type=" + scan_type;
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(
