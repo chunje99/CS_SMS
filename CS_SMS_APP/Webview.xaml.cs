@@ -26,13 +26,10 @@ namespace CS_SMS_APP
         public Webview()
         {
             this.InitializeComponent();
-            Uri siteUri;
 #if DEBUG
-            siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
-#else
-            siteUri = new Uri("http://127.0.0.1/config/chute_allocation.php");
+            //Uri siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
+            //MyWebview.Source = siteUri;
 #endif
-            MyWebview.Source = siteUri;
         }
     }
 }

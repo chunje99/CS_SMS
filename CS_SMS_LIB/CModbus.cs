@@ -399,12 +399,12 @@ namespace CS_SMS_LIB
         public int PrintAll()
         {
             Log.Information("===================");
-            Debug.Write("Value of HoldingRegister ");
+            Log.Information("Value of HoldingRegister ");
             for (int i = 0; i < readLen; i++)
             {
                 if (i % 10 == 0)
                     Log.Information("");
-                Debug.Write(registers[i] + ", ");
+                Log.Information(registers[i] + ", ");
 
             }
             Log.Information("");

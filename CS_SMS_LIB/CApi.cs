@@ -17,10 +17,11 @@ namespace CS_SMS_LIB
     public class CApi
     {
 #if DEBUG
-        public string Domain { get; set; } = "http://sms-api.wtest.biz";
+        //public string Domain { get; set; } = "http://sms-api.wtest.biz";
 #else
-        public string Domain { get; set; } = "http://127.0.0.1";
+        //public string Domain { get; set; } = "http://127.0.0.1";
 #endif
+        public string Domain { get; set; } = "http://127.0.0.1";
         public string urlParameters { get; set; } = "";
         public int m_chute = 0;
 

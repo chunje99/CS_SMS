@@ -135,7 +135,7 @@ namespace CS_SMS_APP
                 msg += "Connect MDS\n";
                 UpdateUI(msg);
 #if DEBUG
-                global.md.m_host = "127.0.0.1";
+                //global.md.m_host = "127.0.0.1";
 #endif
                 msg += "MDS HOST: " + global.md.m_host + " PORT: " + global.md.m_port + "\n";
                 UpdateUI(msg);
@@ -167,10 +167,11 @@ namespace CS_SMS_APP
                 {
                     global.m_printer[i].m_port = port;
 #if DEBUG
-                    global.m_printer[i].m_host = "192.168.0.13";
+                    //global.m_printer[i].m_host = "192.168.0.13";
 #else
-                    global.m_printer[i].m_host = host + (idx + i).ToString();
+                    //global.m_printer[i].m_host = host + (idx + i).ToString();
 #endif
+                    global.m_printer[i].m_host = host + (idx + i).ToString();
                     global.m_printer[i].act0 = (int error, string data) =>
                     {
                         var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>

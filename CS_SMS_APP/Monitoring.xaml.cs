@@ -49,13 +49,16 @@ namespace CS_SMS_APP
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
 
             // Show the message dialog
+            SetMainScanner();
+            SetSUBScanner();
+            MakeEvent();
         }
         private void Loaded(object sender, RoutedEventArgs e)
         {
             //Log.Information("Loaded");
-            SetMainScanner();
-            SetSUBScanner();
-            MakeEvent();
+            //SetMainScanner();
+            //SetSUBScanner();
+            //MakeEvent();
         }
         private async void Alert(string msg)
         {
@@ -151,7 +154,7 @@ namespace CS_SMS_APP
         private void OnEvent_FULL(int module, int chuteid, int onoff)
         {
             Log.Information("OnEvent_FULL module {0} chuteidx {1} data {2}", module, chuteid, onoff);
-            global.api.FullAuto(module*12 + chuteid + 1, onoff);
+            global.api.FullAuto(module*4 + chuteid + 1, onoff);
         }
         private async void OnEvent_PRINT(int module, int direct, int value)
         {
