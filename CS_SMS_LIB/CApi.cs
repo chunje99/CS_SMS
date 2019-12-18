@@ -337,10 +337,10 @@ namespace CS_SMS_LIB
             }
         }
 
-        public async Task<PrintList> Print(int chute_num)
+        public async Task<PrintList> Print(int chute_num, string job_dt, string box_num)
         {
             Log.Information("===Print===");
-            Log.Information("chute_num {0}", chute_num);
+            Log.Information("chute_num {0} job_dt {1} box_num {2}", chute_num, job_dt, box_num);
             PrintList printList = new PrintList();
             try
             {
@@ -356,6 +356,8 @@ namespace CS_SMS_LIB
                 // List data response.
                 var json = new JObject();
                 json.Add("chute_num", chute_num);
+                json.Add("job_dt", job_dt);
+                json.Add("box_num", box_num);
                 var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = client.PostAsync(Domain + url, content).Result;  // Blocking call!
                 if (response.IsSuccessStatusCode)
@@ -381,6 +383,52 @@ namespace CS_SMS_LIB
                 Log.Information(e.ToString());
             }
             return printList;
+        }
+
+        /// <summary>
+        /// Search Box list 
+        /// </summary>
+        /// <param name="searchKey"></param>  box_num, cust_cd, cust_nm
+        /// <param name="searchValue"></param>
+        /// <returns></returns>
+        public async Task<BoxList> Box(string searchKey, string searchValue, string job_dt)
+        {
+            Log.Information("===Box===");
+            Log.Information("searchKey {0} searchValue {1} job_dt {2}", searchKey, searchValue, job_dt);
+            BoxList boxList = new BoxList();
+            try
+            {
+                HttpClient client = new HttpClient();
+                string url = "/v1/datalist/box?job_dt=" + job_dt + "&searchKey=" + searchKey + "&searchValue=" + searchValue;
+                Log.Information(url);
+                client.BaseAddress = new Uri(Domain + url);
+
+                // Add an Accept header for JSON format.
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // List data response.
+                HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStreamAsync();
+                    var serializer = new DataContractJsonSerializer(typeof(BoxList));
+                    boxList = serializer.ReadObject(await resp) as BoxList;
+                    Log.Information(boxList.status);
+                    Log.Information(boxList.msg);
+                    if (boxList.status == "OK")
+                        return boxList;
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+            }
+            return boxList;
         }
 
         public void SetTest(string j)
@@ -470,7 +518,6 @@ namespace CS_SMS_LIB
         public int total_qty { get; set; }
         public int leave_qty { get; set; }
         public int remain_qty { get; set; }
-        public string color { get; set; } = "White";
         public int cnt { get; set; } = 0;
         public PListData()
         {
@@ -484,7 +531,6 @@ namespace CS_SMS_LIB
             total_qty = 0;
             leave_qty = 0;
             remain_qty = 0;
-            color = "White";
             cnt = 0;
         }
     }
@@ -513,6 +559,38 @@ namespace CS_SMS_LIB
         public List<PrintData> list { get; set; } = new List<PrintData>();
         public PrintList()
         {
+        }
+    }
+
+    public class BoxList
+    {
+        public string status { get; set; } = "";
+        public string msg { get; set; } = "";
+        public List<BoxData> list { get; set; } = new List<BoxData>();
+        public BoxList()
+        { }
+    }
+    
+    public class BoxData
+    {
+        public int index { get; set; } = 0;
+        public string job_dt { get; set; } = "";
+        public string box_num { get; set; } = "";
+        public string cust_cd { get; set; } = "";
+        public string cust_nm { get; set; } = "";
+        public string chute_num { get; set; } = "";
+        public string goods_cnt { get; set; } = "";
+        public BoxData()
+        { }
+        public BoxData(BoxData t)
+        {
+            index = t.index;
+            job_dt = t.job_dt;
+            box_num = t.box_num;
+            cust_cd = t.cust_cd;
+            cust_nm = t.cust_nm;
+            chute_num = t.chute_num;
+            goods_cnt = t.goods_cnt;
         }
     }
 }

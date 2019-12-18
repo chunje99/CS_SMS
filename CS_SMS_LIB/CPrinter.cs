@@ -440,8 +440,8 @@ namespace CS_SMS_LIB
                 }
 
 
-                BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "8809681702713");
-                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "8809681702713");
+                BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "8809656137342");
+                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "8809656137342");
 
                 BXLLApi.PrintBlock(1 * dotsPer1mm, 66 * dotsPer1mm, 99 * dotsPer1mm, 67 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
 

@@ -215,9 +215,9 @@ namespace CS_SMS_APP
             }
             int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
             int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
-            PrintList p = await global.api.Print(chute_num1);
+            PrintList p = await global.api.Print(chute_num1, "", "");
             global.m_printer[locPrint].PrintData(p);
-            PrintList p2 = await global.api.Print(chute_num2);
+            PrintList p2 = await global.api.Print(chute_num2, "", "");
             global.m_printer[locPrint].PrintData(p2);
             var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -339,7 +339,7 @@ namespace CS_SMS_APP
                             foreach (var d in m_lastData.list)
                             {
                                 if (data.seq == d.seq)
-                                    data.color = "Aqua";
+                                    data.highlight = "yellow";
                                 mdsList.Add(d);
                             }
                             Log.Information("=======Make PID======");
@@ -385,7 +385,7 @@ namespace CS_SMS_APP
                             {
 
                                 if (data.seq == d.seq)
-                                    data.color = "Aqua";
+                                    data.highlight = "yellow";
                                 mdsList.Add(d);
                             }
                             global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
@@ -408,7 +408,6 @@ namespace CS_SMS_APP
             }
 
             bundleList.Clear();
-            ///TODO API
             Log.Information("=======Get Chute======");
             m_lastData = await global.api.GetChute(m_lastCode, "bundle");
             if(m_lastData.status != "OK")
@@ -427,7 +426,6 @@ namespace CS_SMS_APP
                 return;
             }
             remainList.Clear();
-            ///TODO API
             Log.Information("=======Get Chute======");
             m_lastData = await global.api.GetChute(m_lastCode, "remain");
             if(m_lastData.status != "OK")
@@ -464,8 +462,8 @@ namespace CS_SMS_APP
             mdsList.Clear();
             foreach (var data in m_lastData.list)
             {
-                if (data.highlight == "ON")
-                    data.color = "Aqua";
+                //if (data.highlight == "ON")
+                //    data.color = "Aqua";
                 mdsList.Add(data);
             }
 

@@ -3,20 +3,140 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:CS_SMS_APP"
+    xmlns:CS_SMS_LIB="using:CS_SMS_LIB"
+    xmlns:sys="using:System"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Loaded="OnLoad"
     >
-
     <Grid>
         <TextBlock>박스 검색</TextBlock>
         <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,50,0,0" Width="120" Name="SearchBox_Key" SelectionChanged="OnChange">
-            <x:String>박스 바코드</x:String>
-            <x:String>상품 바코드</x:String>
+            <x:String>박스번호</x:String>
+            <x:String>박스바코드</x:String>
             <x:String>거래처별</x:String>
         </ComboBox>
         <TextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,50,0,0" Text="" TextWrapping="Wrap" Width="200" Name="SearchBox_Value" KeyDown="OnKeyDown"/>
+        <ListView Margin="50,130,0,0" x:Name="listView">
+            <Grid Margin="0,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="DATE" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBlock Text="BOX NUM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                    <TextBlock Text="거래처코드" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                    <TextBlock Text="거래처명" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="슈트" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                    <TextBlock Text="바코드" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                    <TextBlock Text="상세" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                </Grid>
+                <ListView Grid.Row="1"  x:Name="BoxListView" ItemsSource="{x:Bind boxList}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="CS_SMS_LIB:BoxData">
+                            <Grid>
+                                <Grid.ColumnDefinitions >
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind job_dt}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind box_num}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind box_num}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                                <Button Foreground="Teal" FontSize="14" Grid.Column="6" VerticalAlignment="Center" Click="DetailView" Name="{x:Bind index)}">상세 </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+            </Grid>
+        </ListView>
     </Grid>
+    <Page.Resources>
+        <Flyout x:Key="PreviewFlyout" x:Name="Preview" LightDismissOverlayMode="On">
+            <Flyout.FlyoutPresenterStyle>
+                <Style TargetType="FlyoutPresenter">
+                    <Setter Property="MinHeight" Value="100"/>
+                    <Setter Property="MinWidth" Value="700"/>
+                    <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
+                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+                    <Setter Property="IsTabStop" Value="True"/>
+                    <Setter Property="TabNavigation" Value="Cycle"/>
+                </Style>
+            </Flyout.FlyoutPresenterStyle>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Click="RePrint">재출력</Button>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="150"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="상품코드" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                    Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBlock Text="상품명" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                    Grid.Column="1" VerticalAlignment="Center"/>
+                    <TextBlock Text="EA" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                                    Grid.Column="2" VerticalAlignment="Center"/>
+                </Grid>
+                <ListView Grid.Row="2"  x:Name="PrintData" ItemsSource="{x:Bind printList}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="CS_SMS_LIB:PrintData">
+                            <Grid>
+                                <Grid.ColumnDefinitions >
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="300"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind cnt}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Flyout>
+    </Page.Resources>
+
 </Page>

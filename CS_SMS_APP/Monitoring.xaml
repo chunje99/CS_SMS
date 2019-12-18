@@ -80,7 +80,7 @@
                         <ListView Grid.Row="1"  x:Name="BundleData" ItemsSource="{x:Bind bundleList}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
-                                    <Grid>
+                                    <Grid Background="{x:Bind highlight}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="50"/>
                                             <ColumnDefinition Width="150"/>
@@ -174,7 +174,7 @@
                         <ListView Grid.Row="1"  x:Name="RemainData" ItemsSource="{x:Bind remainList}">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
-                                    <Grid>
+                                    <Grid Background="{x:Bind highlight}">
                                         <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="150"/>
@@ -332,7 +332,7 @@
                 <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="CS_SMS_LIB:PListData">
-                            <Grid Background="{x:Bind color}">
+                            <Grid Background="{x:Bind highlight}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="50"/>
                                     <ColumnDefinition Width="150"/>

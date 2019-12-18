@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using CS_SMS_LIB;
 using Windows.System;
 using Windows.UI.Popups;
+using System.Threading.Tasks;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -28,6 +29,9 @@ namespace CS_SMS_APP
     /// </summary>
     public sealed partial class SearchBox : Page
     {
+        ObservableCollection<BoxData> boxList = new ObservableCollection<BoxData>();
+        ObservableCollection<PrintData> printList = new ObservableCollection<PrintData>();
+        public PrintList lastPrintList = null;
         public SearchBox()
         {
             this.InitializeComponent();
@@ -35,9 +39,20 @@ namespace CS_SMS_APP
             SearchBox_Key.SelectedIndex = 0;
         }
 
-        private void OnLoad(object sender, RoutedEventArgs e)
+
+        private async void OnLoad(object sender, RoutedEventArgs e)
         {
             SetSUBScanner();
+            BoxList bList = await global.api.Box("box_num", "1", "20191218");
+            boxList.Clear();
+            BoxData t;
+            int i = 0;
+            foreach ( BoxData b in bList.list)
+            {
+                t = new BoxData(b);
+                t.index = i++;
+                boxList.Add(t);
+            }
         }
 
         private void OnChange(object sender, SelectionChangedEventArgs e)
@@ -105,16 +120,58 @@ namespace CS_SMS_APP
             return;
         }
 
-        private void OnKeyDown(object sender, KeyRoutedEventArgs e)
+        private async void OnKeyDown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {
+                var key = SearchBox_Key.SelectedItem as string;
+                var value = SearchBox_Value.Text;
+                string searchKey = "";
+                /// <param name="searchKey"></param>  box_num, cust_cd, cust_nm
+                if (key == "박스번호")
+                    searchKey = "box_num";
+                else if( key == "박스바코드" )
+                    searchKey = "box_barcode";
+                else if( key == "거래처별" )
+                    searchKey = "box_barcode";
+                BoxList bList = await global.api.Box(searchKey, value, "");
+                boxList.Clear();
+                BoxData t;
+                int i = 0;
+                foreach (BoxData b in bList.list)
+                {
+                    t = new BoxData(b);
+                    t.index = i++;
+                    boxList.Add(t);
+                }
+
                 var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    var key = SearchBox_Key.SelectedItem as string;
-                    Alert("KEY + " + key + " value = " + SearchBox_Value.Text);
+                   Alert("KEY + " + key + " value = " + SearchBox_Value.Text);
                 });
             }
+        }
+
+        private async void DetailView(object sender, RoutedEventArgs e)
+        {
+            Button t = sender as Button;
+            Log.Information("Detailview {0}", t.Name);
+            Log.Information( BoxListView.Items[Int32.Parse(t.Name)].GetType().ToString() );
+            BoxData b = BoxListView.Items[Int32.Parse(t.Name)] as BoxData;
+            Log.Information(b.cust_nm);
+            printList.Clear();
+            lastPrintList = await global.api.Print(Int32.Parse(b.chute_num), b.job_dt, b.box_num);
+            foreach( PrintData p in lastPrintList.list)
+            {
+                printList.Add(p);
+            }
+            Preview.ShowAt((FrameworkElement)sender);
+        }
+
+        private void RePrint(object sender, RoutedEventArgs e)
+        {
+            Log.Information("재출력 ");
+            global.m_printer[0].PrintData(lastPrintList);
         }
     }
 }
