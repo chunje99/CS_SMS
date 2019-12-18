@@ -90,7 +90,7 @@ namespace CS_SMS_APP
 
         private void Print2_Print_Click(object sender, RoutedEventArgs e)
         {
-            global.m_printer[1].PrintSample("Printer2");
+            global.m_printer[1].PrintSample("QRCode2");
         }
         private void Print3_Print_Click(object sender, RoutedEventArgs e)
         {

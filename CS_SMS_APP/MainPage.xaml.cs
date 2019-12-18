@@ -95,6 +95,9 @@ namespace CS_SMS_APP
                 case "monitoring":
                     ContentFrame.Navigate(typeof(Monitoring));
                     break;
+                case "searchbox":
+                    ContentFrame.Navigate(typeof(SearchBox));
+                    break;
                 case "printer":
                     ContentFrame.Navigate(typeof(PrinterSetting));
                     break;

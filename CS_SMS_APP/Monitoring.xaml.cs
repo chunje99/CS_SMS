@@ -48,11 +48,14 @@ namespace CS_SMS_APP
         {
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
-
             // Show the message dialog
             SetMainScanner();
-            SetSUBScanner();
             MakeEvent();
+        }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            SetSUBScanner();
         }
 
         private async void Alert(string msg)
@@ -559,6 +562,5 @@ namespace CS_SMS_APP
         {
             Scanner_Process("8809681702713", Monitoring_scanner0, 100);
         }
-
     }
 }

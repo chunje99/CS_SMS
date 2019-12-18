@@ -1,0 +1,22 @@
+﻿<Page
+    x:Class="CS_SMS_APP.SearchBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CS_SMS_APP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="OnLoad"
+    >
+
+    <Grid>
+        <TextBlock>박스 검색</TextBlock>
+        <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,50,0,0" Width="120" Name="SearchBox_Key" SelectionChanged="OnChange">
+            <x:String>박스 바코드</x:String>
+            <x:String>상품 바코드</x:String>
+            <x:String>거래처별</x:String>
+        </ComboBox>
+        <TextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,50,0,0" Text="" TextWrapping="Wrap" Width="200" Name="SearchBox_Value" KeyDown="OnKeyDown"/>
+    </Grid>
+</Page>
