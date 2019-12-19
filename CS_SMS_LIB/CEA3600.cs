@@ -136,12 +136,36 @@ namespace CS_SMS_LIB
         private readonly int PORT = 11234;
         private readonly int DEVICE_PORT = 12362;
         private UdpClient udpClient = null;
+        private List<UdpClient> udpClients = null;
+        private List<IPEndPoint> serverEps = null;
         public Dictionary<string, KeyValuePair<string, int>> m_deviceTable { get; } = null;
         public List<CEA3600> m_scaner { get;} = new List<CEA3600>();
 
         public UDPer()
         {
             Log.Information("UDPer");
+            /*
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            string ipaddr = "";
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    try
+                    {
+                        var ServerEp = new IPEndPoint(ip, 0);
+                        var Client = new UdpClient(ServerEp);
+                        serverEps.Add(new IPEndPoint(ip, 0));
+                        udpClients.Add(new UdpClient(ServerEp));
+
+                        var ServerResponseData = Client.Receive(ref ServerEp);
+                    }
+                    catch { Console.WriteLine("unable to connect."); }
+                }
+            }
+            */
+
+
             udpClient = new UdpClient();
             Log.Information("udpClient");
             m_deviceTable = new Dictionary<string, KeyValuePair<string, int>>();
@@ -204,6 +228,7 @@ namespace CS_SMS_LIB
             m_deviceTable.Clear();
             byte[] bytes = Encoding.ASCII.GetBytes("MVP\x0d");
             udpClient.Send(bytes, bytes.Length, "255.255.255.255", DEVICE_PORT);
+            
             return 0;
         }
         public int Tables()

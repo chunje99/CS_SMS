@@ -422,7 +422,7 @@ namespace CS_SMS_LIB
             }
 
             m_chuteID = chuteID;
-            Log.Information("Set chute " + chuteID);
+            Log.Information("Set chute " + chuteID + " PID  " + mdsData.pid.ToString());
             try
             {
                 m_mutex.WaitOne();
