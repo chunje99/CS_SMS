@@ -409,12 +409,16 @@ namespace CS_SMS_APP
 
             bundleList.Clear();
             Log.Information("=======Get Chute======");
-            m_lastData = await global.api.GetChute(m_lastCode, "bundle");
-            if(m_lastData.status != "OK")
-                Alert(m_lastData.msg);
+            var tData = await global.api.GetChute(m_lastCode, "bundle");
+            if(tData.status == "OK")
+            {
+                m_lastData = tData;
+                foreach (var data in m_lastData.list)
+                    bundleList.Add(data);
+            }
+            else
+                Alert(tData.msg);
 
-            foreach( var data in m_lastData.list)
-                bundleList.Add(data);
         }
 
         private async void Remain_Processing()
@@ -427,12 +431,16 @@ namespace CS_SMS_APP
             }
             remainList.Clear();
             Log.Information("=======Get Chute======");
-            m_lastData = await global.api.GetChute(m_lastCode, "remain");
-            if(m_lastData.status != "OK")
-                Alert(m_lastData.msg);
+            var tData = await global.api.GetChute(m_lastCode, "remain");
+            if (tData.status == "OK")
+            {
+                m_lastData = tData;
+                foreach (var data in m_lastData.list)
+                    remainList.Add(data);
 
-            foreach (var data in m_lastData.list)
-                remainList.Add(data);
+            }
+            else
+                Alert(tData.msg);
         }
 
         private async void MDS_Processing()
@@ -445,27 +453,28 @@ namespace CS_SMS_APP
             }
 
             Log.Information("=======Get Chute======");
-            m_lastData = await global.api.GetChute(m_lastCode, "single");
-            if(m_lastData.status == "OK")
+            var tData = await global.api.GetChute(m_lastCode, "single");
+            if (tData.status == "OK")
             {
+                m_lastData = tData;
                 Log.Information("=======Make PID======");
                 global.md.MakePID();
                 m_cancelData = m_lastData;
+
+                m_lastData.send_cnt = 1;
+                Log.Information(m_lastData.chute_num.ToString());
+                Log.Information("======={0}======", m_lastData.sku_nm);
+
+                mdsList.Clear();
+                foreach (var data in m_lastData.list)
+                {
+                    //if (data.highlight == "ON")
+                    //    data.color = "Aqua";
+                    mdsList.Add(data);
+                }
             }
             else
-                Alert(m_lastData.msg);
-
-            m_lastData.send_cnt = 1;
-            Log.Information(m_lastData.chute_num.ToString());
-            Log.Information("======={0}======", m_lastData.sku_nm);
-
-            mdsList.Clear();
-            foreach (var data in m_lastData.list)
-            {
-                //if (data.highlight == "ON")
-                //    data.color = "Aqua";
-                mdsList.Add(data);
-            }
+                Alert(tData.msg);
 
             /*
             mdsList.Clear();

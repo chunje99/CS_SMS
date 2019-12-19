@@ -100,12 +100,14 @@ namespace CS_SMS_LIB
                 }
                 else
                 {
-                    Log.Information("{0} {1} {2}", (int)response.StatusCode, response.ReasonPhrase, barcode);
+                    Log.Information("{0} {1} {2} {3}", url, (int)response.StatusCode, response.ReasonPhrase, barcode);
+                    product.msg = String.Format("{0} {1} {2} {3}", url, (int)response.StatusCode, response.ReasonPhrase, barcode);
                 }
             }
             catch (Exception e)
             {
                 Log.Information(e.ToString());
+                product.msg = String.Format("{0} {1} ", url, e.ToString());
             }
             return product;
         }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Serilog;
+using System.Threading;
 
 namespace CS_SMS_LIB
 {
@@ -135,42 +136,40 @@ namespace CS_SMS_LIB
     {
         private readonly int PORT = 11234;
         private readonly int DEVICE_PORT = 12362;
-        private UdpClient udpClient = null;
-        private List<UdpClient> udpClients = null;
-        private List<IPEndPoint> serverEps = null;
+        //private UdpClient udpClient = null;
+        private List<UdpClient> udpClients = new List<UdpClient>();
         public Dictionary<string, KeyValuePair<string, int>> m_deviceTable { get; } = null;
         public List<CEA3600> m_scaner { get;} = new List<CEA3600>();
+        static Mutex m_mutex = new Mutex();
 
         public UDPer()
         {
             Log.Information("UDPer");
-            /*
             var host = Dns.GetHostEntry(Dns.GetHostName());
-            string ipaddr = "";
             foreach (var ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
                     try
                     {
+                        Log.Information("new IP : " + ip.ToString());
                         var ServerEp = new IPEndPoint(ip, 0);
-                        var Client = new UdpClient(ServerEp);
-                        serverEps.Add(new IPEndPoint(ip, 0));
                         udpClients.Add(new UdpClient(ServerEp));
-
-                        var ServerResponseData = Client.Receive(ref ServerEp);
                     }
-                    catch { Console.WriteLine("unable to connect."); }
+                    catch (Exception e)
+                    {
+                        Log.Information("unable to connect.");
+                        Log.Information(e.ToString());
+                    }
                 }
             }
-            */
 
 
-            udpClient = new UdpClient();
+            //udpClient = new UdpClient();
             Log.Information("udpClient");
             m_deviceTable = new Dictionary<string, KeyValuePair<string, int>>();
             Log.Information("Device {@Dictionary<string,KeyValuePair<string,int>>}", m_deviceTable);
-            Bind();
+            //Bind();
         }
         public void Print()
         {
@@ -181,7 +180,11 @@ namespace CS_SMS_LIB
             if (disposing)
             {
                 // dispose managed resources
-                udpClient.Close();
+                //udpClient.Close();
+                foreach (var cli in udpClients)
+                {
+                    cli.Close();
+                }
             }
             // free native resources
         }
@@ -194,12 +197,17 @@ namespace CS_SMS_LIB
         public int Bind()
         {
             Log.Information("Bind()");
-            udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
+            //udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
+            foreach(var cli in udpClients)
+            {
+                cli.Client.Bind(new IPEndPoint(IPAddress.Any, PORT));
+            }
             return 0;
         }
         public int Start()
         {
             Log.Information("Start()");
+            /*
             Task.Run(() =>
             {
                 while (true)
@@ -219,6 +227,31 @@ namespace CS_SMS_LIB
                     }
                 }
             });
+            */
+            foreach(var cli in udpClients)
+            {
+                Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            var from = new IPEndPoint(0, 0);
+                            var recvBuffer = cli.Receive(ref from);
+                            string MAC = Encoding.UTF8.GetString(recvBuffer);
+                            Log.Information(MAC);
+                            m_mutex.WaitOne();
+                            if (!m_deviceTable.ContainsKey(MAC))
+                                m_deviceTable.Add(MAC, new KeyValuePair<string, int>(from.Address.ToString(), 54321));
+                            m_mutex.ReleaseMutex();
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Information(e.ToString());
+                        }
+                    }
+                });
+            }
             return 0;
         }
         public int Scan()
@@ -227,7 +260,12 @@ namespace CS_SMS_LIB
             Log.Information("SCAN");
             m_deviceTable.Clear();
             byte[] bytes = Encoding.ASCII.GetBytes("MVP\x0d");
-            udpClient.Send(bytes, bytes.Length, "255.255.255.255", DEVICE_PORT);
+            //udpClient.Send(bytes, bytes.Length, "255.255.255.255", DEVICE_PORT);
+            foreach(var cli in udpClients)
+            {
+
+                cli.Send(bytes, bytes.Length, "255.255.255.255", DEVICE_PORT);
+            }
             
             return 0;
         }
