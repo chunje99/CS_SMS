@@ -44,6 +44,7 @@ namespace CS_SMS_LIB
         public bool m_dist { get; set; } = true;
         public string m_error { get; set; } = "";
         public bool m_isCon { get; set; } = false;
+        static Mutex m_mutex = new Mutex();
 
         public CModbus()
         {
@@ -59,6 +60,7 @@ namespace CS_SMS_LIB
         }
         public int Connection()
         {
+            Log.Information("MDS Connection " + conCnt.ToString() );
             try
             {
                 if (m_modbusClient != null)
@@ -109,6 +111,7 @@ namespace CS_SMS_LIB
                     {
                         //READ < 80
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(0, 80);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 80 )
                             {
@@ -148,9 +151,13 @@ namespace CS_SMS_LIB
                                 }
 
                             }
+                            m_mutex.ReleaseMutex();
                         }
+                        
+                        await Task.Delay(80);
                         //READ < confirm word data 176
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(80, 96);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 96 )
                             {
@@ -165,9 +172,12 @@ namespace CS_SMS_LIB
                                     mdsData.moduleInfos[i].chuteInfos[j].stackCount = r[i*8 +  j*2 + 1];
                                 }
                             }
+                            m_mutex.ReleaseMutex();
                         }
+                        await Task.Delay(80);
                         //READ < pid + confirm dword data 176
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(500, 98);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 98 )
                             {
@@ -180,6 +190,7 @@ namespace CS_SMS_LIB
                             {
                                 mdsData.pid = pid;
                                 Log.Information("Reset 32010");
+                                await Task.Delay(100);
                                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
 
                                 if (onEvent != null)
@@ -199,9 +210,12 @@ namespace CS_SMS_LIB
                                     }
                                 }
                             }
+                            m_mutex.ReleaseMutex();
                         }
+                        await Task.Delay(80);
                         //READ print input
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(176, 120);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 120 )
                             {
@@ -266,9 +280,12 @@ namespace CS_SMS_LIB
                                     }
                                 }
                             }
+                            m_mutex.ReleaseMutex();
                         }
+                        await Task.Delay(80);
                         ///read tracking data word
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(296, 40);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 40)
                             {
@@ -277,9 +294,11 @@ namespace CS_SMS_LIB
                             }
                             for(int i = 0 ; i < 40 ; i++ ) //module
                                 mdsData.positions[i].chuteNum = r[i];
+                            m_mutex.ReleaseMutex();
                         }
                         //READ < tracking data dword ??
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(598, 80);    //Read 10 Holding Registers from Server, starting with Address 1
                             if( r.Length != 80 )
                             {
@@ -292,8 +311,10 @@ namespace CS_SMS_LIB
                                 int num = r[i*2] + r[i*2 + 1] * 65536;
                                 mdsData.positions[i].pid = num;
                             }
+                            m_mutex.ReleaseMutex();
                         }
                         {
+                            m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(499, 1);    //Read Remain Cnt
                             if( r.Length != 1 )
                             {
@@ -301,14 +322,16 @@ namespace CS_SMS_LIB
                                 break;
                             }
                             mdsData.remainCnt = r[0];
+                            m_mutex.ReleaseMutex();
                         }
                     }
                     catch (Exception e)
                     {
                         Log.Information(e.ToString());
+                        m_mutex.ReleaseMutex();
                         Connection();
                     }
-                    await Task.Delay(200);
+                    await Task.Delay(100);
                 }
             });
         }
@@ -353,8 +376,19 @@ namespace CS_SMS_LIB
                 Log.Information("========== Error ==========");
                 Log.Information("pid 받기 전에 다시 들어왔음");
             }
-            m_modbusClient.WriteMultipleRegisters(32010, new int[] { 1 });
-            m_dist = false;
+            try
+            {
+                m_mutex.WaitOne();
+                m_modbusClient.WriteMultipleRegisters(32010, new int[] { 1 });
+                m_dist = false;
+                m_mutex.ReleaseMutex();
+            }
+            catch (Exception e)
+            {
+                m_mutex.ReleaseMutex();
+                Log.Information(e.ToString());
+                Connection();
+            }
             return 0;
         }
         public int CancelPID()
@@ -365,7 +399,18 @@ namespace CS_SMS_LIB
                 return -1;
             }
             Log.Information("Cancel:");
-            m_modbusClient.WriteMultipleRegisters(32010, new int[] { 2 });
+            try
+            {
+                m_mutex.WaitOne();
+                m_modbusClient.WriteMultipleRegisters(32010, new int[] { 2 });
+                m_mutex.ReleaseMutex();
+            }
+            catch (Exception e)
+            {
+                m_mutex.ReleaseMutex();
+                Log.Information(e.ToString());
+                Connection();
+            }
             return 0;
         }
         public int Distribution(int chuteID)
@@ -377,9 +422,20 @@ namespace CS_SMS_LIB
             }
 
             m_chuteID = chuteID;
-            m_modbusClient.WriteMultipleRegisters(32000, new int[] { mdsData.pid % 65536, mdsData.pid / 65536, chuteID, 0 });
             Log.Information("Set chute " + chuteID);
-            m_dist = true;
+            try
+            {
+                m_mutex.WaitOne();
+                m_modbusClient.WriteMultipleRegisters(32000, new int[] { mdsData.pid % 65536, mdsData.pid / 65536, chuteID, 0 });
+                m_dist = true;
+                m_mutex.ReleaseMutex();
+            }
+            catch (Exception e)
+            {
+                m_mutex.ReleaseMutex();
+                Log.Information(e.ToString());
+                Connection();
+            }
             return 0;
         }
         public int GetDistribution()

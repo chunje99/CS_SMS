@@ -43,7 +43,7 @@ namespace CS_SMS_APP
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
             SetSUBScanner();
-            BoxList bList = await global.api.Box("box_num", "1", "20191218");
+            BoxList bList = await global.api.Box("", "", "");
             boxList.Clear();
             BoxData t;
             int i = 0;
@@ -144,11 +144,6 @@ namespace CS_SMS_APP
                     t.index = i++;
                     boxList.Add(t);
                 }
-
-                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                   Alert("KEY + " + key + " value = " + SearchBox_Value.Text);
-                });
             }
         }
 
