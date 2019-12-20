@@ -154,7 +154,7 @@ namespace CS_SMS_LIB
                             m_mutex.ReleaseMutex();
                         }
                         
-                        await Task.Delay(50);
+                        await Task.Delay(20);
                         //READ < confirm word data 176
                         {
                             m_mutex.WaitOne();
@@ -174,7 +174,7 @@ namespace CS_SMS_LIB
                             }
                             m_mutex.ReleaseMutex();
                         }
-                        await Task.Delay(50);
+                        await Task.Delay(20);
                         //READ < pid + confirm dword data 176
                         {
                             m_mutex.WaitOne();
@@ -190,7 +190,7 @@ namespace CS_SMS_LIB
                             {
                                 mdsData.pid = pid;
                                 Log.Information("Reset 32010");
-                                await Task.Delay(50);
+                                await Task.Delay(100);
                                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
 
                                 if (onEvent != null)
@@ -212,7 +212,7 @@ namespace CS_SMS_LIB
                             }
                             m_mutex.ReleaseMutex();
                         }
-                        await Task.Delay(50);
+                        await Task.Delay(20);
                         //READ print input
                         {
                             m_mutex.WaitOne();
@@ -282,7 +282,7 @@ namespace CS_SMS_LIB
                             }
                             m_mutex.ReleaseMutex();
                         }
-                        await Task.Delay(50);
+                        await Task.Delay(20);
                         ///read tracking data word
                         {
                             m_mutex.WaitOne();
@@ -378,7 +378,7 @@ namespace CS_SMS_LIB
             }
             try
             {
-                Thread.Sleep(100);
+                //Thread.Sleep(100);
                 m_mutex.WaitOne();
                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 1 });
                 m_dist = false;
@@ -402,7 +402,7 @@ namespace CS_SMS_LIB
             Log.Information("Cancel:");
             try
             {
-                Thread.Sleep(100);
+                //Thread.Sleep(100);
                 m_mutex.WaitOne();
                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 2 });
                 m_mutex.ReleaseMutex();

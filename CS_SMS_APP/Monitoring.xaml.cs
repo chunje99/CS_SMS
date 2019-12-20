@@ -121,9 +121,17 @@ namespace CS_SMS_APP
 
         private void OnEvent_PID(int pid)
         {
-            Log.Information("OnEvent_PID {0}", pid);
+            Log.Information("OnEvent_PID {0} chute_num {1}", pid, m_lastData.chute_num);
             if (pid <= 0)
                 return;
+            if(m_lastData.chute_num <= 0)
+            {
+                var ig = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Alert("슈트 0 할당 에러");
+                });
+                return;
+            }
             global.md.Distribution(m_lastData.chute_num);
             var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
