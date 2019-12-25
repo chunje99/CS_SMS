@@ -22,6 +22,7 @@ using System.ComponentModel;
 using Windows.System;
 using Serilog;
 using Windows.UI.Popups;
+using System.Collections.Concurrent;
 
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
@@ -44,6 +45,9 @@ namespace CS_SMS_APP
         //public CMPS m_lastData = new CMPS();
         public Product m_lastData = new Product();
         public Product m_cancelData = new Product();
+        private ConcurrentQueue<Product> m_queueData = new ConcurrentQueue<Product>();
+        private ConcurrentQueue<Product> m_currentData = new ConcurrentQueue<Product>();
+        static Mutex m_monitorMutex = new Mutex(false, "monitoring_mutex");
         public Monitoring()
         {
             this.InitializeComponent();
@@ -51,6 +55,29 @@ namespace CS_SMS_APP
             // Show the message dialog
             SetMainScanner();
             MakeEvent();
+            CheckQueue();
+        }
+
+        private void CheckQueue()
+        {
+            Log.Information("Start CheckQueue()");
+            Task.Run(() =>
+            {
+                Product pData = new Product();
+                while (true)
+                {
+                    if (m_currentData.IsEmpty && m_queueData.TryDequeue(out pData))
+                    {
+                        m_monitorMutex.WaitOne();
+                        m_currentData.Enqueue(pData);
+                        ///MakePID
+                        Log.Information("=======Make PID======");
+                        global.md.MakePID();
+                        m_monitorMutex.ReleaseMutex();
+                    }
+                    Thread.Sleep(100);
+                }
+            });
         }
 
         private void OnLoad(object sender, RoutedEventArgs e)
@@ -121,25 +148,42 @@ namespace CS_SMS_APP
 
         private void OnEvent_PID(int pid)
         {
-            Log.Information("OnEvent_PID {0} chute_num {1}", pid, m_lastData.chute_num);
-            if (pid <= 0)
+            m_monitorMutex.WaitOne();
+            Product pData;
+            if (!m_currentData.TryDequeue(out pData))
+            {
+                var g = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Alert("CurrentData Empty 에러");
+                });
+                m_monitorMutex.ReleaseMutex();
                 return;
-            if(m_lastData.chute_num <= 0)
+            }
+            Log.Information("OnEvent_PID {0} chute_num {1}", pid, pData.chute_num);
+            if (pid <= 0)
+            {
+                m_monitorMutex.ReleaseMutex();
+                return;
+
+            }
+            if (pData.chute_num <= 0)
             {
                 var ig = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     Alert("슈트 0 할당 에러");
                 });
+                m_monitorMutex.ReleaseMutex();
                 return;
             }
-            global.md.Distribution(m_lastData.chute_num);
+            global.md.Distribution(pData.chute_num);
             var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 UpdateUI(Monitoring_pid, pid.ToString());
                 UpdateUI(Monitoring_chuteid, global.md.m_chuteID.ToString());
             });
             ///call Leave api
-            global.api.Leave(m_lastData.seq, pid, m_lastData.send_cnt, m_lastData.chute_num);
+            global.api.Leave(pData.seq, pid, pData.send_cnt, pData.chute_num);
+            m_monitorMutex.ReleaseMutex();
         }
         private void OnEvent_CONFIRM_PID(int module, int chute_num, int pid)
         {
@@ -350,8 +394,10 @@ namespace CS_SMS_APP
                                     data.highlight = "yellow";
                                 mdsList.Add(d);
                             }
-                            Log.Information("=======Make PID======");
-                            global.md.MakePID();
+                            //Log.Information("=======Make PID======");
+                            //global.md.MakePID();
+                            Log.Information("=======ADD QUEUE======");
+                            m_queueData.Enqueue(m_lastData);
                         }
                     }
                 }
@@ -465,13 +511,15 @@ namespace CS_SMS_APP
             if (tData.status == "OK")
             {
                 m_lastData = tData;
-                Log.Information("=======Make PID======");
-                global.md.MakePID();
+                //Log.Information("=======Make PID======");
+                //global.md.MakePID();
                 m_cancelData = m_lastData;
 
                 m_lastData.send_cnt = 1;
                 Log.Information(m_lastData.chute_num.ToString());
                 Log.Information("======={0}======", m_lastData.sku_nm);
+                Log.Information("=======ADD QUEUE======");
+                m_queueData.Enqueue(m_lastData);
 
                 mdsList.Clear();
                 foreach (var data in m_lastData.list)
