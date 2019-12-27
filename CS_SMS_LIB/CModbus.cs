@@ -44,7 +44,8 @@ namespace CS_SMS_LIB
         public bool m_dist { get; set; } = true;
         public string m_error { get; set; } = "";
         public bool m_isCon { get; set; } = false;
-        static Mutex m_mutex = new Mutex(false, "modbus_mutex");
+        //static Mutex m_mutex = new Mutex(false, "modbus_mutex");
+        static Mutex m_mutex = new Mutex();
 
         public CModbus()
         {
@@ -113,6 +114,7 @@ namespace CS_SMS_LIB
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(0, 80);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 80 )
                             {
                                 Log.Information("Read Error < 79 array" );
@@ -151,7 +153,6 @@ namespace CS_SMS_LIB
                                 }
 
                             }
-                            m_mutex.ReleaseMutex();
                         }
                         
                         await Task.Delay(50);
@@ -159,6 +160,7 @@ namespace CS_SMS_LIB
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(80, 96);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 96 )
                             {
                                 Log.Information("Read Error < 176 array" );
@@ -172,13 +174,13 @@ namespace CS_SMS_LIB
                                     mdsData.moduleInfos[i].chuteInfos[j].stackCount = r[i*8 +  j*2 + 1];
                                 }
                             }
-                            m_mutex.ReleaseMutex();
                         }
                         await Task.Delay(50);
                         //READ < pid + confirm dword data 176
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(500, 98);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 98 )
                             {
                                 Log.Information("Read Error < confirm dword" );
@@ -186,6 +188,7 @@ namespace CS_SMS_LIB
                             }
 
                             int pid = r[0] + r[1] * 65536;
+                            /*
                             if(pid != mdsData.pid)
                             {
                                 mdsData.pid = pid;
@@ -196,6 +199,7 @@ namespace CS_SMS_LIB
                                 if (onEvent != null)
                                     onEvent(MDS_EVENT.PID, pid, 0, 0);
                             }
+                            */
 
                             for (int i = 0 ; i < 12 ; i++ ) //module
                             {
@@ -210,13 +214,13 @@ namespace CS_SMS_LIB
                                     }
                                 }
                             }
-                            m_mutex.ReleaseMutex();
                         }
                         await Task.Delay(50);
                         //READ print input
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(176, 120);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 120 )
                             {
                                 Log.Information("Read Error < 176 array" );
@@ -280,13 +284,13 @@ namespace CS_SMS_LIB
                                     }
                                 }
                             }
-                            m_mutex.ReleaseMutex();
                         }
                         await Task.Delay(50);
                         ///read tracking data word
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(296, 40);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 40)
                             {
                                 Log.Information("Read Error < 176 array" );
@@ -294,12 +298,12 @@ namespace CS_SMS_LIB
                             }
                             for(int i = 0 ; i < 40 ; i++ ) //module
                                 mdsData.positions[i].chuteNum = r[i];
-                            m_mutex.ReleaseMutex();
                         }
                         //READ < tracking data dword ??
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(598, 80);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 80 )
                             {
                                 Log.Information("Read Error < confirm dword" );
@@ -311,18 +315,17 @@ namespace CS_SMS_LIB
                                 int num = r[i*2] + r[i*2 + 1] * 65536;
                                 mdsData.positions[i].pid = num;
                             }
-                            m_mutex.ReleaseMutex();
                         }
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(499, 1);    //Read Remain Cnt
+                            m_mutex.ReleaseMutex();
                             if( r.Length != 1 )
                             {
                                 Log.Information("Read Error < remain word" );
                                 break;
                             }
                             mdsData.remainCnt = r[0];
-                            m_mutex.ReleaseMutex();
                         }
                     }
                     catch (Exception e)
@@ -430,6 +433,32 @@ namespace CS_SMS_LIB
                 Thread.Sleep(100);
                 m_mutex.WaitOne();
                 m_modbusClient.WriteMultipleRegisters(32000, new int[] { mdsData.pid % 65536, mdsData.pid / 65536, chuteID, 0 });
+                m_dist = true;
+                m_mutex.ReleaseMutex();
+            }
+            catch (Exception e)
+            {
+                m_mutex.ReleaseMutex();
+                Log.Information(e.ToString());
+                Connection();
+            }
+            return 0;
+        }
+        public int Distribution(int chuteID, int pid)
+        {
+            if(!m_isCon)
+            {
+                Log.Information("Distribution: ConError");
+                return -1;
+            }
+
+            m_chuteID = chuteID;
+            Log.Information("Set chute " + chuteID + " PID  " + pid.ToString());
+            try
+            {
+                Thread.Sleep(100);
+                m_mutex.WaitOne();
+                m_modbusClient.WriteMultipleRegisters(32000, new int[] { pid % 65536, pid / 65536, chuteID, 0 });
                 m_dist = true;
                 m_mutex.ReleaseMutex();
             }

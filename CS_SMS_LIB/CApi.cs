@@ -390,7 +390,7 @@ namespace CS_SMS_LIB
         /// <summary>
         /// Search Box list 
         /// </summary>
-        /// <param name="searchKey"></param>  box_num, cust_cd, cust_nm
+        /// <param name="searchKey"></param>  box_num, cust_cd, cust_nm, sku_cd
         /// <param name="searchValue"></param>
         /// <returns></returns>
         public async Task<BoxList> Box(string searchKey, string searchValue, string job_dt)
@@ -431,6 +431,53 @@ namespace CS_SMS_LIB
                 Log.Information(e.ToString());
             }
             return boxList;
+        }
+
+        public async Task<PIDData> GetPID()
+        {
+            PIDData pidData = new PIDData();
+            HttpClient client = new HttpClient();
+            string url = "/v1/module/pid";
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            try
+            {
+                HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    //var resp = response.Content.ReadAsStringAsync();
+                    //Log.Information(await resp);
+                    var resp = response.Content.ReadAsStreamAsync();
+                    //List<Contributor> contributors = JsonConvert.DeserializeObject<List<Contributor>>(resp);
+                    //contributors.ForEach(Console.WriteLine);
+                    var serializer = new DataContractJsonSerializer(typeof(PIDData));
+                    var repositories = serializer.ReadObject(await resp) as PIDData;
+                    Log.Information(repositories.status);
+                    Log.Information(repositories.msg);
+                    if (repositories.status == "OK")
+                    {
+                        Log.Information("GetPID:" + repositories.pid.ToString());
+                    }
+                    return repositories;
+                }
+                else
+                {
+                    Log.Information("{0} {1} {2}", url, (int)response.StatusCode, response.ReasonPhrase);
+                    pidData.msg = String.Format("{0} {1} {2}", url, (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                pidData.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+            return pidData;
         }
 
         public void SetTest(string j)
@@ -594,5 +641,13 @@ namespace CS_SMS_LIB
             chute_num = t.chute_num;
             goods_cnt = t.goods_cnt;
         }
+    }
+    public class PIDData
+    {
+        public string status { get; set; } = "";
+        public string msg { get; set; } = "";
+        public int pid { get; set; } = 0;
+        public PIDData()
+        { }
     }
 }

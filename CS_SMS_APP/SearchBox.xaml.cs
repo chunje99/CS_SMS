@@ -106,6 +106,7 @@ namespace CS_SMS_APP
                         var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
                             SearchBox_Value.Text = barcode;
+                            SearchProcess();
                         });
                     }
                     else
@@ -120,30 +121,39 @@ namespace CS_SMS_APP
             return;
         }
 
+        private async void SearchProcess()
+        {
+            var key = SearchBox_Key.SelectedItem as string;
+            var value = SearchBox_Value.Text;
+            string searchKey = "";
+            /// <param name="searchKey"></param>  box_num, cust_cd, cust_nm
+            if (key == "박스번호")
+                searchKey = "box_num";
+            else if (key == "박스바코드")
+                searchKey = "box_barcode";
+            else if (key == "거래처코드")
+                searchKey = "cust_cd";
+            else if (key == "거래처명")
+                searchKey = "cust_nm";
+            else if (key == "상품코드")
+                searchKey = "sku_cd";
+            BoxList bList = await global.api.Box(searchKey, value, "");
+            boxList.Clear();
+            BoxData t;
+            int i = 0;
+            foreach (BoxData b in bList.list)
+            {
+                t = new BoxData(b);
+                t.index = i++;
+                boxList.Add(t);
+            }
+        }
+
         private async void OnKeyDown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {
-                var key = SearchBox_Key.SelectedItem as string;
-                var value = SearchBox_Value.Text;
-                string searchKey = "";
-                /// <param name="searchKey"></param>  box_num, cust_cd, cust_nm
-                if (key == "박스번호")
-                    searchKey = "box_num";
-                else if( key == "박스바코드" )
-                    searchKey = "box_barcode";
-                else if( key == "거래처별" )
-                    searchKey = "box_barcode";
-                BoxList bList = await global.api.Box(searchKey, value, "");
-                boxList.Clear();
-                BoxData t;
-                int i = 0;
-                foreach (BoxData b in bList.list)
-                {
-                    t = new BoxData(b);
-                    t.index = i++;
-                    boxList.Add(t);
-                }
+                SearchProcess();
             }
         }
 

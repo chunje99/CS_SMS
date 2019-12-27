@@ -47,7 +47,10 @@ namespace CS_SMS_APP
         public Product m_cancelData = new Product();
         private ConcurrentQueue<Product> m_queueData = new ConcurrentQueue<Product>();
         private ConcurrentQueue<Product> m_currentData = new ConcurrentQueue<Product>();
-        static Mutex m_monitorMutex = new Mutex(false, "monitoring_mutex");
+        //static Mutex m_monitorMutex = new Mutex(false, "monitoring_mutex");
+        static Mutex m_monitorMutex = new Mutex();
+        private int m_lastBundleCnt = 0;
+        private int m_lastRemainCnt = 0;
         public Monitoring()
         {
             this.InitializeComponent();
@@ -61,21 +64,29 @@ namespace CS_SMS_APP
         private void CheckQueue()
         {
             Log.Information("Start CheckQueue()");
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 Product pData = new Product();
                 while (true)
                 {
                     if (m_currentData.IsEmpty && m_queueData.TryDequeue(out pData))
                     {
-                        m_monitorMutex.WaitOne();
+                        //m_monitorMutex.WaitOne();
                         m_currentData.Enqueue(pData);
                         ///MakePID
                         Log.Information("=======Make PID======");
-                        global.md.MakePID();
-                        m_monitorMutex.ReleaseMutex();
+                        PIDData pidData = await global.api.GetPID();
+                        if (pidData.status == "OK")
+                        {
+                            ///Distribution
+                            global.md.mdsData.pid = pidData.pid;
+                            OnEvent_PID(pidData.pid);
+                        }
+                        else
+                            Alert(pidData.msg);
+                        //m_monitorMutex.ReleaseMutex();
                     }
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                 }
             });
         }
@@ -120,7 +131,7 @@ namespace CS_SMS_APP
                 switch (eType)
                 {
                     case MDS_EVENT.PID:
-                        OnEvent_PID(id0);
+                        //OnEvent_PID(id0);
                         break;
                     case MDS_EVENT.PRINT:
                         OnEvent_PRINT(id0, id1, id2);
@@ -175,7 +186,7 @@ namespace CS_SMS_APP
                 m_monitorMutex.ReleaseMutex();
                 return;
             }
-            global.md.Distribution(pData.chute_num);
+            global.md.Distribution(pData.chute_num, pid);
             var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 UpdateUI(Monitoring_pid, pid.ToString());
@@ -380,8 +391,9 @@ namespace CS_SMS_APP
                     {
                         Log.Information("=======send leave api ====== {0}", data.seq);
                         m_lastData.Set(data);
-                        m_lastData.send_cnt = Int32.Parse(box.Text);
-                        if( data.remain_qty < Int32.Parse(box.Text))
+                        m_lastBundleCnt = Int32.Parse(box.Text);
+                        m_lastData.send_cnt = m_lastBundleCnt;
+                        if( data.remain_qty < m_lastBundleCnt)
                         {
                             Alert("잔류 수량 초과");
                         }
@@ -401,7 +413,9 @@ namespace CS_SMS_APP
                         }
                     }
                 }
-                Monitoring_bundle.Flyout.Hide();
+                //Monitoring_bundle.Flyout.Hide();
+                Thread.Sleep(500);
+                Bundle_Processing();
             }
         }
 
@@ -427,8 +441,9 @@ namespace CS_SMS_APP
                     {
                         Log.Information("=======send leave api ====== {0}", data.seq);
                         m_lastData.Set(data);
-                        m_lastData.send_cnt = Int32.Parse(box.Text);
-                        if( data.remain_qty < Int32.Parse(box.Text))
+                        m_lastRemainCnt = Int32.Parse(box.Text);
+                        m_lastData.send_cnt = m_lastRemainCnt;
+                        if( data.remain_qty < m_lastRemainCnt)
                         {
                             Alert("잔류 수량 초과");
                         }
@@ -447,6 +462,7 @@ namespace CS_SMS_APP
                     }
                 }
                 //remainList.Clear();
+                Thread.Sleep(500);
                 Remain_Processing();
                 //Monitoring_remain.Flyout.Hide();
             }
@@ -462,13 +478,23 @@ namespace CS_SMS_APP
             }
 
             bundleList.Clear();
+            mdsList.Clear();
             Log.Information("=======Get Chute======");
             var tData = await global.api.GetChute(m_lastCode, "bundle");
             if(tData.status == "OK")
             {
                 m_lastData = tData;
+                bool isFirst = true;
                 foreach (var data in m_lastData.list)
+                {
+                    if(data.highlight != "gray" && isFirst )
+                    {
+                        data.cnt = m_lastBundleCnt;
+                        isFirst = false;
+                    }
                     bundleList.Add(data);
+                    mdsList.Add(data);
+                }
             }
             else
                 Alert(tData.msg);
@@ -484,14 +510,24 @@ namespace CS_SMS_APP
                 return;
             }
             remainList.Clear();
+            mdsList.Clear();
             Log.Information("=======Get Chute======");
             var tData = await global.api.GetChute(m_lastCode, "remain");
             if (tData.status == "OK")
             {
                 m_lastData = tData;
+                bool isFirst = true;
                 foreach (var data in m_lastData.list)
-                    remainList.Add(data);
+                {
 
+                    if (data.highlight != "gray" && isFirst)
+                    {
+                        data.cnt = m_lastRemainCnt;
+                        isFirst = false;
+                    }
+                    remainList.Add(data);
+                    mdsList.Add(data);
+                }
             }
             else
                 Alert(tData.msg);
@@ -624,6 +660,22 @@ namespace CS_SMS_APP
         private void TmpClick(object sender, RoutedEventArgs e)
         {
             Scanner_Process("8809681702713", Monitoring_scanner0, 100);
+        }
+
+        private void BundleTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textbox = sender as TextBox;
+            if (textbox == null) return;
+            if( textbox.Text != "0")
+                textbox.Focus(FocusState.Programmatic);
+        }
+
+        private void RemainTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textbox = sender as TextBox;
+            if (textbox == null) return;
+            if( textbox.Text != "0")
+                textbox.Focus(FocusState.Programmatic);
         }
     }
 }

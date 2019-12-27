@@ -108,7 +108,7 @@
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                         <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                        <TextBox Text="{x:Bind cnt}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind seq}" />
+                                        <TextBox Text="{x:Bind cnt, Mode=TwoWay}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind seq}" TextChanged="BundleTextChanged"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -202,7 +202,7 @@
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                         <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                        <TextBox Text="{x:Bind cnt}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind seq}"/>
+                                        <TextBox Text="{x:Bind cnt}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind seq}" TextChanged="RemainTextChanged"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

@@ -14,9 +14,11 @@
     <Grid>
         <TextBlock>박스 검색</TextBlock>
         <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,50,0,0" Width="120" Name="SearchBox_Key" SelectionChanged="OnChange">
-            <x:String>박스번호</x:String>
+            <x:String>상품코드</x:String>
             <x:String>박스바코드</x:String>
-            <x:String>거래처별</x:String>
+            <x:String>거래처코드</x:String>
+            <x:String>박스번호</x:String>
+            <x:String>거래처명</x:String>
         </ComboBox>
         <TextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,50,0,0" Text="" TextWrapping="Wrap" Width="200" Name="SearchBox_Value" KeyDown="OnKeyDown"/>
         <ListView Margin="50,130,0,0" x:Name="listView">
