@@ -149,7 +149,7 @@ namespace CS_SMS_APP
             }
         }
 
-        private async void OnKeyDown(object sender, KeyRoutedEventArgs e)
+        private void OnKeyDown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {

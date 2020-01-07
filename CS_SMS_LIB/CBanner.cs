@@ -84,24 +84,18 @@ namespace CS_SMS_LIB
                         //Log.Information("readLen " + readLen);
                         if (readLen <= 3)
                             continue;
-                        if (bytes[0] == 2)
-                            ;// Log.Information("<STX>");
-                        else
+                        if (bytes[0] != 2)
                         {
                             Log.Information("<STX> Error");
                             continue;
                         }
-                        if (bytes[readLen - 2] == 13)
-                            ;// Log.Information("<CR>");
-                        else
+                        if (bytes[readLen - 2] != 13)
                         {
                             Log.Information("<CR> Error");
                             continue;
 
                         }
-                        if (bytes[readLen - 1] == 10)
-                            ;// Log.Information("<LF>");
-                        else
+                        if (bytes[readLen - 1] != 10)
                         {
                             Log.Information("<LF> Error");
                             continue;

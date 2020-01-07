@@ -50,7 +50,9 @@ namespace CS_SMS_APP
         //static Mutex m_monitorMutex = new Mutex(false, "monitoring_mutex");
         static Mutex m_monitorMutex = new Mutex();
         private int m_lastBundleCnt = 0;
+        private int m_bundleFocusSeq = 0;
         private int m_lastRemainCnt = 0;
+        private int m_remainFocusSeq = 0;
         public Monitoring()
         {
             this.InitializeComponent();
@@ -421,6 +423,7 @@ namespace CS_SMS_APP
 
         private void Remain_Click(object sender, RoutedEventArgs e)
         {
+            Remain_input.Text = "";
             remainList.Clear();
         }
 
@@ -490,6 +493,7 @@ namespace CS_SMS_APP
                     if(data.highlight != "gray" && isFirst )
                     {
                         data.cnt = m_lastBundleCnt;
+                        m_bundleFocusSeq = data.seq;
                         isFirst = false;
                     }
                     bundleList.Add(data);
@@ -523,6 +527,7 @@ namespace CS_SMS_APP
                     if (data.highlight != "gray" && isFirst)
                     {
                         data.cnt = m_lastRemainCnt;
+                        m_remainFocusSeq = data.seq;
                         isFirst = false;
                     }
                     remainList.Add(data);
@@ -665,16 +670,18 @@ namespace CS_SMS_APP
         private void BundleTextChanged(object sender, TextChangedEventArgs e)
         {
             var textbox = sender as TextBox;
+            Log.Information("BundleTextChanged " + textbox.Name );
             if (textbox == null) return;
-            if( textbox.Text != "0")
+            if( textbox.Name == m_bundleFocusSeq.ToString() )
                 textbox.Focus(FocusState.Programmatic);
         }
 
         private void RemainTextChanged(object sender, TextChangedEventArgs e)
         {
             var textbox = sender as TextBox;
+            Log.Information("RemainTextChanged " + textbox.Name );
             if (textbox == null) return;
-            if( textbox.Text != "0")
+            if( textbox.Name == m_remainFocusSeq.ToString() )
                 textbox.Focus(FocusState.Programmatic);
         }
     }

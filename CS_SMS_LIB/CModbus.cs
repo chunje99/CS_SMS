@@ -32,7 +32,7 @@ namespace CS_SMS_LIB
         public ModbusClient m_modbusClient { get; set; } = null;
         private EasyModbus.ModbusServer modbusServer = null;
         public int m_port { get; set; } = 502;
-        public string m_host { get; set; } = "192.168.0.201";
+        public string m_host { get; set; } = "192.168.0.1";
         private bool m_active  = true;
         public int m_chuteID { get; set; } = 0;
         private int conCnt = 0;
@@ -49,7 +49,7 @@ namespace CS_SMS_LIB
 
         public CModbus()
         {
-            m_host = "192.168.0.201";
+            m_host = "192.168.0.1";
             m_port = 502;
             m_active = true;
         }

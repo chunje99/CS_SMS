@@ -512,7 +512,6 @@ namespace CS_SMS_LIB
 
             int icnt = 2;
             int jcnt = 2;
-            int kcnt = 4;
             for (int k = 0; k < 13 ; k++)
             {
 
