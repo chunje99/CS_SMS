@@ -26,7 +26,7 @@ namespace CS_SMS_APP
         public Webview()
         {
             this.InitializeComponent();
-#if CHUNJE99
+#if DEBUG
             Uri siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
             MyWebview.Source = siteUri;
 #endif

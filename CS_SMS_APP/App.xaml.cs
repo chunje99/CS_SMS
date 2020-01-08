@@ -34,7 +34,7 @@ namespace CS_SMS_APP
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 
-#if CHUNJE99
+#if DEBUG
             Log.Logger = new LoggerConfiguration().WriteTo.Debug(outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}").CreateLogger();
 #else
             Log.Logger = new LoggerConfiguration().WriteTo.File(

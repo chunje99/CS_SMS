@@ -409,6 +409,11 @@ namespace CS_SMS_LIB
                 m_mutex.WaitOne();
                 m_modbusClient.WriteMultipleRegisters(32010, new int[] { 2 });
                 m_mutex.ReleaseMutex();
+                Thread.Sleep(300);
+                Log.Information("Cancel: Reset");
+                m_mutex.WaitOne();
+                m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
+                m_mutex.ReleaseMutex();
             }
             catch (Exception e)
             {

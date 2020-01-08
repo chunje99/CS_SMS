@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <ListView>
+        <ListView SelectionMode="None">
             <Grid>
                 <StackPanel>
                     <TextBlock>로그</TextBlock>

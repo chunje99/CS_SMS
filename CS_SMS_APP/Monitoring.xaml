@@ -82,7 +82,7 @@
                             <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="2"  x:Name="BundleData" ItemsSource="{x:Bind bundleList}">
+                        <ListView Grid.Row="2"  x:Name="BundleData" ItemsSource="{x:Bind bundleList}" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                     <Grid Background="{x:Bind highlight}">
@@ -177,7 +177,7 @@
                             <TextBlock Text="잔류수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="2"  x:Name="RemainData" ItemsSource="{x:Bind remainList}">
+                        <ListView Grid.Row="2"  x:Name="RemainData" ItemsSource="{x:Bind remainList}" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                     <Grid Background="{x:Bind highlight}">
@@ -266,7 +266,10 @@
                             <TextBlock Text="취소" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                                    <Grid Grid.Row="1">
+                        <ListView Grid.Row="1"  x:Name="CancelData" ItemsSource="{x:Bind cancelList}" SelectionMode="None">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="CS_SMS_LIB:Product">
+                                    <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="50"/>
                                             <ColumnDefinition Width="150"/>
@@ -278,29 +281,32 @@
                                             <ColumnDefinition Width="100"/>
                                             <ColumnDefinition Width="70"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="{x:Bind m_cancelData.chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind sku_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind sku_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind total_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind leave_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="6" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{x:Bind m_cancelData.remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
+                                        <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
                                         <Button Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" Click="Cancel_Confirm">취소</Button>
                                     </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </Grid>
                 </Flyout>
             </Button.Flyout>
         </Button>
-        <ListView Margin="50,300,0,0" x:Name="listView">
+        <ListView Margin="50,300,0,0" x:Name="listView" SelectionMode="None">
             <TextBlock Text="1. LOGS" />
             <Grid Margin="0,0,0,0">
                 <Grid.RowDefinitions>
@@ -335,7 +341,7 @@
                     <TextBlock Text="남은수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="7" VerticalAlignment="Center"/>
                 </Grid>
-                <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList}">
+                <ListView Grid.Row="1"  x:Name="MDSData" ItemsSource="{x:Bind mdsList}" SelectionMode="None">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                             <Grid Background="{x:Bind highlight}">

@@ -36,6 +36,7 @@ namespace CS_SMS_APP
     {
         ObservableCollection<PListData> bundleList = new ObservableCollection<PListData>();
         ObservableCollection<PListData> remainList = new ObservableCollection<PListData>();
+        ObservableCollection<Product> cancelList = new ObservableCollection<Product>();
         ObservableCollection<PListData> mdsList = new ObservableCollection<PListData>();
 
 
@@ -44,7 +45,7 @@ namespace CS_SMS_APP
         public DateTime m_lastTime = DateTime.Now;
         //public CMPS m_lastData = new CMPS();
         public Product m_lastData = new Product();
-        public Product m_cancelData = new Product();
+        public Product m_cancelData = null;
         private ConcurrentQueue<Product> m_queueData = new ConcurrentQueue<Product>();
         private ConcurrentQueue<Product> m_currentData = new ConcurrentQueue<Product>();
         //static Mutex m_monitorMutex = new Mutex(false, "monitoring_mutex");
@@ -402,6 +403,8 @@ namespace CS_SMS_APP
                         else
                         {
                             mdsList.Clear();
+                            cancelList.Clear();
+                            cancelList.Add(m_lastData);
                             foreach (var d in m_lastData.list)
                             {
                                 if (data.seq == d.seq)
@@ -555,6 +558,8 @@ namespace CS_SMS_APP
                 //Log.Information("=======Make PID======");
                 //global.md.MakePID();
                 m_cancelData = m_lastData;
+                cancelList.Clear();
+                cancelList.Add(m_lastData);
 
                 m_lastData.send_cnt = 1;
                 Log.Information(m_lastData.chute_num.ToString());
@@ -644,6 +649,7 @@ namespace CS_SMS_APP
             Log.Information("===Cancel confirm======");
             global.api.Cancel(global.md.mdsData.pid);
             global.md.CancelPID();
+            cancelList.Clear();
         }
 
         private void Input_Keydown(object sender, KeyRoutedEventArgs e)

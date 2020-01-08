@@ -153,5 +153,54 @@ namespace CS_SMS_APP
                 //code to update UI
             });
         }
+        private async void UpdateUIIP(string name, string ip)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            () =>
+            {
+                if (name == "Scanner_1")
+                    Scanner_1.Text = ip;
+                if (name == "Scanner_2")
+                    Scanner_2.Text = ip;
+                if (name == "Scanner_3")
+                    Scanner_3.Text = ip;
+                if (name == "Scanner_4")
+                    Scanner_4.Text = ip;
+                //code to update UI
+            });
+        }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            foreach (var scanner in global.udp.m_scaner)
+            {
+                if (scanner.m_isCon)
+                {
+                    scanner.act0 = (name, chute_num, barcode) =>
+                    {
+                        Log.Information("==============");
+                        Log.Information("MAIN");
+                        Log.Information(name);
+                        Log.Information(barcode);
+                        //global.m_msgQueue.Enqueue(barcode);
+                        //var devices = global.udp.m_deviceTable;
+                        var ig = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                UpdateUI(name, chute_num, barcode);
+                            });
+                        Log.Information("==============");
+                    };
+
+                    //global.md.MakePID();
+                    var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        UpdateUI(scanner.m_name, 0, "접속");
+                        UpdateUIIP(scanner.m_name, scanner.m_ip);
+                    });
+                }
+
+            }
+
+        }
     }
 }
