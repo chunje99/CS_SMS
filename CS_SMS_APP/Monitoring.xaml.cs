@@ -51,9 +51,9 @@ namespace CS_SMS_APP
         //static Mutex m_monitorMutex = new Mutex(false, "monitoring_mutex");
         static Mutex m_monitorMutex = new Mutex();
         private int m_lastBundleCnt = 0;
-        private int m_bundleFocusSeq = 0;
+        private int m_bundleFocusIdx  = 0;
         private int m_lastRemainCnt = 0;
-        private int m_remainFocusSeq = 0;
+        private int m_remainFocusIdx = 0;
         public Monitoring()
         {
             this.InitializeComponent();
@@ -425,11 +425,19 @@ namespace CS_SMS_APP
                 Log.Information(box.Text);
                 foreach( var data in bundleList)
                 {
-                    if(data.seq.ToString() == box.Name)
+                    if(data.idx.ToString() == box.Name)
                     {
-                        Log.Information("=======send leave api ====== {0}", data.seq);
+                        Log.Information("=======send leave api ====== {0} {1}", data.idx, data.seq);
                         m_lastData.Set(data);
-                        m_lastBundleCnt = Int32.Parse(box.Text);
+                        try
+                        {
+                            m_lastBundleCnt = Int32.Parse(box.Text);
+                        }
+                        catch (FormatException ex)
+                        {
+                            Alert(ex.Message);
+                            continue;
+                        }
                         m_lastData.send_cnt = m_lastBundleCnt;
                         if( data.remain_qty < m_lastBundleCnt)
                         {
@@ -440,6 +448,7 @@ namespace CS_SMS_APP
                             mdsList.Clear();
                             cancelList.Clear();
                             cancelList.Add(m_lastData);
+                            m_bundleFocusIdx = data.idx;
                             foreach (var d in m_lastData.list)
                             {
                                 if (data.seq == d.seq)
@@ -478,11 +487,19 @@ namespace CS_SMS_APP
                 Log.Information(box.Text);
                 foreach ( var data in remainList)
                 {
-                    if(data.seq.ToString() == box.Name)
+                    if(data.idx.ToString() == box.Name)
                     {
-                        Log.Information("=======send leave api ====== {0}", data.seq);
+                        Log.Information("=======send leave api ====== {0} {1}", data.idx, data.seq);
                         m_lastData.Set(data);
-                        m_lastRemainCnt = Int32.Parse(box.Text);
+                        try
+                        {
+                            m_lastRemainCnt = Int32.Parse(box.Text);
+                        }
+                        catch (FormatException ex)
+                        {
+                            Alert(ex.Message);
+                            continue;
+                        }
                         m_lastData.send_cnt = m_lastRemainCnt;
                         if( data.remain_qty < m_lastRemainCnt)
                         {
@@ -491,6 +508,7 @@ namespace CS_SMS_APP
                         else
                         {
                             mdsList.Clear();
+                            m_remainFocusIdx = data.idx;
                             foreach (var d in m_lastData.list)
                             {
 
@@ -526,14 +544,26 @@ namespace CS_SMS_APP
             {
                 m_lastData = tData;
                 bool isFirst = true;
+                ///check focus
+                Log.Information("bundleFocusIdx: " + m_bundleFocusIdx.ToString());
+                if( m_lastData.list.Count() > m_bundleFocusIdx)
+                {
+                    if( m_lastData.list[m_bundleFocusIdx].highlight != "gray" )
+                        isFirst = false;
+                }
+                int idx = 0;
                 foreach (var data in m_lastData.list)
                 {
-                    if(data.highlight != "gray" && isFirst )
+                    if (data.highlight != "gray")
                     {
                         data.cnt = m_lastBundleCnt;
-                        m_bundleFocusSeq = data.seq;
-                        isFirst = false;
+                        if (isFirst)
+                        {
+                            m_bundleFocusIdx = idx;
+                            isFirst = false;
+                        }
                     }
+                    data.idx = idx++;
                     bundleList.Add(data);
                     mdsList.Add(data);
                 }
@@ -559,15 +589,26 @@ namespace CS_SMS_APP
             {
                 m_lastData = tData;
                 bool isFirst = true;
+                ///for focus
+                if( m_lastData.list.Count() > m_remainFocusIdx)
+                {
+                    if( m_lastData.list[m_remainFocusIdx].highlight != "gray" )
+                        isFirst = false;
+                }
+                int idx = 0;
                 foreach (var data in m_lastData.list)
                 {
 
-                    if (data.highlight != "gray" && isFirst)
+                    if (data.highlight != "gray")
                     {
                         data.cnt = m_lastRemainCnt;
-                        m_remainFocusSeq = data.seq;
-                        isFirst = false;
+                        if (isFirst)
+                        {
+                            m_remainFocusIdx = data.idx;
+                            isFirst = false;
+                        }
                     }
+                    data.idx = idx++;
                     remainList.Add(data);
                     mdsList.Add(data);
                 }
@@ -708,21 +749,20 @@ namespace CS_SMS_APP
             Scanner_Process("8809681702713", Monitoring_scanner0, 100);
         }
 
-        private void BundleTextChanged(object sender, TextChangedEventArgs e)
+        private void BundleChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             var textbox = sender as TextBox;
-            Log.Information("BundleTextChanged " + textbox.Name );
             if (textbox == null) return;
-            if( textbox.Name == m_bundleFocusSeq.ToString() )
+            if( textbox.Name == m_bundleFocusIdx.ToString() )
                 textbox.Focus(FocusState.Programmatic);
+
         }
 
-        private void RemainTextChanged(object sender, TextChangedEventArgs e)
+        private void RemainChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             var textbox = sender as TextBox;
-            Log.Information("RemainTextChanged " + textbox.Name );
             if (textbox == null) return;
-            if( textbox.Name == m_remainFocusSeq.ToString() )
+            if( textbox.Name == m_remainFocusIdx.ToString() )
                 textbox.Focus(FocusState.Programmatic);
         }
     }

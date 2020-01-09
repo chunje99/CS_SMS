@@ -82,7 +82,7 @@
                             <TextBlock Text="묶음수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="2"  x:Name="BundleData" ItemsSource="{x:Bind bundleList}" SelectionMode="None">
+                        <ListView Grid.Row="2"  x:Name="BundleData" ItemsSource="{x:Bind bundleList, Mode=OneWay}" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                     <Grid Background="{x:Bind highlight}">
@@ -113,7 +113,7 @@
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                         <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                        <TextBox Text="{x:Bind cnt, Mode=TwoWay}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind seq}" TextChanged="BundleTextChanged"/>
+                                        <TextBox Text="{x:Bind cnt, Mode=TwoWay}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind idx}" DataContextChanged="BundleChanged"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -177,7 +177,7 @@
                             <TextBlock Text="잔류수량" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                         </Grid>
-                        <ListView Grid.Row="2"  x:Name="RemainData" ItemsSource="{x:Bind remainList}" SelectionMode="None">
+                        <ListView Grid.Row="2"  x:Name="RemainData" ItemsSource="{x:Bind remainList, Mode=OneWay}" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                     <Grid Background="{x:Bind highlight}">
@@ -208,7 +208,7 @@
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                         <TextBlock Text="{x:Bind remain_qty}" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                        <TextBox Text="{x:Bind cnt}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind seq}" TextChanged="RemainTextChanged"/>
+                                        <TextBox Text="{x:Bind cnt, Mode=TwoWay}" Foreground="Teal" FontSize="14" Grid.Column="8" VerticalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind idx}" DataContextChanged="RemainChanged"/>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

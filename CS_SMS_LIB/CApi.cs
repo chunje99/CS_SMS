@@ -588,6 +588,7 @@ namespace CS_SMS_LIB
     }
     public class PListData
     {
+        public int idx { get; set; }
         public int seq { get; set; }
         public string highlight { get; set; }
         public int chute_num { get; set; }
@@ -601,6 +602,7 @@ namespace CS_SMS_LIB
         public int cnt { get; set; } = 0;
         public PListData()
         {
+            idx = 0;
             seq = 0;
             highlight = "";
             chute_num = 0;
