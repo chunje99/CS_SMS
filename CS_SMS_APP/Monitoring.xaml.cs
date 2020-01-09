@@ -134,6 +134,7 @@ namespace CS_SMS_APP
                 switch (eType)
                 {
                     case MDS_EVENT.PID:
+                        OnEvent_MasterSensor(id0);
                         //OnEvent_PID(id0);
                         break;
                     case MDS_EVENT.PRINT:
@@ -158,6 +159,21 @@ namespace CS_SMS_APP
                         break;
                 }
             };
+        }
+
+        private void OnEvent_MasterSensor(int pid)
+        {
+            Task.Run(() =>
+            {
+                Log.Information("OnEvent_MasterSensor {0}", pid);
+                if (pid <= 0)
+                {
+                    return;
+
+                }
+                ///call Leave api
+                global.api.MasterSensor(pid);
+            });
         }
 
         private void OnEvent_PID(int pid)
@@ -201,116 +217,135 @@ namespace CS_SMS_APP
         }
         private void OnEvent_CONFIRM_PID(int module, int chute_num, int pid)
         {
-            Log.Information("OnEvent_CONFIRM_PID module {0} chute_num{1} pid {2}", module, chute_num, pid );
-            if (pid <= 0)
-                return;
+            Task.Run(() =>
+            {
+                Log.Information("OnEvent_CONFIRM_PID module {0} chute_num{1} pid {2}", module, chute_num, pid);
+                if (pid <= 0)
+                    return;
 
-            int confirm_data = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].confirmData;
-            int t_pid = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].pidNum;
-            int stack_count = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].stackCount;
-            global.api.Release(t_pid, confirm_data, stack_count, module*4 + chute_num + 1);
+                int confirm_data = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].confirmData;
+                int t_pid = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].pidNum;
+                int stack_count = global.md.mdsData.moduleInfos[module].chuteInfos[chute_num].stackCount;
+                global.api.Release(t_pid, confirm_data, stack_count, module * 4 + chute_num + 1);
+            });
         }
         private void OnEvent_CHUTECHOICE(int chute_num, int id1, int onoff)
         {
-            Log.Information("OnEvent_CHUTECHOICE chute_num {0} data {1}", chute_num, onoff);
-            global.api.FullManual(chute_num, onoff);
+            Task.Run(() =>
+            {
+                Log.Information("OnEvent_CHUTECHOICE chute_num {0} data {1}", chute_num, onoff);
+                global.api.FullManual(chute_num, onoff);
+            });
         }
         private void OnEvent_FULL(int module, int chuteid, int onoff)
         {
-            Log.Information("OnEvent_FULL module {0} chuteidx {1} data {2}", module, chuteid, onoff);
-            global.api.FullAuto(module*4 + chuteid + 1, onoff);
-        }
-        private async void OnEvent_PRINT(int module, int direct, int value)
-        {
-            Log.Information("OnEvent_PRINT {0} {1} {2}", module, direct, value);
-            if (value == 0)
-                return;
-
-            int locPrint = 0;
-            if (direct == 0)
+            Task.Run(() =>
             {
-                if (module == 0)
+                Log.Information("OnEvent_FULL module {0} chuteidx {1} data {2}", module, chuteid, onoff);
+                global.api.FullAuto(module * 4 + chuteid + 1, onoff);
+            });
+        }
+        private void OnEvent_PRINT(int module, int direct, int value)
+        {
+            Task.Run(async () =>
+            {
+                Log.Information("OnEvent_PRINT {0} {1} {2} START", module, direct, value);
+                if (value == 0)
+                    return;
+
+                int locPrint = 0;
+                if (direct == 0)
                 {
-                    locPrint = 0;
-                    //1
-                }
-                else if (module == 1)
-                {
-                    if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
+                    if (module == 0)
                     {
                         locPrint = 0;
                         //1
                     }
-                    else
+                    else if (module == 1)
+                    {
+                        if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
+                        {
+                            locPrint = 0;
+                            //1
+                        }
+                        else
+                        {
+                            locPrint = 2;
+                            //3
+                        }
+                    }
+                    else if (module == 2)
                     {
                         locPrint = 2;
                         //3
                     }
                 }
-                else if (module == 2)
+                else if (direct == 1)
                 {
-                    locPrint = 2;
-                    //3
-                }
-            }
-            else if (direct == 1)
-            {
-                if (module == 0)
-                {
-                    locPrint = 1;
-                    //2
-                }
-                else if (module == 1)
-                {
-                    if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
-                    {
-                        locPrint = 3;
-                        //1
-                    }
-                    else
+                    if (module == 0)
                     {
                         locPrint = 1;
-                        //3
+                        //2
+                    }
+                    else if (module == 1)
+                    {
+                        if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
+                        {
+                            locPrint = 3;
+                            //1
+                        }
+                        else
+                        {
+                            locPrint = 1;
+                            //3
+                        }
+                    }
+                    else if (module == 2)
+                    {
+                        locPrint = 3;
+                        //4
                     }
                 }
-                else if (module == 2)
+                int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
+                int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
+                PrintList p = await global.api.Print(chute_num1, "", "");
+                global.m_printer[locPrint].PrintData(p);
+                PrintList p2 = await global.api.Print(chute_num2, "", "");
+                global.m_printer[locPrint].PrintData(p2);
+                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    locPrint = 3;
-                    //4
-                }
-            }
-            int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
-            int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
-            PrintList p = await global.api.Print(chute_num1, "", "");
-            global.m_printer[locPrint].PrintData(p);
-            PrintList p2 = await global.api.Print(chute_num2, "", "");
-            global.m_printer[locPrint].PrintData(p2);
-            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
+                    UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
+                });
+                Log.Information("OnEvent_PRINT {0} {1} {2} END", module, direct, value);
             });
         }
         private void OnEvent_PLUS(int module, int direct, int value)
         {
-            Log.Information("OnEvent_PLUS module {0} direct {1} value {2}", module, direct, value);
-            if (value == 0)
-                return;
+            Task.Run(() =>
+            {
+                Log.Information("OnEvent_PLUS module {0} direct {1} value {2}", module, direct, value);
+                if (value == 0)
+                    return;
 
-            int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
-            int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
-            global.api.AddStatus(chute_num1, "+");
-            global.api.AddStatus(chute_num2, "+");
+                int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
+                int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
+                global.api.AddStatus(chute_num1, "+");
+                global.api.AddStatus(chute_num2, "+");
+            });
         }
         private void OnEvent_MINUS(int module, int direct, int value)
         {
-            Log.Information("OnEvent_MINUS module {0} direct {1} value {2}", module, direct, value);
-            if (value == 0)
-                return;
+            Task.Run(() =>
+            {
+                Log.Information("OnEvent_MINUS module {0} direct {1} value {2}", module, direct, value);
+                if (value == 0)
+                    return;
 
-            int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
-            int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
-            global.api.AddStatus(chute_num1, "-");
-            global.api.AddStatus(chute_num2, "-");
+                int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
+                int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
+                global.api.AddStatus(chute_num1, "-");
+                global.api.AddStatus(chute_num2, "-");
+            });
         }
 
 

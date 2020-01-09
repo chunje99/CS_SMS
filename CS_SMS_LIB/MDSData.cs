@@ -11,6 +11,7 @@ namespace CS_SMS_LIB
     {
         ///읽는 데이터 
         public int pid {get;set;} = 0;
+        public int first_pid {get;set;} = 0;  //첫번째 모듈에 지나가는 pid 감지
         public int moduleCnt {get;set;} = 0;
         public int heartBest {get;set;} = 0;
         public SettingData settingData = new SettingData();

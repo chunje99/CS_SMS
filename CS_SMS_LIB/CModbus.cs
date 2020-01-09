@@ -188,18 +188,15 @@ namespace CS_SMS_LIB
                             }
 
                             int pid = r[0] + r[1] * 65536;
-                            /*
-                            if(pid != mdsData.pid)
+                            if(pid != mdsData.first_pid)
                             {
-                                mdsData.pid = pid;
-                                Log.Information("Reset 32010");
-                                await Task.Delay(100);
-                                m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
-
+                                mdsData.first_pid = pid;
+                                Log.Information("EVENT PID: " + pid.ToString());
+                                //await Task.Delay(100);
+                                //m_modbusClient.WriteMultipleRegisters(32010, new int[] { 0 });
                                 if (onEvent != null)
                                     onEvent(MDS_EVENT.PID, pid, 0, 0);
                             }
-                            */
 
                             for (int i = 0 ; i < 12 ; i++ ) //module
                             {

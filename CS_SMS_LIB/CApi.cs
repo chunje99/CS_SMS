@@ -11,6 +11,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
+using System.Threading;
 
 namespace CS_SMS_LIB
 {
@@ -326,6 +327,36 @@ namespace CS_SMS_LIB
             var json = new JObject();
             json.Add("chute_num", chute_num);
             json.Add("barcode", barcode);
+            var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response body. Blocking!
+                Log.Information("===OK===");
+            }
+            else
+            {
+                Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+            }
+        }
+
+        public void MasterSensor(int pid )
+        {
+            Log.Information("===MasteSensor===");
+            Log.Information("pid {0}", pid);
+            Thread.Sleep(5000);
+
+            HttpClient client = new HttpClient();
+            string url = "/v1/product/mastersensor";
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            var json = new JObject();
+            json.Add("pid", pid);
             var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
             HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
             if (response.IsSuccessStatusCode)

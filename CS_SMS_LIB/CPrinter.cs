@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Serilog;
 
 namespace CS_SMS_LIB
 {
     public class CPrinter
     {
-        public string m_host { get; set; }
-        public string m_port { get; set; }
+        public string m_host { get; set; } = "127.0.0.1";
+        public string m_port { get; set; } = "9100";
 
         public CPrinter()
         {
@@ -68,6 +69,7 @@ namespace CS_SMS_LIB
 
             if (nStatus != (int)SLCS_ERROR_CODE.ERR_CODE_NO_ERROR)
             {
+                Log.Information("Printer Connection Error : HOST {0} PORT {1}", m_host, m_port );
                 BXLLApi.DisconnectPrinter();
                 if(act0 != null)
                     act0(nStatus, GetStatusMsg(nStatus));
@@ -301,7 +303,7 @@ namespace CS_SMS_LIB
             {
 
                 // Prints string using TrueFont
-                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true,
+                BXLLApi.PrintDeviceFont(20 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true,
                     printList.cust_cd + " (" + printList.cust_nm + ")");
 
                 //	Draw Lines
