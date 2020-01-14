@@ -146,7 +146,11 @@ namespace CS_SMS_APP
                 else
                 {
                     msg += "Connection OK\n";
-                    global.md.StartClient();
+                    //global.md.StartClient();
+                    Log.Information("Init MDS");
+                    global.md.CancelPID();
+                    Log.Information("ReadMDS");
+                    global.md.ReadMDS();
                 }
                 UpdateUI(msg);
             });

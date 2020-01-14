@@ -421,6 +421,8 @@ namespace CS_SMS_APP
                     Alert("MDS 접속에러");
                     return;
                 }
+
+                Bundle_input.Focus(FocusState.Programmatic);
                 TextBox box = sender as TextBox;
                 Log.Information(box.Text);
                 foreach( var data in bundleList)
@@ -753,9 +755,11 @@ namespace CS_SMS_APP
         {
             var textbox = sender as TextBox;
             if (textbox == null) return;
-            if( textbox.Name == m_bundleFocusIdx.ToString() )
+            if (textbox.Name == m_bundleFocusIdx.ToString())
+            {
+                Log.Information("BundleFocusChange");
                 textbox.Focus(FocusState.Programmatic);
-
+            }
         }
 
         private void RemainChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -763,7 +767,10 @@ namespace CS_SMS_APP
             var textbox = sender as TextBox;
             if (textbox == null) return;
             if( textbox.Name == m_remainFocusIdx.ToString() )
+            {
+                Log.Information("RemainFocusChange");
                 textbox.Focus(FocusState.Programmatic);
+            }
         }
     }
 }

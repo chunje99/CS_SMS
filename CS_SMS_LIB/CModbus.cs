@@ -102,7 +102,7 @@ namespace CS_SMS_LIB
             return 0;
 
         }
-        async private void ReadMDS()
+        async public void ReadMDS()
         {
             await Task.Run(async () =>
             {

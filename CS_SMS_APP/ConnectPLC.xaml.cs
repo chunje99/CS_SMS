@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Serilog;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -38,7 +39,11 @@ namespace CS_SMS_APP
             }
             else
             {
-                global.md.StartClient();
+                //global.md.StartClient();
+                Log.Information("INIT MDS");
+                global.md.CancelPID();
+                Log.Information("ReadMDS");
+                global.md.ReadMDS();
                 PLC_Status.Text = "Connected";
             }
         }
