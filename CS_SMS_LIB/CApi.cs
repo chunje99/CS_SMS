@@ -344,7 +344,6 @@ namespace CS_SMS_LIB
         {
             Log.Information("===MasteSensor===");
             Log.Information("pid {0}", pid);
-            Thread.Sleep(5000);
 
             HttpClient client = new HttpClient();
             string url = "/v1/product/mastersensor";

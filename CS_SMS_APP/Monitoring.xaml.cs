@@ -54,6 +54,7 @@ namespace CS_SMS_APP
         private int m_bundleFocusIdx  = 0;
         private int m_lastRemainCnt = 0;
         private int m_remainFocusIdx = 0;
+        private int m_lastBundleSeq = 0;
         public Monitoring()
         {
             this.InitializeComponent();
@@ -451,10 +452,13 @@ namespace CS_SMS_APP
                             cancelList.Clear();
                             cancelList.Add(m_lastData);
                             m_bundleFocusIdx = data.idx;
+                            m_lastBundleSeq = data.seq;
                             foreach (var d in m_lastData.list)
                             {
                                 if (data.seq == d.seq)
+                                {
                                     data.highlight = "yellow";
+                                }
                                 mdsList.Add(d);
                             }
                             //Log.Information("=======Make PID======");
@@ -465,7 +469,7 @@ namespace CS_SMS_APP
                     }
                 }
                 //Monitoring_bundle.Flyout.Hide();
-                Thread.Sleep(500);
+                Thread.Sleep(600);
                 Bundle_Processing();
             }
         }
@@ -542,15 +546,37 @@ namespace CS_SMS_APP
             mdsList.Clear();
             Log.Information("=======Get Chute======");
             var tData = await global.api.GetChute(m_lastCode, "bundle");
-            if(tData.status == "OK")
+            if (tData.status == "OK")
             {
                 m_lastData = tData;
                 bool isFirst = true;
                 ///check focus
                 Log.Information("bundleFocusIdx: " + m_bundleFocusIdx.ToString());
-                if( m_lastData.list.Count() > m_bundleFocusIdx)
+                ///check dup send seq
+                bool isBeforeUpdate = false;
+                foreach (var data in m_lastData.list)
                 {
-                    if( m_lastData.list[m_bundleFocusIdx].highlight != "gray" )
+                    if (m_lastBundleSeq > 0 && m_lastBundleSeq == data.seq)
+                    {
+                        Log.Information("Duple Bundle list");
+                        isBeforeUpdate = true;
+                    }
+                }
+                if (isBeforeUpdate) ///데이터 다시 가지고 오기
+                {
+                    Thread.Sleep(500);
+                    Log.Information("=======RE Get Chute======");
+                    var ttData = await global.api.GetChute(m_lastCode, "bundle");
+                    if (ttData.status != "OK")
+                    {
+                        Alert(ttData.msg);
+                        return;
+                    }
+                    m_lastData = ttData;
+                }
+                if (m_lastData.list.Count() > m_bundleFocusIdx)
+                {
+                    if (m_lastData.list[m_bundleFocusIdx].highlight != "gray")
                         isFirst = false;
                 }
                 int idx = 0;
