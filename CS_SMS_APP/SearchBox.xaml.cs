@@ -176,7 +176,7 @@ namespace CS_SMS_APP
         private void RePrint(object sender, RoutedEventArgs e)
         {
             Log.Information("재출력 ");
-            global.m_printer[0].PrintData(lastPrintList);
+            global.m_printer[1].PrintData(lastPrintList);
         }
     }
 }

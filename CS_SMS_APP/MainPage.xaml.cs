@@ -61,9 +61,9 @@ namespace CS_SMS_APP
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
             // you can also add items in code behind
-            NavView.MenuItems.Add(new NavigationViewItemSeparator());
-            NavView.MenuItems.Add(new NavigationViewItem()
-            { Content = "My content", Icon = new SymbolIcon(Symbol.Folder), Tag = "content" });
+            //NavView.MenuItems.Add(new NavigationViewItemSeparator());
+            //NavView.MenuItems.Add(new NavigationViewItem()
+            //{ Content = "My content", Icon = new SymbolIcon(Symbol.Folder), Tag = "content" });
 
             // set the initial SelectedItem 
             foreach (NavigationViewItemBase item in NavView.MenuItems)
@@ -113,7 +113,10 @@ namespace CS_SMS_APP
 
         private void PageSizeChanged(object sender, SizeChangedEventArgs e)
         {
+            Log.Information("PageSize : {0} {1}", e.NewSize.Width, e.NewSize.Height);
             ContentFrame.Width = e.NewSize.Width;
+            ContentFrame.Height = e.NewSize.Height - 10;
+            MainGrid.Height = e.NewSize.Height - 10;
         }
     }
 }

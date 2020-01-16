@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
@@ -28,6 +29,7 @@ namespace CS_SMS_APP
     {
         public string msg = "";
         public bool loaded = false;
+        private int m_errorCnt = 0;
         public Home()
         {
             this.InitializeComponent();
@@ -46,14 +48,23 @@ namespace CS_SMS_APP
                 //search printer
                 await PrinterSetting();
                 loaded = true;
+
+                if( m_errorCnt == 0)
+                    this.Frame.Navigate(typeof(Monitoring));
             }
         }
-        private async void UpdateUI(string msg)
+        private async void UpdateUI(string msg, string color = "black")
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
             () =>
             {
-                MainMsg.Text = msg;
+                //MainMsg.Text = msg;
+                Paragraph para = new Paragraph();
+                var brush = new SolidColorBrush(Windows.UI.Colors.Black);
+                if(color == "red")
+                    brush = new SolidColorBrush(Windows.UI.Colors.Red);
+                para.Inlines.Add(new Run { Text = msg, FontSize = 15, Foreground = brush });
+                MainMsg.Blocks.Add(para);
             });
         }
         private async Task<int> MainScanner()
@@ -62,21 +73,23 @@ namespace CS_SMS_APP
                 {
                     Log.Information("Main ScannerIP {0}, PORT {1} ",
                         global.banner.m_ip, global.banner.m_port);
-                    msg += "Main ScannerIP " + global.banner.m_ip + " PORT " + global.banner.m_port + "\n";
+                    msg = "Main ScannerIP " + global.banner.m_ip + " PORT " + global.banner.m_port;
                     UpdateUI(msg);
-                    msg += "Main Scanner Connecting...\n";
+                    msg = "Main Scanner Connecting...";
                     UpdateUI(msg);
                     int ret = global.banner.Connect();
                     if (ret == 0)
                     {
                         global.banner.Start();
-                        msg += "OK\n";
+                        msg = "OK";
+                        UpdateUI(msg);
                     }
                     else
                     {
-                        msg += "Error\n";
+                        msg = "Error";
+                        UpdateUI(msg, "red");
+                        m_errorCnt++;
                     }
-                    UpdateUI(msg);
                 });
             return 0;
         }
@@ -84,13 +97,20 @@ namespace CS_SMS_APP
         {
             await Task.Run(() =>
             {
-                msg += "Sub Scanner Scan\n";
+                msg = "Sub Scanner Scan";
                 UpdateUI(msg);
                 global.udp.Print();
                 global.udp.Scan();
                 Thread.Sleep(1000);
                 var devices = global.udp.m_deviceTable;
                 Log.Information(devices.Count().ToString());
+                if(devices.Count() != 3 )
+                {
+                    msg = "Sub Scanner Count Error";
+                    UpdateUI(msg, "red");
+                    m_errorCnt++;
+                }
+
                 //// todo refactory
                 string[] names = { "", "", "", "", "", "" };
                 int i = 0;
@@ -99,30 +119,34 @@ namespace CS_SMS_APP
                     //names[i] = device.Key.Replace("MAC=", "").Replace("PORT=54321","");
                     //names[i] = device.Key.Replace("MAC=", "").Replace("PORT=54321","") + "  IP" + device.Value.Key;
                     names[i] = device.Value.Key;
-                    msg += device.Value.Key + " FIND \n";
+                    msg = device.Value.Key + " FIND ";
+                    UpdateUI(msg);
                     i++;
                 }
-                UpdateUI(msg);
-                msg += "Sub Scanner Connect\n";
                 i = 1;
                 foreach (var device in devices)
                 {
+                    msg = "Sub Scanner Connect " + i.ToString();
+                    UpdateUI(msg);
                     global.udp.StartScaner(device.Value.Key, 54321, "Scanner_" + i.ToString());
                     Thread.Sleep(100);
                 }
 
                 foreach (var scanner in global.udp.m_scaner)
                 {
-                    msg += "Sub Scanner " + scanner.m_ip;
+                    msg = "Sub Scanner " + scanner.m_ip;
+                    UpdateUI(msg);
                     if (scanner.m_isCon)
                     {
-                        msg += " Connection OK\n";
+                        msg = " Connection OK";
+                        UpdateUI(msg);
                     }
                     else
                     {
-                        msg += " Connection ERROR\n";
+                        msg = " Connection ERROR";
+                        UpdateUI(msg, "red");
+                        m_errorCnt++;
                     }
-                    UpdateUI(msg);
                 }
             });
             return 0;
@@ -132,27 +156,29 @@ namespace CS_SMS_APP
         {
             await Task.Run(() =>
             {
-                msg += "Connect MDS\n";
+                msg = "Connect MDS";
                 UpdateUI(msg);
 #if DEBUG
                 global.md.m_host = "127.0.0.1";
 #endif
-                msg += "MDS HOST: " + global.md.m_host + " PORT: " + global.md.m_port + "\n";
+                msg = "MDS HOST: " + global.md.m_host + " PORT: " + global.md.m_port;
                 UpdateUI(msg);
                 if (global.md.Connection() == -1)
                 {
-                    msg += "Connection Error\n";
+                    msg = "Connection Error";
+                    UpdateUI(msg, "red");
+                    m_errorCnt++;
                 }
                 else
                 {
-                    msg += "Connection OK\n";
+                    msg = "Connection OK";
+                    UpdateUI(msg);
                     //global.md.StartClient();
                     Log.Information("Init MDS");
                     global.md.CancelPID();
                     Log.Information("ReadMDS");
                     global.md.ReadMDS();
                 }
-                UpdateUI(msg);
             });
             return 0;
         }
@@ -161,7 +187,7 @@ namespace CS_SMS_APP
         {
             await Task.Run(() =>
             {
-                msg += "Printer Setting\n";
+                msg = "Printer Setting";
                 UpdateUI(msg);
 
                 string host = "192.168.0.";
@@ -181,14 +207,20 @@ namespace CS_SMS_APP
                         {
                             Log.Information("Print" + i.ToString() + " error : " + error.ToString() + " data: " + data);
                             if (error == 0)
-                                msg += "Print" + i.ToString() + " OK model: " + data + "\n";
+                            {
+                                msg = "Print" + i.ToString() + " OK model: " + data;
+                                UpdateUI(msg);
+                            }
                             else
-                                msg += "Print" + i.ToString() + " error : " + error.ToString() + " data: " + data + "\n";
+                            {
+                                msg = "Print" + i.ToString() + " error : " + error.ToString() + " data: " + data;
+                                UpdateUI(msg, "red");
+                                m_errorCnt++;
+                            }
                         });
                     };
                     global.m_printer[i].PrintConnect();
                     Thread.Sleep(500);
-                    UpdateUI(msg);
                 }
 
             });

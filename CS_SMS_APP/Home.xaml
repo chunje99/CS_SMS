@@ -13,6 +13,7 @@
         <TextBlock>HOME</TextBlock>
         <TextBlock Margin="100, 100, 0,0 ">실행 순서 >> 메인 스캐너 연결 >> 서치 스캐너 연결 >> PLC 연결 >> 모니터링</TextBlock>
         <Button Content="자동연결" Margin="100,150,0,0" VerticalAlignment="Top" Click="AutoConnect"/>
-        <TextBlock Margin="100, 200, 0,0 " Name="MainMsg"></TextBlock>
+        <!--TextBlock Margin="100, 200, 0,0 " Name="MainMsg"></ -->
+        <RichTextBlock Margin="100,200,0,0" Name="MainMsg"></RichTextBlock>
     </Grid>
 </Page>

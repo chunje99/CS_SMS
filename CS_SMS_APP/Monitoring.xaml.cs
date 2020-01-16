@@ -97,6 +97,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
+            Log.Information("Monitoring OnLoad");
             SetSUBScanner();
         }
 
@@ -246,80 +247,55 @@ namespace CS_SMS_APP
                 global.api.FullAuto(module * 4 + chuteid + 1, onoff);
             });
         }
+        private async void Printing(int chute_num)
+        {
+            Log.Information("Printing chute_num {0} start", chute_num);
+            int locPrint = 0;
+            if (chute_num == 1 || chute_num == 3 || chute_num == 5)
+                locPrint = 0;
+            else if (chute_num == 2 || chute_num == 4 || chute_num == 6)
+                locPrint = 1;
+            else if (chute_num == 7 || chute_num == 9 || chute_num == 11)
+                locPrint = 2;
+            else if (chute_num == 8 || chute_num == 10 || chute_num == 12)
+                locPrint = 3;
+
+            PrintList p = await global.api.Print(chute_num, "", "");
+            global.m_printer[locPrint].PrintData(p);
+            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
+            });
+            Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint+1);
+        }
         private void OnEvent_PRINT(int module, int direct, int value)
         {
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 Log.Information("OnEvent_PRINT {0} {1} {2} START", module, direct, value);
                 if (value == 0)
                     return;
 
-                int locPrint = 0;
-                if (direct == 0)
+                int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;   ///left
+                int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2; ///right
+                if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1) ///left
                 {
-                    if (module == 0)
-                    {
-                        locPrint = 0;
-                        //1
-                    }
-                    else if (module == 1)
-                    {
-                        if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
-                        {
-                            locPrint = 0;
-                            //1
-                        }
-                        else
-                        {
-                            locPrint = 2;
-                            //3
-                        }
-                    }
-                    else if (module == 2)
-                    {
-                        locPrint = 2;
-                        //3
-                    }
+                    Printing(chute_num1);
                 }
-                else if (direct == 1)
+                else if (global.md.mdsData.moduleInfos[module].printInfos[direct].rightChute == 1) ///right
                 {
-                    if (module == 0)
-                    {
-                        locPrint = 1;
-                        //2
-                    }
-                    else if (module == 1)
-                    {
-                        if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1)
-                        {
-                            locPrint = 3;
-                            //1
-                        }
-                        else
-                        {
-                            locPrint = 1;
-                            //3
-                        }
-                    }
-                    else if (module == 2)
-                    {
-                        locPrint = 3;
-                        //4
-                    }
+                    Printing(chute_num2);
                 }
-                int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;
-                int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
-                PrintList p = await global.api.Print(chute_num1, "", "");
-                global.m_printer[locPrint].PrintData(p);
-                PrintList p2 = await global.api.Print(chute_num2, "", "");
-                global.m_printer[locPrint].PrintData(p2);
-                var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                else if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 0 &&   ///left & right
+                         global.md.mdsData.moduleInfos[module].printInfos[direct].rightChute == 0)
                 {
-                    UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
-                });
+                    Printing(chute_num1);
+                    Printing(chute_num2);
+                }
                 Log.Information("OnEvent_PRINT {0} {1} {2} END", module, direct, value);
             });
         }
+
         private void OnEvent_PLUS(int module, int direct, int value)
         {
             Task.Run(() =>
