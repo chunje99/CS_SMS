@@ -6,16 +6,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
+    Background="#DDE7F3" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"
     SizeChanged="PageSizeChanged"
     >
 
     <Grid MinWidth="1100" Width="auto" Height="auto" MinHeight="950" Name="MainGrid">
         <NavigationView x:Name="NavView" ItemInvoked="NavView_ItemInvoked"
-            Loaded="NavView_Loaded" IsSettingsVisible="False">
+            Loaded="NavView_Loaded" IsSettingsVisible="False" OpenPaneLength="240">
             <NavigationView.Resources>
-                <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="DeepSkyBlue"/>
-                <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="DeepSkyBlue" />
+                <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#337BD2"/>
+                <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#337BD2" />
+                <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="Blue"/>
 
                 <!--SolidColorBrush x:Key="NavigationViewItemForegroundPointerOver" Color="Blue"/>
                 <SolidColorBrush x:Key="NavigationViewItemForegroundSelected" Color="Blue"/>
@@ -24,21 +25,19 @@
                 <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPressed" Color="Blue"/ -->
             </NavigationView.Resources>
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home" Foreground="White">
+                <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home" Foreground="White" FontSize="14">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE10F;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItemSeparator/>
-                <NavigationViewItemHeader Content="Main pages" Foreground="White"/>
-                <NavigationViewItem x:Uid="MainScanner" Icon="Camera" Content="Main Sacnner" Tag="scanner" Foreground="White"/>
-                <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="Search Sacnners" Tag="scanners" Foreground="White"/>
-                <NavigationViewItem x:Uid="ConnectMDS" Icon="Remote" Content="Connect MDS" Tag="plc" Foreground="White"/>
-                <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="Printer Setting" Tag="printer" Foreground="White"/>
-                <NavigationViewItem x:Uid="Monitoring" Icon="View" Content="Monitoring" Tag="monitoring" Foreground="White"/>
-                <NavigationViewItem x:Uid="SearchBox" Icon="View" Content="박스검색" Tag="searchbox" Foreground="White"/>
-                <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처할당" Tag="webview" Foreground="White"/>
-                <NavigationViewItem x:Uid="Logs" Icon="Library" Content="Logs" Tag="logs" Foreground="White"/>
+                <NavigationViewItem x:Uid="MainScanner" Icon="Camera" Content="Main Sacnner" Tag="scanner" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="Search Sacnners" Tag="scanners" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="ConnectMDS" Icon="Remote" Content="Connect MDS" Tag="plc" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="Printer Setting" Tag="printer" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="Monitoring" Icon="View" Content="Monitoring" Tag="monitoring" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="SearchBox" Icon="View" Content="박스검색" Tag="searchbox" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처할당" Tag="webview" Foreground="White" FontSize="14"/>
+                <NavigationViewItem x:Uid="Logs" Icon="Library" Content="Logs" Tag="logs" Foreground="White" FontSize="14"/>
             </NavigationView.MenuItems>
 
             <Frame x:Name="ContentFrame" Width="auto" Margin="24" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Left" VerticalContentAlignment="Top">

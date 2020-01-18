@@ -103,6 +103,7 @@ namespace CS_SMS_APP
 
         private async void Alert(string msg)
         {
+            Log.Information("Alert:" + msg);
             // Create the message dialog and set its content
             var messageDialog = new MessageDialog(msg);
 
