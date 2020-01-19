@@ -71,6 +71,7 @@ namespace CS_SMS_APP
             Task.Run(async () =>
             {
                 Product pData = new Product();
+                int taskCnt = 0;
                 while (true)
                 {
                     if (m_currentData.IsEmpty && m_queueData.TryDequeue(out pData))
@@ -78,7 +79,7 @@ namespace CS_SMS_APP
                         //m_monitorMutex.WaitOne();
                         m_currentData.Enqueue(pData);
                         ///MakePID
-                        Log.Information("=======Make PID======");
+                        Log.Information("=======Make PID====== {0}", taskCnt++);
                         PIDData pidData = await global.api.GetPID();
                         if (pidData.status == "OK")
                         {
@@ -90,7 +91,7 @@ namespace CS_SMS_APP
                             Alert(pidData.msg);
                         //m_monitorMutex.ReleaseMutex();
                     }
-                    Thread.Sleep(50);
+                    //Thread.Sleep(50);
                 }
             });
         }
@@ -135,6 +136,7 @@ namespace CS_SMS_APP
         {
             global.md.onEvent = (MDS_EVENT eType, int id0, int id1, int id2) =>
             {
+                Log.Information("EVENT {0} {1} {2} {3}", eType, id0, id1, id2);
                 switch (eType)
                 {
                     case MDS_EVENT.PID:
@@ -366,6 +368,7 @@ namespace CS_SMS_APP
         }
         private async void UpdateUI(TextBox tbox, string barcode)
         {
+            Log.Information("UpdateUI : " + barcode);
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
             () =>
             {

@@ -22,12 +22,12 @@
             <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" BorderThickness="1" Name="Monitoring_input" KeyDown="Input_Keydown"/>
 
             <TextBlock HorizontalAlignment="Left" Margin="60,102,0,0" Text="PID" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <TextBox HorizontalAlignment="Left" Margin="152,102,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" Name="Monitoring_pid"/>
+            <TextBox HorizontalAlignment="Left" Margin="152,102,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" BorderThickness="1" Name="Monitoring_pid"/>
             <TextBlock HorizontalAlignment="Left" Margin="470,102,0,0" Text="chute" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <TextBox HorizontalAlignment="Left" Margin="562,102,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" Name="Monitoring_chuteid"/>
+            <TextBox HorizontalAlignment="Left" Margin="562,102,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" BorderThickness="1" Name="Monitoring_chuteid"/>
 
             <TextBlock HorizontalAlignment="Left" Margin="880,102,0,0" Text="printer" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <TextBox HorizontalAlignment="Left" Margin="972,102,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" Name="Monitoring_printer"/>
+            <TextBox HorizontalAlignment="Left" Margin="972,102,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" BorderThickness="1" Name="Monitoring_printer"/>
 
             <Button Content="묶음처리" Margin="864,159,0,0" VerticalAlignment="Top" Width="160" Height="40" Name="Monitoring_bundle" Click="Bundle_Click"  Background="#337BD2" Foreground="White">
                 <Button.Flyout>
@@ -52,7 +52,7 @@
                             <Grid Grid.Row="0">
                                 <TextBlock HorizontalAlignment="Left" Margin="60,31,0,0" FontSize="18" Text="묶음처리" VerticalAlignment="Top" FontWeight="Bold" />
                                 <TextBlock HorizontalAlignment="Left" Margin="882,40,0,0" FontSize="14" Text="직접입력 " VerticalAlignment="Top"/>
-                                <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Bundle_input" KeyDown="Input_Keydown"/>
+                                <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" BorderThickness="1" Name="Bundle_input" KeyDown="Input_Keydown"/>
                             </Grid>
                             <Grid Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
                                 <Grid.ColumnDefinitions>
@@ -116,7 +116,7 @@
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                             <TextBlock Text="{x:Bind remain_qty}" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                            <TextBox Text="{x:Bind cnt, Mode=OneWay}" FontSize="14" Grid.Column="8" HorizontalAlignment="Center" KeyDown="Bundle_Keydown" Name="{x:Bind idx}" DataContextChanged="BundleChanged"/>
+                                            <TextBox Text="{x:Bind cnt, Mode=OneWay}" FontSize="14" Grid.Column="8" HorizontalAlignment="Center" BorderThickness="1" KeyDown="Bundle_Keydown" Name="{x:Bind idx}" DataContextChanged="BundleChanged"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
@@ -149,7 +149,7 @@
                             <Grid Grid.Row="0">
                                 <TextBlock HorizontalAlignment="Left" Margin="60,31,0,0" FontSize="18" Text="미처리" VerticalAlignment="Top" FontWeight="Bold" />
                                 <TextBlock HorizontalAlignment="Left" Margin="882,40,0,0" Text="직접입력 " FontSize="14" VerticalAlignment="Top"/>
-                                <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Name="Remain_input" KeyDown="Input_Keydown"/>
+                                <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" BorderThickness="1" Name="Remain_input" KeyDown="Input_Keydown"/>
                             </Grid>
                             <Grid Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
                                 <Grid.ColumnDefinitions>
@@ -213,7 +213,7 @@
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                             <TextBlock Text="{x:Bind remain_qty}" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="7" VerticalAlignment="Center"/>
-                                            <TextBox Text="{x:Bind cnt, Mode=OneWay}" FontSize="14" Grid.Column="8" HorizontalAlignment="Center" KeyDown="Remain_Keydown" Name="{x:Bind idx}" DataContextChanged="RemainChanged"/>
+                                            <TextBox Text="{x:Bind cnt, Mode=OneWay}" FontSize="14" Grid.Column="8" HorizontalAlignment="Center" KeyDown="Remain_Keydown" BorderThickness="1" Name="{x:Bind idx}" DataContextChanged="RemainChanged"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
