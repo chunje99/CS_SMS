@@ -98,6 +98,7 @@ namespace CS_SMS_APP
         private void OnLoad(object sender, RoutedEventArgs e)
         {
             Log.Information("Monitoring OnLoad");
+            global.m_mainTopTB.Text = "작업";
             SetSUBScanner();
         }
 
@@ -388,6 +389,12 @@ namespace CS_SMS_APP
         private void Bundle_Click(object sender, RoutedEventArgs e)
         {
             bundleList.Clear();
+            var options = new FlyoutShowOptions()
+            {
+                Position = new Point(0,100),
+                ShowMode = FlyoutShowMode.Transient
+            };
+            Monitoring_bundle.Flyout.ShowAt(Monitoring_Main_Grid as UIElement, options);
         }
 
         private void Bundle_Keydown(object sender, KeyRoutedEventArgs e)
@@ -455,6 +462,12 @@ namespace CS_SMS_APP
         {
             Remain_input.Text = "";
             remainList.Clear();
+            var options = new FlyoutShowOptions()
+            {
+                Position = new Point(0,100),
+                ShowMode = FlyoutShowMode.Transient
+            };
+            Monitoring_remain.Flyout.ShowAt(Monitoring_Main_Grid as UIElement, options);
         }
 
         private void Remain_Keydown(object sender, KeyRoutedEventArgs e)
@@ -717,6 +730,12 @@ namespace CS_SMS_APP
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Log.Information("===Cancel======");
+            var options = new FlyoutShowOptions()
+            {
+                Position = new Point(0,100),
+                ShowMode = FlyoutShowMode.Transient
+            };
+            Monitoring_cancel.Flyout.ShowAt(Monitoring_Main_Grid as UIElement, options);
         }
 
         private void Cancel_Confirm(object sender, RoutedEventArgs e)

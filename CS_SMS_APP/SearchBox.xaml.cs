@@ -42,6 +42,7 @@ namespace CS_SMS_APP
 
         private async void OnLoad(object sender, RoutedEventArgs e)
         {
+            global.m_mainTopTB.Text = "박스 목록";
             SetSUBScanner();
             BoxList bList = await global.api.Box("", "", "");
             boxList.Clear();

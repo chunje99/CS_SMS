@@ -31,5 +31,10 @@ namespace CS_SMS_APP
             MyWebview.Source = siteUri;
 #endif
         }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            global.m_mainTopTB.Text = "거래처 할당";
+        }
     }
 }

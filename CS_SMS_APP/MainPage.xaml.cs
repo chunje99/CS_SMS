@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using CS_SMS_LIB;
 using System.Text;
 using Serilog;
+using Windows.UI.ViewManagement;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
 
@@ -31,6 +32,7 @@ namespace CS_SMS_APP
         public static TextBox[] m_scanner = new TextBox[5];
         public static Queue<string> m_msgQueue = new Queue<string>();
         public static List<CPrinter> m_printer = new List<CPrinter>(new CPrinter[] { new CPrinter(), new CPrinter(), new CPrinter(), new CPrinter()});
+        public static TextBlock m_mainTopTB = new TextBlock();
         public global()
         {
         }
@@ -40,8 +42,12 @@ namespace CS_SMS_APP
     {
         public MainPage()
         {
+            global.m_mainTopTB.Text = "Home";
             global.udp.Start();
             this.InitializeComponent();
+            ApplicationView.PreferredLaunchViewSize = new Size(1600, 960);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -81,39 +87,30 @@ namespace CS_SMS_APP
             switch (item.Tag)
             {
                 case "home":
-                    MainTopText.Text = "Home";
                     ContentFrame.Navigate(typeof(Home));
                     break;
                 case "scanner":
-                    MainTopText.Text = "고정 스캐너";
                     ContentFrame.Navigate(typeof(MainScanner));
                     break;
                 case "scanners":
-                    MainTopText.Text = "바코드 스캐너";
                     ContentFrame.Navigate(typeof(SearchScanner));
                     break;
                 case "plc":
-                    MainTopText.Text = "PLC 접속";
                     ContentFrame.Navigate(typeof(ConnectPLC));
                     break;
                 case "monitoring":
-                    MainTopText.Text = "작업";
                     ContentFrame.Navigate(typeof(Monitoring));
                     break;
                 case "searchbox":
-                    MainTopText.Text = "박스 검색";
                     ContentFrame.Navigate(typeof(SearchBox));
                     break;
                 case "printer":
-                    MainTopText.Text = "프린트 테스트";
                     ContentFrame.Navigate(typeof(PrinterSetting));
                     break;
                 case "webview":
-                    MainTopText.Text = "거래처 할당";
                     ContentFrame.Navigate(typeof(Webview));
                     break;
                 case "logs":
-                    MainTopText.Text = "LOGS";
                     ContentFrame.Navigate(typeof(Logs));
                     break;
 

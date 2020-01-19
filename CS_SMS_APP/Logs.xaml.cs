@@ -131,5 +131,10 @@ namespace CS_SMS_APP
         {
             CheckLog();
         }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            global.m_mainTopTB.Text = "LOGS";
+        }
     }
 }

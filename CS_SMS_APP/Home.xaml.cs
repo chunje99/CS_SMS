@@ -50,7 +50,9 @@ namespace CS_SMS_APP
                 loaded = true;
 
                 if( m_errorCnt == 0)
+                {
                     this.Frame.Navigate(typeof(Monitoring));
+                }
             }
         }
         private async void UpdateUI(string msg, string color = "black")
@@ -225,6 +227,11 @@ namespace CS_SMS_APP
 
             });
             return 0;
+        }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            global.m_mainTopTB.Text = "Home";
         }
     }
 }

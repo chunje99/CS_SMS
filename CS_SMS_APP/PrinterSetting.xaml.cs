@@ -110,5 +110,10 @@ namespace CS_SMS_APP
                 tbox.Text = data;
             });
         }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            global.m_mainTopTB.Text = "프린터 테스트";
+        }
     }
 }

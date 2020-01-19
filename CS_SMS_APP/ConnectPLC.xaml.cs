@@ -50,6 +50,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
+            global.m_mainTopTB.Text = "PLC 연결";
             if(global.md.m_isCon)
             {
                 PLC_Status.Text = "Connected";

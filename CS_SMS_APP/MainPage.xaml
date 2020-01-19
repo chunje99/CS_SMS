@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="White">
             <Image Source="/Assets/img-logo.png" Margin="56,6,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="128" Height="52"/>
-            <TextBlock Margin="278,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" Foreground="#337BD2" Name="MainTopText"><Bold>Home</Bold></TextBlock>
+            <TextBlock Margin="278,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="24" Foreground="#337BD2" Name="MainTopText" Text="{x:Bind local:global.m_mainTopTB.Text, Mode=TwoWay}" FontWeight="Bold" />
         </Grid>
         <Grid Grid.Row="1" MinWidth="1100" Width="auto" Height="auto" MinHeight="950" Name="MainGrid">
             <NavigationView x:Name="NavView" ItemInvoked="NavView_ItemInvoked"
@@ -42,11 +42,11 @@
                     <NavigationViewItem x:Uid="Monitoring" Icon="View" Content="작업" Tag="monitoring" Foreground="White" FontSize="14"/>
                     <NavigationViewItemSeparator/>
                     <NavigationViewItem x:Uid="MainScanner" Icon="Camera" Content="고정 스캐너" Tag="scanner" Foreground="White" FontSize="14"/>
-                    <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="바코드 스캐너" Tag="scanners" Foreground="White" FontSize="14"/>
-                    <NavigationViewItem x:Uid="ConnectMDS" Icon="Remote" Content="PLC 접속" Tag="plc" Foreground="White" FontSize="14"/>
-                    <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="프리터 테스트" Tag="printer" Foreground="White" FontSize="14"/>
+                    <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="핸드 스캐너" Tag="scanners" Foreground="White" FontSize="14"/>
+                    <NavigationViewItem x:Uid="ConnectMDS" Icon="Remote" Content="PLC 연결" Tag="plc" Foreground="White" FontSize="14"/>
+                    <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="프린터 테스트" Tag="printer" Foreground="White" FontSize="14"/>
                     <NavigationViewItemSeparator/>
-                    <NavigationViewItem x:Uid="SearchBox" Icon="View" Content="박스 검색" Tag="searchbox" Foreground="White" FontSize="14"/>
+                    <NavigationViewItem x:Uid="SearchBox" Icon="View" Content="박스 목록" Tag="searchbox" Foreground="White" FontSize="14"/>
                     <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처 할당" Tag="webview" Foreground="White" FontSize="14"/>
                     <NavigationViewItemSeparator/>
                     <NavigationViewItem x:Uid="Logs" Icon="Library" Content="Logs" Tag="logs" Foreground="White" FontSize="14"/>
