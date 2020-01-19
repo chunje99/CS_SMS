@@ -11,7 +11,6 @@
     >
 
     <Grid>
-        <TextBlock>Main Scanner</TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="HOST " TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="200,100,0,0" Text="192.168.0.220" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="Scanner_Host"/>
         <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="PORT" TextWrapping="Wrap" VerticalAlignment="Top"/>

@@ -12,7 +12,6 @@
     Loaded="OnLoad"
     >
     <Grid>
-        <TextBlock>박스 검색</TextBlock>
         <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,50,0,0" Width="120" Name="SearchBox_Key" SelectionChanged="OnChange">
             <x:String>상품코드</x:String>
             <x:String>박스바코드</x:String>

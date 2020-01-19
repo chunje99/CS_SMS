@@ -12,7 +12,6 @@
         <ListView SelectionMode="None">
             <Grid>
                 <StackPanel>
-                    <TextBlock>로그</TextBlock>
                     <TextBox Text="" TextWrapping="Wrap" Name="Logs_Location"/>
                     <Button Click="Button_Click">새로고침</Button>
                     <TextBlock x:Name="LOGS" TextWrapping="Wrap" Text="" Width="1000" ></TextBlock>

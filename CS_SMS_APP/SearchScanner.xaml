@@ -10,7 +10,6 @@
     Loaded="OnLoad" >
 
     <Grid>
-        <TextBlock>Search Scanner</TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="152,101,0,0" Text="스캐너 MAC  -" TextWrapping="Wrap" VerticalAlignment="Top" Width="91" Height="26" TextAlignment="Left" />
         <TextBlock HorizontalAlignment="Left" Margin="300,60,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="320,60,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Height="39" Width="140"  Name="Scanner_1"/>

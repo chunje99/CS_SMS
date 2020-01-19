@@ -81,30 +81,39 @@ namespace CS_SMS_APP
             switch (item.Tag)
             {
                 case "home":
+                    MainTopText.Text = "Home";
                     ContentFrame.Navigate(typeof(Home));
                     break;
                 case "scanner":
+                    MainTopText.Text = "고정 스캐너";
                     ContentFrame.Navigate(typeof(MainScanner));
                     break;
                 case "scanners":
+                    MainTopText.Text = "바코드 스캐너";
                     ContentFrame.Navigate(typeof(SearchScanner));
                     break;
                 case "plc":
+                    MainTopText.Text = "PLC 접속";
                     ContentFrame.Navigate(typeof(ConnectPLC));
                     break;
                 case "monitoring":
+                    MainTopText.Text = "작업";
                     ContentFrame.Navigate(typeof(Monitoring));
                     break;
                 case "searchbox":
+                    MainTopText.Text = "박스 검색";
                     ContentFrame.Navigate(typeof(SearchBox));
                     break;
                 case "printer":
+                    MainTopText.Text = "프린트 테스트";
                     ContentFrame.Navigate(typeof(PrinterSetting));
                     break;
                 case "webview":
+                    MainTopText.Text = "거래처 할당";
                     ContentFrame.Navigate(typeof(Webview));
                     break;
                 case "logs":
+                    MainTopText.Text = "LOGS";
                     ContentFrame.Navigate(typeof(Logs));
                     break;
 

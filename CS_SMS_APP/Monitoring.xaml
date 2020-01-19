@@ -10,9 +10,7 @@
     Background="#DDE7F3"
     Loaded="OnLoad"
     >
-
-    <Grid>
-        <TextBlock>Monitoring</TextBlock>
+    <Grid Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
         <TextBlock HorizontalAlignment="Left" Margin="52,40,0,0" Text="스캐너 " TextWrapping="Wrap" VerticalAlignment="Top"/>
 
         <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Margin="39,77,0,0" Background="White" Width="1260" Height="229">
