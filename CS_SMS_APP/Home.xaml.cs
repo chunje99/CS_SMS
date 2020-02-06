@@ -40,13 +40,13 @@ namespace CS_SMS_APP
         {
             if (!loaded)
             {
-                int t = await MainScanner();
-                //sub scanner
+                //int t = await MainScanner();
+                ////sub scanner
                 await SubScanner();
                 //connect plc
                 await ConnectPLC();
                 //search printer
-                await PrinterSetting();
+                //await PrinterSetting();
                 loaded = true;
 
                 if( m_errorCnt == 0)
@@ -192,14 +192,14 @@ namespace CS_SMS_APP
                 msg = "Printer Setting";
                 UpdateUI(msg);
 
-                string host = "192.168.0.";
+                string host = "172.16.0.";
                 int idx = 161;
                 string port = "9100";
                 for( int i = 0; i < 4; i++)
                 {
                     global.m_printer[i].m_port = port;
 #if DEBUG
-                    global.m_printer[i].m_host = "192.168.0.13";
+                    global.m_printer[i].m_host = "172.16.0.13";
 #else
                     global.m_printer[i].m_host = host + (idx + i).ToString();
 #endif

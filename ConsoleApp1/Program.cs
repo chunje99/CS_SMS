@@ -84,7 +84,7 @@ namespace ConsoleApp1
         static void Test2()
         {
             CBanner banner = new CBanner();
-            banner.m_ip = "192.168.0.100";
+            banner.m_ip = "172.16.0.100";
             banner.m_port = 5123;
             Log.Information( "Connect : " + banner.Connect());
             banner.m_port = 51236;
