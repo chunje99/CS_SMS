@@ -53,6 +53,7 @@
                                 <TextBlock HorizontalAlignment="Left" Margin="60,31,0,0" FontSize="18" Text="묶음처리" VerticalAlignment="Top" FontWeight="Bold" />
                                 <TextBlock HorizontalAlignment="Left" Margin="882,40,0,0" FontSize="14" Text="직접입력 " VerticalAlignment="Top"/>
                                 <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" BorderThickness="1" Name="Bundle_input" KeyDown="Input_Keydown"/>
+                                <Button HorizontalAlignment="Left" Margin="1200,0,0,0" VerticalAlignment="Top" Click="Bundle_Close">X</Button>
                             </Grid>
                             <Grid Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
                                 <Grid.ColumnDefinitions>
@@ -72,9 +73,9 @@
                                 Grid.Column="1" VerticalAlignment="Center"/>
                                 <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                <TextBlock Text="거래처코드" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="작업장" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                <TextBlock Text="거래처명" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="LOC_CD" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
                                 <TextBlock Text="낱개수량" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
@@ -150,6 +151,7 @@
                                 <TextBlock HorizontalAlignment="Left" Margin="60,31,0,0" FontSize="18" Text="미처리" VerticalAlignment="Top" FontWeight="Bold" />
                                 <TextBlock HorizontalAlignment="Left" Margin="882,40,0,0" Text="직접입력 " FontSize="14" VerticalAlignment="Top"/>
                                 <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" BorderThickness="1" Name="Remain_input" KeyDown="Input_Keydown"/>
+                                <Button HorizontalAlignment="Left" Margin="1200,0,0,0" VerticalAlignment="Top" Click="Remain_Close">X</Button>
                             </Grid>
                             <Grid Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
                                 <Grid.ColumnDefinitions>
@@ -169,9 +171,9 @@
                                 Grid.Column="1" VerticalAlignment="Center"/>
                                 <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                <TextBlock Text="거래처코드" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="작업장" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                <TextBlock Text="거래처명" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="LOC_CD" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
                                 <TextBlock Text="낱개수량" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
@@ -227,9 +229,9 @@
                     <Flyout LightDismissOverlayMode="On" Placement="Full">
                         <Flyout.FlyoutPresenterStyle>
                             <Style TargetType="FlyoutPresenter">
-                                <Setter Property="MinHeight" Value="150"/>
+                                <Setter Property="MinHeight" Value="200"/>
                                 <Setter Property="MinWidth" Value="1260"/>
-                                <Setter Property="MaxHeight" Value="150"/>
+                                <Setter Property="MaxHeight" Value="200"/>
                                 <Setter Property="MaxWidth" Value="1260"/>
                                 <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
                                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
@@ -241,9 +243,13 @@
                         <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="1260">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"/>
+                                <RowDefinition Height="50"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
+                            <Grid Grid.Row="0">
+                                <Button HorizontalAlignment="Left" Margin="1200,0,0,0" VerticalAlignment="Top" Click="Cancel_Close">X</Button>
+                            </Grid>
+                            <Grid Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition />
@@ -261,9 +267,9 @@
                                 Grid.Column="1" VerticalAlignment="Center"/>
                                 <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                                <TextBlock Text="거래처코드" FontSize="14" HorizontalAlignment="Center" 
+                                <TextBlock Text="작업장" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="3" VerticalAlignment="Center"/>
-                                <TextBlock Text="거래처명" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="LOC_CD" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="4" VerticalAlignment="Center"/>
                                 <TextBlock Text="낱개수량" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="5" VerticalAlignment="Center"/>
@@ -274,7 +280,7 @@
                                 <TextBlock Text="취소" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                             </Grid>
-                            <ListView Grid.Row="1"  x:Name="CancelData" ItemsSource="{x:Bind cancelList}" SelectionMode="None">
+                            <ListView Grid.Row="2"  x:Name="CancelData" ItemsSource="{x:Bind cancelList}" SelectionMode="None">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="CS_SMS_LIB:Product">
                                         <Grid Width="1260">
@@ -339,9 +345,9 @@
                                 Grid.Column="0" VerticalAlignment="Center"/>
                             <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center"
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                            <TextBlock Text="거래처코드" FontSize="16" HorizontalAlignment="Center"
+                            <TextBlock Text="작업장" FontSize="16" HorizontalAlignment="Center"
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                            <TextBlock Text="거래처명" FontSize="16" HorizontalAlignment="Center"
+                            <TextBlock Text="LOC_CD" FontSize="16" HorizontalAlignment="Center"
                                 Grid.Column="3" VerticalAlignment="Center"/>
                             <TextBlock Text="낱개수량" FontSize="16" HorizontalAlignment="Center"
                                 Grid.Column="4" VerticalAlignment="Center"/>

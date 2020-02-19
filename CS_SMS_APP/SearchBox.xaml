@@ -15,9 +15,9 @@
         <ComboBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,50,0,0" Width="120" Name="SearchBox_Key" SelectionChanged="OnChange">
             <x:String>상품코드</x:String>
             <x:String>박스바코드</x:String>
-            <x:String>거래처코드</x:String>
+            <x:String>작업장</x:String>
             <x:String>박스번호</x:String>
-            <x:String>거래처명</x:String>
+            <x:String>LOC_CD</x:String>
         </ComboBox>
         <TextBox HorizontalAlignment="Left" VerticalAlignment="Top" Margin="300,50,0,0" Text="" TextWrapping="Wrap" Width="200" Name="SearchBox_Value" KeyDown="OnKeyDown"/>
         <ListView Margin="50,130,0,0" x:Name="listView">
@@ -40,9 +40,9 @@
                                 Grid.Column="0" VerticalAlignment="Center"/>
                     <TextBlock Text="BOX NUM" Foreground="Teal" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                    <TextBlock Text="거래처코드" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                    <TextBlock Text="작업장" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="2" VerticalAlignment="Center"/>
-                    <TextBlock Text="거래처명" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
+                    <TextBlock Text="LOC_CD" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="3" VerticalAlignment="Center"/>
                     <TextBlock Text="슈트" Foreground="Teal" FontSize="14" HorizontalAlignment="Center"
                                 Grid.Column="4" VerticalAlignment="Center"/>

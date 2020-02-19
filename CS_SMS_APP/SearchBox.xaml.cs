@@ -132,9 +132,9 @@ namespace CS_SMS_APP
                 searchKey = "box_num";
             else if (key == "박스바코드")
                 searchKey = "box_barcode";
-            else if (key == "거래처코드")
+            else if (key == "작업장")
                 searchKey = "cust_cd";
-            else if (key == "거래처명")
+            else if (key == "LOC_CD")
                 searchKey = "cust_nm";
             else if (key == "상품코드")
                 searchKey = "sku_cd";

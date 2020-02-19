@@ -797,5 +797,20 @@ namespace CS_SMS_APP
                 textbox.Focus(FocusState.Programmatic);
             }
         }
+
+        private void Bundle_Close(object sender, RoutedEventArgs e)
+        {
+            Monitoring_bundle.Flyout.Hide();
+        }
+
+        private void Remain_Close(object sender, RoutedEventArgs e)
+        {
+            Monitoring_remain.Flyout.Hide();
+        }
+
+        private void Cancel_Close(object sender, RoutedEventArgs e)
+        {
+            Monitoring_cancel.Flyout.Hide();
+        }
     }
 }
