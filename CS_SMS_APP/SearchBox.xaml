@@ -68,9 +68,9 @@
                                 Grid.Column="0" VerticalAlignment="Center"/>
                                 <TextBlock Text="{x:Bind box_num}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="1" VerticalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
-                                Grid.Column="2" VerticalAlignment="Center"/>
                                 <TextBlock Text="{x:Bind cust_nm}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind cust_cd}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="3" VerticalAlignment="Center"/>
                                 <TextBlock Text="{x:Bind chute_num}" Foreground="Teal" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="4" VerticalAlignment="Center"/>

@@ -133,9 +133,9 @@ namespace CS_SMS_APP
             else if (key == "박스바코드")
                 searchKey = "box_barcode";
             else if (key == "작업장")
-                searchKey = "cust_cd";
-            else if (key == "LOC_CD")
                 searchKey = "cust_nm";
+            else if (key == "LOC_CD")
+                searchKey = "cust_cd";
             else if (key == "상품코드")
                 searchKey = "sku_cd";
             BoxList bList = await global.api.Box(searchKey, value, "");
