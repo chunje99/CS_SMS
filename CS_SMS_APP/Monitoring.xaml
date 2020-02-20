@@ -384,7 +384,7 @@
                                     <TextBlock Text="{x:Bind total_qty}" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="4" VerticalAlignment="Center"/>
                                     <TextBlock Text="{x:Bind leave_qty}" FontSize="14"  HorizontalAlignment="Center"
-                                Grid.Column="5" VerticalAlignment="Center"/>
+                                Grid.Column="5" VerticalAlignment="Center" Foreground="{x:Bind leave_qty_color}"/>
                                     <TextBlock Text="{x:Bind remain_qty}" FontSize="14"  HorizontalAlignment="Center"
                                 Grid.Column="6" VerticalAlignment="Center"/>
                                     <TextBlock Text="{x:Bind chute_num}" FontSize="14"  HorizontalAlignment="Center"

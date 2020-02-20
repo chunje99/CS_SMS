@@ -445,6 +445,9 @@ namespace CS_SMS_APP
                                 if (data.seq == d.seq)
                                 {
                                     data.highlight = "yellow";
+                                    d.highlight = "yellow";
+                                    data.leave_qty_color = "red";
+                                    d.leave_qty_color = "red";
                                 }
                                 mdsList.Add(d);
                             }
@@ -586,6 +589,10 @@ namespace CS_SMS_APP
                     }
                     data.idx = idx++;
                     bundleList.Add(data);
+                    ///todo same seq
+                    //PListData d = new PListData(data);
+                    //d.highlight = "yellow";
+                    //d.leave_qty_color = "red";
                     mdsList.Add(data);
                 }
             }
@@ -631,6 +638,10 @@ namespace CS_SMS_APP
                     }
                     data.idx = idx++;
                     remainList.Add(data);
+                    ///todo same seq
+                    //PListData d = new PListData(data);
+                    //d.highlight = "yellow";
+                    //d.leave_qty_color = "red";
                     mdsList.Add(data);
                 }
             }
@@ -669,6 +680,9 @@ namespace CS_SMS_APP
                 {
                     //if (data.highlight == "ON")
                     //    data.color = "Aqua";
+                    if (data.highlight == "yellow")
+                        data.leave_qty_color = "red";
+                    Log.Information(data.highlight);
                     mdsList.Add(data);
                 }
             }

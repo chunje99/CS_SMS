@@ -597,6 +597,7 @@ namespace CS_SMS_LIB
         public string cust_nm { get; set; }
         public int total_qty { get; set; }
         public int leave_qty { get; set; }
+        public string leave_qty_color { get; set; }
         public int remain_qty { get; set; }
         public int cnt { get; set; } = 0;
         public PListData()
@@ -611,8 +612,25 @@ namespace CS_SMS_LIB
             cust_nm = "";
             total_qty = 0;
             leave_qty = 0;
+            leave_qty_color = "black";
             remain_qty = 0;
             cnt = 0;
+        }
+        public PListData(PListData p)
+        {
+            idx = p.idx;
+            seq = p.seq;
+            highlight = p.highlight;
+            chute_num = p.chute_num;
+            sku_cd = p.sku_cd;
+            sku_nm = p.sku_nm;
+            cust_cd = p.cust_cd;
+            cust_nm = p.cust_nm;
+            total_qty = p.total_qty;
+            leave_qty = p.leave_qty;
+            leave_qty_color = p.leave_qty_color;
+            remain_qty = p.remain_qty;
+            cnt = p.cnt;
         }
     }
 
