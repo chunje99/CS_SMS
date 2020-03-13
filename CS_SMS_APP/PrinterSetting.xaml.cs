@@ -113,7 +113,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
-            global.m_mainTopTB.Text = "프린터 테스트";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "프린터 테스트";
         }
     }
 }

@@ -231,7 +231,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
-            global.m_mainTopTB.Text = "Home";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "Home";
         }
     }
 }

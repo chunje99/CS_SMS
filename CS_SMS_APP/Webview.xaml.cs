@@ -34,7 +34,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
-            global.m_mainTopTB.Text = "거래처 할당";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "거래처 할당";
         }
     }
 }

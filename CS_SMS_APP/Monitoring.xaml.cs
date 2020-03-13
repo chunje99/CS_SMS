@@ -99,7 +99,7 @@ namespace CS_SMS_APP
         private void OnLoad(object sender, RoutedEventArgs e)
         {
             Log.Information("Monitoring OnLoad");
-            global.m_mainTopTB.Text = "작업";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "작업 관리";
             SetSUBScanner();
         }
 
