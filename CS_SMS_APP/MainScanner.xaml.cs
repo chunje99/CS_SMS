@@ -50,7 +50,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
-            global.m_mainTopTB.Text = "고정 스캐너";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "고정 스캐너";
             if(global.banner.m_isCon)
             {
                 Scanner_Status.Text = "Connected";

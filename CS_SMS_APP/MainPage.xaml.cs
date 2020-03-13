@@ -33,6 +33,7 @@ namespace CS_SMS_APP
         public static Queue<string> m_msgQueue = new Queue<string>();
         public static List<CPrinter> m_printer = new List<CPrinter>(new CPrinter[] { new CPrinter(), new CPrinter(), new CPrinter(), new CPrinter()});
         public static TextBlock m_mainTopTB = new TextBlock();
+        public static string m_mainTopPrefix = "DAS_카카오분류-";
         public global()
         {
         }
@@ -42,7 +43,7 @@ namespace CS_SMS_APP
     {
         public MainPage()
         {
-            global.m_mainTopTB.Text = "Home";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "Home";
             global.udp.Start();
             this.InitializeComponent();
             ApplicationView.PreferredLaunchViewSize = new Size(1600, 960);
