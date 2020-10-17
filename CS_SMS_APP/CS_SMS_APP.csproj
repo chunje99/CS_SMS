@@ -24,9 +24,9 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>D4EE86FAE5F3C7A952E0269216070A3EF13443BD</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>DD690BFC20B6223FCB9AB1E4A6E37C12DE75835B</PackageCertificateThumbprint>
     <AppxBundle>Never</AppxBundle>
-    <PackageCertificateKeyFile />
+    <PackageCertificateKeyFile>CS_SMS_APP_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -308,6 +308,9 @@
       <Project>{53f88034-331e-4e25-9c95-6ea2cbf7d1f0}</Project>
       <Name>CS_SMS_LIB</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CS_SMS_APP_TemporaryKey.pfx" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
