@@ -40,6 +40,7 @@ namespace CS_SMS_APP
         {
             if (!loaded)
             {
+                await ConMqtt();
                 //int t = await MainScanner();
                 ////sub scanner
                 await SubScanner();
@@ -93,6 +94,16 @@ namespace CS_SMS_APP
                         m_errorCnt++;
                     }
                 });
+            return 0;
+        }
+        private async Task<int> ConMqtt()
+        {
+            await global.mqc.Connect();
+            await global.mqc.Subscribe("do01/F4BD01");
+            await global.mqc.Subscribe("dothing_server");
+            await Task.Run(() =>
+            {
+            });
             return 0;
         }
         private async Task<int> SubScanner()

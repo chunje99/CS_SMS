@@ -24,6 +24,7 @@ namespace CS_SMS_APP
     /// </summary>
     public class global
     {
+        public static CMqttApi mqc = new CMqttApi();
         public static UDPer udp = new UDPer();
         public static CModbus md = new CModbus();
         public static CBanner banner = new CBanner();
@@ -110,6 +111,9 @@ namespace CS_SMS_APP
                     break;
                 case "webview":
                     ContentFrame.Navigate(typeof(Webview));
+                    break;
+                case "indicator":
+                    ContentFrame.Navigate(typeof(Indicator));
                     break;
                 case "logs":
                     ContentFrame.Navigate(typeof(Logs));

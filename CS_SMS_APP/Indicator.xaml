@@ -1,0 +1,22 @@
+﻿<Page
+    x:Class="CS_SMS_APP.Indicator"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CS_SMS_APP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="#DDE7F3"
+    Loaded="OnLoad"
+    >
+
+    <Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="IND 1" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="200,100,0,0" Text="111" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IND1_ID"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="IND 2" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,100,0,0" Text="222" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IND2_ID"/>
+        <TextBlock HorizontalAlignment="Left" Margin="600,100,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="IND_GW_Status"/>
+        <Button Content="ON" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="IND1_ON" Click="IND1_ON_Click"/>
+        <Button Content="OFF" Margin="800,200,0,0" VerticalAlignment="Top" Width="152" Name="IND1_OFF" Click="IND1_OFF_Click"/>
+    </Grid>
+</Page>

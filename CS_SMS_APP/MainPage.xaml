@@ -48,6 +48,7 @@
                     <NavigationViewItemSeparator/>
                     <NavigationViewItem x:Uid="SearchBox" Icon="View" Content="박스 관리" Tag="searchbox" Foreground="White" FontSize="14"/>
                     <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처 할당" Tag="webview" Foreground="White" FontSize="14"/>
+                    <NavigationViewItem x:Uid="Indicator" Icon="Link" Content="표시기" Tag="indicator" Foreground="White" FontSize="14"/>
                     <NavigationViewItemSeparator/>
                     <NavigationViewItem x:Uid="Logs" Icon="Library" Content="Logs" Tag="logs" Foreground="White" FontSize="14"/>
                 </NavigationView.MenuItems>
