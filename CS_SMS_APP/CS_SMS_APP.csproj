@@ -24,7 +24,8 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>DD690BFC20B6223FCB9AB1E4A6E37C12DE75835B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>
+    </PackageCertificateThumbprint>
     <AppxBundle>Never</AppxBundle>
     <PackageCertificateKeyFile>CS_SMS_APP_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>

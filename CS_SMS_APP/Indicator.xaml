@@ -11,9 +11,9 @@
     >
 
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="IND 1" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="150,100,0,0" Text="L LED" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="200,100,0,0" Text="111" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IND1_ID"/>
-        <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="IND 2" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="R LED" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="400,100,0,0" Text="222" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IND2_ID"/>
         <TextBlock HorizontalAlignment="Left" Margin="600,100,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="IND_GW_Status"/>
         <Button Content="ON" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="IND1_ON" Click="IND1_ON_Click"/>
