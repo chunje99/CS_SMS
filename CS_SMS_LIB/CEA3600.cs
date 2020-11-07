@@ -17,8 +17,9 @@ namespace CS_SMS_LIB
         private Socket m_socket;
         public string m_name { get; } = "";
         public bool m_isCon { get; set; }
-        public Action<string, int, string> act0 = null;
+        public Action<string, string, int, string> act0 = null;
         public int m_chute_num { get; set; }
+        public string m_job { get; set; }
 
         public CEA3600(string ip, int port, string name)
         {
@@ -27,6 +28,7 @@ namespace CS_SMS_LIB
             m_name = name;
             m_isCon = false;
             m_chute_num = -1;
+            m_job = "BOX";
         }
         protected virtual void Dispose(bool disposing)
         {
@@ -108,18 +110,44 @@ namespace CS_SMS_LIB
                             string prefix = data.Substring(0, 6);
                             if( prefix == "CHUTE_")
                             {
+                                m_job = "BOX";
                                 m_chute_num = Int32.Parse(data.Substring(6, data.Length - 6));
-                                Log.Information("스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
+                                Log.Information(m_job + "스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
+                            }
+                            else if( prefix == "INDIC_")
+                            {
+                                m_job = "INDICATOR";
+                                m_chute_num = Int32.Parse(data.Substring(6, data.Length - 6));
+                                Log.Information(m_job + "스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
+                            }
+                            else if( prefix == "ADDIND")
+                            {
+                                m_job = "ADDIND";
+                                m_chute_num = -1;
+                                Log.Information(m_job + "스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
+                            }
+                            else if( prefix == "DELIND")
+                            {
+                                m_job = "DELIND";
+                                m_chute_num = -1;
+                                Log.Information(m_job + "스캐너 할당 " + m_name + " : " + m_chute_num.ToString());
                             }
                             else
                             {
-                                Log.Information("QR code error :" + data);
+                                if( m_job == "ADDIND" || m_job == "DELIND")
+                                {
+                                    string ind = data.Substring(2, 6);
+                                    if (act0 != null)
+                                        act0(m_job, m_name, m_chute_num, ind);
+                                }
+                                else
+                                    Log.Information("QR code error :" + data);
                             }
                         }
                         else //if( barcodeType == 3 ) // code128
                         {
                             if (act0 != null)
-                                act0(m_name, m_chute_num, data);
+                                act0(m_job, m_name, m_chute_num, data);
                         }
                     }
                 }

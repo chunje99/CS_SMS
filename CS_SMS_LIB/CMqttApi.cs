@@ -21,6 +21,28 @@ namespace CS_SMS_LIB
         string clientId;
         public bool isConnect = false;
         public bool isActive = false;
+        public List<string> m_indList;
+        public string m_gwID { get; set; }
+        public string m_serverTopic { get; set; }
+        public string m_brokerAddress { get; set; }
+        public string m_user { get; set; }
+        public string m_passwd { get; set; }
+        public Action<MpsRes<MpsBodyIndOnRes>> handleIndOnRes = null;
+
+        public CMqttApi()
+        {
+            m_indList = new List<string> { 
+                "F8C6FC", "1135F2", "11364C", "1319C3", "131938", 
+                "11364B", "1135FB", "113601", "113650", "1135F6", 
+                "11346A", "1136B7", "1135F1", "113476", "1135F9", 
+                "11369E", "1319AB", "1136AE", "113506", "113653", 
+                "1135FD", "1135F5", "1319AA", "11364F", "11365A" };
+            m_gwID = "kakao/F4BD01";
+            m_serverTopic = "weng";
+            m_brokerAddress = "52.78.48.7";
+            m_user = "mqadmin";
+            m_passwd = "mqadminpassword";
+        }
 
         public class MpsProperties : ICloneable
         {
@@ -63,7 +85,7 @@ namespace CS_SMS_LIB
             public MpsIndConf()
             {
 
-                seg_role = new string[] { "R", "B" };
+                seg_role = new string[] { "B", "P" };
                 alignment = "R";
                 btn_mode = "B";
                 btn_intvl = 3;
@@ -75,7 +97,7 @@ namespace CS_SMS_LIB
                 led_bar_mode = "S";
                 led_bar_intvl = 3;
                 led_bar_brtns = 10;
-                view_type = "2";
+                view_type = "0";
             }
             public string[] seg_role { get; set; }
             public string alignment { get; set; }
@@ -131,18 +153,20 @@ namespace CS_SMS_LIB
             public MpsIndOn()
             {
                 id = "";
-                seg_role = new string[] { "R", "B" };
+                seg_role = new string[] { "B", "P" };
                 biz_id = "";
                 org_relay = 0;
                 org_box_qty = 0;
+                org_ea_qty = 0;
                 color = "R";
-                view_type = "3";
+                view_type = "0";
             }
             public string id { get; set; }
             public string[] seg_role{ get; set; }
             public string biz_id { get; set; }
             public int org_relay { get; set; }
             public int org_box_qty { get; set; }
+            public int org_ea_qty { get; set; }
             public string color{ get; set; }
             public string view_type { get; set; }
         }
@@ -152,7 +176,8 @@ namespace CS_SMS_LIB
             {
                 action = "IND_ON_REQ";
                 biz_type = "MPS";
-                action_type = "pick";
+                //action_type = "pick";
+                action_type = "stock";
                 read_only = false;
                 ind_on = new List<MpsIndOn>();
             }
@@ -195,6 +220,23 @@ namespace CS_SMS_LIB
             public T body;
         }
 
+        public class MpsBodyIndOnRes: MpsBody
+        {
+            public MpsBodyIndOnRes()
+            {
+            }
+            public string id { get; set; }
+            public string biz_id { get; set; }
+            public string biz_type { get; set; }
+            public string action_type { get; set; }
+            public string biz_flag { get; set; }
+            public int org_relay { get; set; }
+            public int org_box_qty { get; set; }
+            public int org_ea_qty { get; set; }
+            public int res_box_qty { get; set; }
+            public int res_ea_qty { get; set; }
+        }
+
         private async Task HandleReceivedApplicationMessage(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
             var item = $"Timestamp: {DateTime.Now:O} | Topic: {eventArgs.ApplicationMessage.Topic} | Payload: {eventArgs.ApplicationMessage.ConvertPayloadToString()} | QoS: {eventArgs.ApplicationMessage.QualityOfServiceLevel}";
@@ -223,7 +265,7 @@ namespace CS_SMS_LIB
         public async Task Connect()
         {
             string clientId;
-            string BrokerAddress = "dothing.iptime.org";
+            string BrokerAddress = m_brokerAddress;
             mqttFactory = new MqttFactory();
             client = mqttFactory.CreateMqttClient();
             //client.UseApplicationMessageReceivedHandler(HandleReceivedApplicationMessage);
@@ -234,7 +276,7 @@ namespace CS_SMS_LIB
             var options = new MqttClientOptionsBuilder()
                 .WithClientId("Client1")
                 .WithTcpServer(BrokerAddress, 1883)
-                .WithCredentials("dothing", "dothing")
+                .WithCredentials(m_user, m_passwd)
                 .Build();
 
             await client.ConnectAsync(options);
@@ -308,7 +350,7 @@ namespace CS_SMS_LIB
 
         void handleEvent(string Topic, string body)
         {
-            if (Topic == "dothing_server")
+            if (Topic == m_serverTopic)
             {
                 Log.Information("Topic: " + Topic);
                 Log.Information(body);
@@ -334,6 +376,12 @@ namespace CS_SMS_LIB
                         ReqAck(req);
                         isActive = true;
                     }
+                    else if (req.body.action == "IND_ON_RES")
+                    {
+                        ReqAck(req);
+                        if (handleIndOnRes != null)
+                            handleIndOnRes(ParseIndOnRes(body));
+                    }
                 }
                 else
                 {
@@ -353,6 +401,24 @@ namespace CS_SMS_LIB
             try
             {
                 req = JsonConvert.DeserializeObject<MpsReq<MpsBody>>(json);
+                if (req.body != null)
+                {
+                    Log.Information(req.body.action);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.Message);
+            }
+            return req;
+        }
+
+        MpsRes<MpsBodyIndOnRes> ParseIndOnRes(string json)
+        {
+            MpsRes<MpsBodyIndOnRes> req = new MpsRes<MpsBodyIndOnRes>();
+            try
+            {
+                req = JsonConvert.DeserializeObject<MpsRes<MpsBodyIndOnRes>>(json);
                 if (req.body != null)
                 {
                     Log.Information(req.body.action);
@@ -413,10 +479,12 @@ namespace CS_SMS_LIB
                 is_reply = false,
             };
             res.body = new MpsBodyGwInit();
-            res.body.gw_conf.id = "do01/F4BD01";
+            res.body.gw_conf.id = m_gwID;
             res.body.gw_conf.channel = "5";
             res.body.gw_conf.pan = "02D3";
-            res.body.ind_list.Add(new MpsInd { id = "F8C6FC", channel = "5", pan = "02D3", biz_type = "DAS" });
+
+            foreach(string ind in m_indList)
+                res.body.ind_list.Add(new MpsInd { id = ind, channel = "5", pan = "02D3", biz_type = "DAS" });
             /*
             res.body.ind_conf = new MpsIndConf
             {
@@ -448,7 +516,56 @@ namespace CS_SMS_LIB
             Public(res.properties.dest_id, json);
         }
 
-        public void ind_on_req (string ind_id, int relay, int box )
+        void ind_on_res(MpsReq<MpsBody> req)
+        {
+            MpsRes<MpsBodyGwInit> res = new MpsRes<MpsBodyGwInit>();
+            res.properties = new MpsProperties
+            {
+                id = req.properties.id,
+                time = req.properties.time,
+                source_id = req.properties.dest_id,
+                dest_id = req.properties.source_id,
+                is_reply = false,
+            };
+            res.body = new MpsBodyGwInit();
+            res.body.gw_conf.id = m_gwID;
+            res.body.gw_conf.channel = "5";
+            res.body.gw_conf.pan = "02D3";
+
+            foreach(string ind in m_indList)
+                res.body.ind_list.Add(new MpsInd { id = ind, channel = "5", pan = "02D3", biz_type = "DAS" });
+            /*
+            res.body.ind_conf = new MpsIndConf
+            {
+                seg_role = new string[] { "B", "p" },
+                alignment = "R",
+                btn_mode = "B",
+                btn_intvl = 3,
+                bf_on_msg_t = 0,
+                bf_on_delay = 0,
+                cncl_delay = 20,
+                blink_if_full = false,
+                off_use_res = false,
+                led_bar_mode = "S",
+                led_bar_intvl = 3,
+                led_bar_brtns = 10,
+                view_type = "2"
+            };
+            res.body.svr_time = 123123;
+            res.body.health_period = 0;
+            */
+
+            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
+            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
+            // 초단위 값을 Int 형으로 형변환
+            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            res.body.svr_time = NowUnixTime;
+
+            string json = JsonConvert.SerializeObject(res, Formatting.Indented);
+            Public(res.properties.dest_id, json);
+        }
+
+        public void ind_on_req (string ind_id, int box, int ea_qty )
         {
             MpsRes<MpsBodyIndOn> res = new MpsRes<MpsBodyIndOn>();
             // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
@@ -459,12 +576,13 @@ namespace CS_SMS_LIB
             {
                 id = Guid.NewGuid().ToString(),
                 time = NowUnixTime * 1000,
-                source_id = "dothing_server",
-                dest_id = "do01/F4BD01",
+                source_id = m_serverTopic,
+                dest_id = m_gwID,
                 is_reply = false,
             };
             res.body = new MpsBodyIndOn();
-            res.body.ind_on.Add(new MpsIndOn { id=ind_id, org_relay= relay, org_box_qty = box });
+            //res.body.ind_on.Add(new MpsIndOn { id=ind_id, org_relay= relay, org_box_qty = box });
+            res.body.ind_on.Add(new MpsIndOn { id=ind_id, org_box_qty = box, org_ea_qty = ea_qty });
 
             string json = JsonConvert.SerializeObject(res, Formatting.Indented);
             Public(res.properties.dest_id, json);
@@ -481,8 +599,8 @@ namespace CS_SMS_LIB
             {
                 id = Guid.NewGuid().ToString(),
                 time = NowUnixTime * 1000,
-                source_id = "dothing_server",
-                dest_id = "do01/F4BD01",
+                source_id = m_serverTopic,
+                dest_id = m_gwID,
                 is_reply = false,
             };
             res.body = new MpsBodyIndOff();
@@ -490,6 +608,23 @@ namespace CS_SMS_LIB
 
             string json = JsonConvert.SerializeObject(res, Formatting.Indented);
             Public(res.properties.dest_id, json);
+        }
+
+        public void add_ind (string ind_id)
+        {
+            Log.Information("Add_ind : " + ind_id);
+            if (!m_indList.Exists(x => x == ind_id))
+            {
+                m_indList.Add(ind_id);
+            }
+        }
+        public void del_ind (string ind_id)
+        {
+            Log.Information("Del_ind : " + ind_id);
+            if (m_indList.Exists(x => x == ind_id))
+            {
+                m_indList.Remove(ind_id);
+            }
         }
     }
 }

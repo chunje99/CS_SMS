@@ -18,7 +18,8 @@ namespace CS_SMS_LIB
     public class CApi
     {
 #if DEBUG
-        public string Domain { get; set; } = "http://sms-api.wtest.biz";
+        //public string Domain { get; set; } = "http://sms-api.wtest.biz";
+        public string Domain { get; set; } = "http://sms-admin.wtest.biz";
 #else
         public string Domain { get; set; } = "http://127.0.0.1";
 #endif
@@ -510,6 +511,201 @@ namespace CS_SMS_LIB
             return pidData;
         }
 
+        public async Task<IndicatorList> GetIndicatorList(int chute_num, string barcode)
+        {
+            HttpClient client = new HttpClient();
+            string url = "/dummy/api/scanChuteGoods.php";
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+            IndicatorList indicatorList = new IndicatorList();
+
+
+            // List data response.
+            try
+            {
+                // List data response.
+                var json = new JObject();
+                json.Add("barcode", barcode);
+                json.Add("chute_num", chute_num);
+                var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStreamAsync();
+                    var serializer = new DataContractJsonSerializer(typeof(IndicatorList));
+                    indicatorList = serializer.ReadObject(await resp) as IndicatorList;
+                    Log.Information(indicatorList.status);
+                    Log.Information(indicatorList.msg);
+                    if (indicatorList.status == "OK")
+                    {
+                        Log.Information("IndicatorList {@IndocatorList}", indicatorList);
+                        return indicatorList;
+                    }
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                //pidData.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+            return indicatorList;
+        }
+
+        public async Task<IndicatorOK> IndicatorOK(JObject json)
+        {
+            HttpClient client = new HttpClient();
+            string url = "/dummy/api/indOk.php";
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+            IndicatorOK indicatorOK = new IndicatorOK();
+
+
+            // List data response.
+            try
+            {
+                // List data response.
+                //var json = new JObject();
+                //json.Add("id", id);
+                var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStreamAsync();
+                    var serializer = new DataContractJsonSerializer(typeof(IndicatorOK));
+                    indicatorOK = serializer.ReadObject(await resp) as IndicatorOK;
+                    Log.Information(indicatorOK.status);
+                    Log.Information(indicatorOK.msg);
+                    if (indicatorOK.status == "OK")
+                    {
+                        Log.Information("IndicatorOK {@IndocatorOK}", indicatorOK);
+                        return indicatorOK;
+                    }
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                //pidData.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+            return indicatorOK;
+        }
+
+        public async Task IndicatorFull(string id)
+        {
+            HttpClient client = new HttpClient();
+            string url = "/dummy/api/indFull.php";
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+
+            // List data response.
+            try
+            {
+                // List data response.
+                var json = new JObject();
+                json.Add("id", id);
+                var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStringAsync();
+                    JObject joResponse = JObject.Parse(await resp);
+                    string status = (string)joResponse["status"];
+                    string msg = (string)joResponse["msg"];
+                    Log.Information(status);
+                    Log.Information(msg);
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                //pidData.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+        }
+
+        public async Task IndicatorCancel(string id)
+        {
+            HttpClient client = new HttpClient();
+            string url = "/dummy/api/indCancel.php";
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+
+            // List data response.
+            try
+            {
+                // List data response.
+                var json = new JObject();
+                json.Add("id", id);
+                var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStringAsync();
+                    JObject joResponse = JObject.Parse(await resp);
+                    string status = (string)joResponse["status"];
+                    string msg = (string)joResponse["msg"];
+                    Log.Information(status);
+                    Log.Information(msg);
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                //pidData.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+        }
+
+        public async Task IndicatorModify(string id)
+        {
+            HttpClient client = new HttpClient();
+            string url = "/dummy/api/indModify.php";
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+
+            // List data response.
+            try
+            {
+                // List data response.
+                var json = new JObject();
+                json.Add("id", id);
+                var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PostAsync(Domain+url, content).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStringAsync();
+                    JObject joResponse = JObject.Parse(await resp);
+                    string status = (string)joResponse["status"];
+                    string msg = (string)joResponse["msg"];
+                    Log.Information(status);
+                    Log.Information(msg);
+                }
+                else
+                {
+                    Log.Information("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                //pidData.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+        }
+
         public void SetTest(string j)
         {
             //return;
@@ -699,5 +895,37 @@ namespace CS_SMS_LIB
         public int pid { get; set; } = 0;
         public PIDData()
         { }
+    }
+
+    public class IndicatorData
+    {
+        public string id { get; set; } = "";
+        public List<string> seg_role { get; set; } = new List<string>();
+        public string org_boxin_qty { get; set; } = "0";
+        public string org_ea_qty { get; set; } = "0";
+        public string view_type { get; set; } = "0";
+        public IndicatorData() { }
+    }
+    public class IndicatorList
+    {
+        public string status { get; set; } = "";
+        public string msg { get; set; } = "";
+        public string action { get; set; } = "";
+        public string biz_type { get; set; } = "";
+        public string action_type { get; set; } = "";
+        public List<IndicatorData> ind_on { get; set; } = new List<IndicatorData>();
+        public IndicatorList() { }
+    }
+    //{"status":"OK","msg":"","action":"IND_OFF_REQ","end_off_flag":"false","force_flag":"true",
+    //"ind_off":["F8C6FC","1135F2","11364C"]}
+    public class IndicatorOK
+    {
+        public string status { get; set; } = "";
+        public string msg { get; set; } = "";
+        public string action { get; set; } = "";
+        public string end_off_flag { get; set; } = "";
+        public string force_flag { get; set; } = "";
+        public List<string> ind_off { get; set; } = new List<string>();
+        public IndicatorOK() { }
     }
 }

@@ -93,7 +93,7 @@ namespace CS_SMS_APP
         {
             foreach (var scanner in global.udp.m_scaner)
             {
-                scanner.act0 = (string name, int chute_num, string barcode ) =>
+                scanner.act0 = (string job, string name, int chute_num, string barcode ) =>
                 {
                     if (chute_num == -1)
                     {

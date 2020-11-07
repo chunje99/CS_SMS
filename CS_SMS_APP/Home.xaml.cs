@@ -47,7 +47,7 @@ namespace CS_SMS_APP
                 //connect plc
                 await ConnectPLC();
                 //search printer
-                //await PrinterSetting();
+                await PrinterSetting();
                 loaded = true;
 
                 if( m_errorCnt == 0)
@@ -99,8 +99,8 @@ namespace CS_SMS_APP
         private async Task<int> ConMqtt()
         {
             await global.mqc.Connect();
-            await global.mqc.Subscribe("do01/F4BD01");
-            await global.mqc.Subscribe("dothing_server");
+            await global.mqc.Subscribe(global.mqc.m_serverTopic);
+            await global.mqc.Subscribe(global.mqc.m_gwID);
             await Task.Run(() =>
             {
             });

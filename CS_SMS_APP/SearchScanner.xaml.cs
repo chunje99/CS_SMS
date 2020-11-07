@@ -113,7 +113,7 @@ namespace CS_SMS_APP
             {
                 if (scanner.m_isCon)
                 {
-                    scanner.act0 = (name, chute_num, barcode) =>
+                    scanner.act0 = (job, name, chute_num, barcode) =>
                     {
                         Log.Information("==============");
                         Log.Information("MAIN");
@@ -177,7 +177,7 @@ namespace CS_SMS_APP
             {
                 if (scanner.m_isCon)
                 {
-                    scanner.act0 = (name, chute_num, barcode) =>
+                    scanner.act0 = (job, name, chute_num, barcode) =>
                     {
                         Log.Information("==============");
                         Log.Information("MAIN");

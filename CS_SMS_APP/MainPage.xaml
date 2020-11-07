@@ -44,7 +44,7 @@
                     <!--NavigationViewItem x:Uid="MainScanner" Icon="Camera" Content="고정 스캐너" Tag="scanner" Foreground="White" FontSize="14"/ -->
                     <NavigationViewItem x:Uid="SearchScanners" Icon="Scan" Content="핸드 스캐너" Tag="scanners" Foreground="White" FontSize="14"/>
                     <NavigationViewItem x:Uid="ConnectMDS" Icon="Remote" Content="PLC 연결" Tag="plc" Foreground="White" FontSize="14"/>
-                    <!--NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="프린터 테스트" Tag="printer" Foreground="White" FontSize="14"/-->
+                    <NavigationViewItem x:Uid="PrinterSetting" Icon="Print"  Content="프린터 테스트" Tag="printer" Foreground="White" FontSize="14"/>
                     <NavigationViewItemSeparator/>
                     <NavigationViewItem x:Uid="SearchBox" Icon="View" Content="박스 관리" Tag="searchbox" Foreground="White" FontSize="14"/>
                     <NavigationViewItem x:Uid="Webview" Icon="Link" Content="거래처 할당" Tag="webview" Foreground="White" FontSize="14"/>
