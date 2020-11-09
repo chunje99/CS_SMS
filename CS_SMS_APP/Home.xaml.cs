@@ -98,9 +98,25 @@ namespace CS_SMS_APP
         }
         private async Task<int> ConMqtt()
         {
+            msg = "표시기 연결";
+            UpdateUI(msg);
             await global.mqc.Connect();
-            await global.mqc.Subscribe(global.mqc.m_serverTopic);
-            await global.mqc.Subscribe(global.mqc.m_gwID);
+            if(!global.mqc.isConnect)
+            {
+                msg = "표시기 연결 ERROR";
+                UpdateUI(msg, "red");
+            }
+            else
+            {
+                msg = "표시기 연결 OK";
+                UpdateUI(msg);
+                await global.mqc.Subscribe(global.mqc.m_serverTopic);
+                msg = global.mqc.m_serverTopic + " 구독";
+                UpdateUI(msg);
+                await global.mqc.Subscribe(global.mqc.m_gwID);
+                msg = global.mqc.m_gwID + " 구독";
+                UpdateUI(msg);
+            }
             await Task.Run(() =>
             {
             });
@@ -210,7 +226,8 @@ namespace CS_SMS_APP
                 {
                     global.m_printer[i].m_port = port;
 #if DEBUG
-                    global.m_printer[i].m_host = "172.16.0.13";
+                    //global.m_printer[i].m_host = "172.16.0.13";
+                    global.m_printer[i].m_host = host + (idx + i).ToString();
 #else
                     global.m_printer[i].m_host = host + (idx + i).ToString();
 #endif

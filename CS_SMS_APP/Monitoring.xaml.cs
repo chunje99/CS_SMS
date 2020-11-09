@@ -23,6 +23,7 @@ using Windows.System;
 using Serilog;
 using Windows.UI.Popups;
 using System.Collections.Concurrent;
+using Newtonsoft.Json.Linq;
 
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
@@ -62,6 +63,7 @@ namespace CS_SMS_APP
             // Show the message dialog
             SetMainScanner();
             MakeEvent();
+            SetMqttHandler();
             CheckQueue();
         }
 
@@ -336,36 +338,66 @@ namespace CS_SMS_APP
             {
                 scanner.act0 = (string job, string name, int chute_num, string barcode ) =>
                 {
-                    if (chute_num == -1)
+                    Log.Information(job + " "+ name + " " + chute_num + " " + barcode);
+                    if (job == "BOX")
                     {
-                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        if (chute_num == -1)
                         {
-                            Alert("스캐너를 할당하세요!(" + barcode + ")");
-                        });
-                    }
-                    else if (chute_num == 0)
-                    {
-                        Scanner_Process(barcode, Monitoring_scanner0, 0);
-                    }
-                    else if (chute_num >= 1 && chute_num <= 48)
-                    {
-                        global.api.AddGoods(chute_num, barcode);
-                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                Alert("스캐너를 할당하세요!(" + barcode + ")");
+                            });
+                        }
+                        else if (chute_num == 0)
                         {
-                            UpdateUI(Monitoring_scanner1, "슈터 " + chute_num.ToString() + " : " + barcode);
-                        });
-                    }
-                    else
-                    {
-                        var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            Scanner_Process(barcode, Monitoring_scanner0, 0);
+                        }
+                        else if (chute_num >= 1 && chute_num <= 48)
                         {
-                            Alert("(" + barcode + ")할당이 잘못 되었습니다.! chute = " + chute_num.ToString());
-                        });
+                            global.api.AddGoods(chute_num, barcode);
+                            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                UpdateUI(Monitoring_scanner1, "슈터 " + chute_num.ToString() + " : " + barcode);
+                            });
+                        }
+                        else
+                        {
+                            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                Alert("(" + barcode + ")할당이 잘못 되었습니다.! chute = " + chute_num.ToString());
+                            });
+                        }
+                    }
+                    else if(job == "INDICATOR")
+                    {
+                        GetIndicatorList(chute_num, barcode);
                     }
                 };
             }
             return;
         }
+        private async void GetIndicatorList(int chute_num, string barcode)
+        {
+            Log.Information("GetIndicatorList: " + chute_num.ToString() + " ," + barcode);
+            var indicatorBody = await global.api.GetIndicatorList(chute_num, barcode);
+            if (global.mqc.isConnect)
+            {
+                CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { action = indicatorBody.action, action_type = indicatorBody.action_type, biz_type = indicatorBody.biz_type };
+                foreach (var a in indicatorBody.ind_on)
+                {
+                    int box = Convert.ToInt32(a.org_boxin_qty);
+                    int ea = Convert.ToInt32(a.org_ea_qty);
+                    reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a.id, org_box_qty = box, org_ea_qty = ea, biz_id = a.biz_id, view_type = a.view_type, seg_role = a.seg_role});
+                }
+                global.mqc.ind_on_req(reqBody);
+                //UpdateUI("LED ON");
+            }
+            else
+            {
+                //UpdateUI("disconnected");
+            }
+        }
+
         private async void UpdateUI(TextBox tbox, string barcode)
         {
             Log.Information("UpdateUI : " + barcode);
@@ -825,6 +857,38 @@ namespace CS_SMS_APP
         private void Cancel_Close(object sender, RoutedEventArgs e)
         {
             Monitoring_cancel.Flyout.Hide();
+        }
+
+        private void SetMqttHandler()
+        {
+            Log.Information("SetMqttHandler");
+            global.mqc.handleIndOnRes = (CMqttApi.MpsRes<CMqttApi.MpsBodyIndOnRes> res) =>
+            {
+                Log.Information("handleIndOnRes: " + res.body.id + " biz_flag :" + res.body.biz_flag);
+                var json = new JObject();
+                json.Add("action", res.body.action);
+                json.Add("id", res.body.id);
+                json.Add("biz_id", res.body.biz_id);
+                json.Add("biz_type", res.body.biz_type);
+                json.Add("action_type", res.body.action_type);
+                json.Add("biz_flag", res.body.biz_flag);
+                json.Add("org_relay", res.body.org_relay);
+                json.Add("org_box_qty", res.body.org_box_qty);
+                json.Add("org_ea_qty", res.body.org_ea_qty);
+                json.Add("res_box_qty", res.body.res_box_qty);
+                json.Add("res_ea_qty", res.body.res_ea_qty);
+                IndicatorRes(json);
+                if (res.body.biz_flag == "full")
+                    global.mqc.led_on_req(res.body.id);
+            };
+        }
+        private async void IndicatorRes(JObject json)
+        {
+            Log.Information("IndicatorRes");
+            var indicatorOK = await global.api.IndicatorRes(json);
+            ///indicator off
+            CMqttApi.MpsBodyIndOff reqBody = new CMqttApi.MpsBodyIndOff { ind_off = indicatorOK.ind_off };
+            global.mqc.ind_off_req(reqBody);
         }
     }
 }

@@ -201,6 +201,31 @@ namespace CS_SMS_LIB
             public List<string> ind_off { get; set; }
         }
 
+        public class MpsBodyLEDOn: MpsBody
+        {
+            public MpsBodyLEDOn()
+            {
+                action = "LED_ON_REQ";
+                id = "";
+                led_bar_mode = "B";
+                led_bar_intvl = 1;
+                led_bar_brtns = 10;
+            }
+            public string id { get; set; }
+            public string led_bar_mode { get; set; }
+            public int led_bar_intvl { get; set; }
+            public int led_bar_brtns { get; set; }
+        }
+        public class MpsBodyLEDOff: MpsBody
+        {
+            public MpsBodyLEDOff()
+            {
+                action = "LED_OFF_REQ";
+                id = "";
+            }
+            public string id { get; set; }
+        }
+
         public class MpsReq<T>
         {
             public MpsReq()
@@ -264,45 +289,52 @@ namespace CS_SMS_LIB
 
         public async Task Connect()
         {
-            string clientId;
-            string BrokerAddress = m_brokerAddress;
-            mqttFactory = new MqttFactory();
-            client = mqttFactory.CreateMqttClient();
-            //client.UseApplicationMessageReceivedHandler(HandleReceivedApplicationMessage);
-            //client.ConnectedHandler = new MqttClientConnectedHandlerDelegate(x => OnConnected());
-            //client.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(x => OnDisconnected());
-
-            // Create TCP based options using the builder.
-            var options = new MqttClientOptionsBuilder()
-                .WithClientId("Client1")
-                .WithTcpServer(BrokerAddress, 1883)
-                .WithCredentials(m_user, m_passwd)
-                .Build();
-
-            await client.ConnectAsync(options);
-            isConnect = true;
-            Log.Information("Connect");
-
-
-            //client = new MqttClient(BrokerAddress);
-            //client.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
-            //clientId = Guid.NewGuid().ToString();
-            clientId = "TTTEEESSSTTT";
-            //client.Connect(clientId, "dothing", "dothing");
-
-            client.UseApplicationMessageReceivedHandler(e =>
+            try
             {
-                Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
-                Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
-                Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-                Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
-                Console.WriteLine($"+ Retain = {e.ApplicationMessage.Retain}");
-                Console.WriteLine();
-                Log.Information("Received" + e.GetHashCode());
-                string ReceivedMessage = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                handleEvent(e.ApplicationMessage.Topic, ReceivedMessage);
-            });
+                string clientId;
+                string BrokerAddress = m_brokerAddress;
+                mqttFactory = new MqttFactory();
+                client = mqttFactory.CreateMqttClient();
+                //client.UseApplicationMessageReceivedHandler(HandleReceivedApplicationMessage);
+                //client.ConnectedHandler = new MqttClientConnectedHandlerDelegate(x => OnConnected());
+                //client.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(x => OnDisconnected());
 
+                // Create TCP based options using the builder.
+                var options = new MqttClientOptionsBuilder()
+                    .WithClientId("Client1")
+                    .WithTcpServer(BrokerAddress, 1883)
+                    .WithCredentials(m_user, m_passwd)
+                    .Build();
+
+                await client.ConnectAsync(options);
+                isConnect = true;
+                Log.Information("Connect");
+
+
+                //client = new MqttClient(BrokerAddress);
+                //client.MqttMsgPublishReceived += client_MqttMsgPublishReceived;
+                //clientId = Guid.NewGuid().ToString();
+                clientId = "TTTEEESSSTTT";
+                //client.Connect(clientId, "dothing", "dothing");
+
+                client.UseApplicationMessageReceivedHandler(e =>
+                {
+                    Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
+                    Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
+                    Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
+                    Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
+                    Console.WriteLine($"+ Retain = {e.ApplicationMessage.Retain}");
+                    Console.WriteLine();
+                    Log.Information("Received" + e.GetHashCode());
+                    string ReceivedMessage = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                    handleEvent(e.ApplicationMessage.Topic, ReceivedMessage);
+                });
+            }
+            catch (Exception e)
+            {
+                Log.Information("Mqtt 접속에러" + e.ToString());
+                //product.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
         }
 
         public async Task Disconnect()
@@ -447,10 +479,7 @@ namespace CS_SMS_LIB
 
         void timesync_res(MpsReq<MpsBody> req)
         {
-            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
-            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
-            // 초단위 값을 Int 형으로 형변환
-            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            long NowUnixTime = GetNowUTime();
 
             MpsRes<MpsBodyTimeSync> res = new MpsRes<MpsBodyTimeSync> { body = new MpsBodyTimeSync() };
             res.properties = (MpsProperties)res.properties.Clone();
@@ -505,11 +534,7 @@ namespace CS_SMS_LIB
             res.body.svr_time = 123123;
             res.body.health_period = 0;
             */
-
-            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
-            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
-            // 초단위 값을 Int 형으로 형변환
-            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            long NowUnixTime = GetNowUTime();
             res.body.svr_time = NowUnixTime;
 
             string json = JsonConvert.SerializeObject(res, Formatting.Indented);
@@ -554,24 +579,17 @@ namespace CS_SMS_LIB
             res.body.svr_time = 123123;
             res.body.health_period = 0;
             */
-
-            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
-            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
-            // 초단위 값을 Int 형으로 형변환
-            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            long NowUnixTime = GetNowUTime();
             res.body.svr_time = NowUnixTime;
 
             string json = JsonConvert.SerializeObject(res, Formatting.Indented);
             Public(res.properties.dest_id, json);
         }
 
-        public void ind_on_req (string ind_id, int box, int ea_qty )
+        public void ind_on_req (MpsBodyIndOn reqBody)
         {
             MpsRes<MpsBodyIndOn> res = new MpsRes<MpsBodyIndOn>();
-            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
-            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
-            // 초단위 값을 Int 형으로 형변환
-            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            long NowUnixTime = GetNowUTime();
             res.properties = new MpsProperties
             {
                 id = Guid.NewGuid().ToString(),
@@ -580,21 +598,18 @@ namespace CS_SMS_LIB
                 dest_id = m_gwID,
                 is_reply = false,
             };
-            res.body = new MpsBodyIndOn();
-            //res.body.ind_on.Add(new MpsIndOn { id=ind_id, org_relay= relay, org_box_qty = box });
-            res.body.ind_on.Add(new MpsIndOn { id=ind_id, org_box_qty = box, org_ea_qty = ea_qty });
+            res.body = reqBody;
+            //res.body = new MpsBodyIndOn();
+            //res.body.ind_on.Add(new MpsIndOn { id=ind_id, org_box_qty = box, org_ea_qty = ea_qty, biz_id = biz_id });
 
             string json = JsonConvert.SerializeObject(res, Formatting.Indented);
             Public(res.properties.dest_id, json);
         }
 
-        public void ind_off_req (List<string> ind_ids)
+        public void ind_off_req (MpsBodyIndOff reqBody)
         {
-            MpsRes<MpsBodyIndOff> res = new MpsRes<MpsBodyIndOff>();
-            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
-            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
-            // 초단위 값을 Int 형으로 형변환
-            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            MpsReq<MpsBodyIndOff> res = new MpsReq<MpsBodyIndOff>();
+            long NowUnixTime = GetNowUTime();
             res.properties = new MpsProperties
             {
                 id = Guid.NewGuid().ToString(),
@@ -603,8 +618,7 @@ namespace CS_SMS_LIB
                 dest_id = m_gwID,
                 is_reply = false,
             };
-            res.body = new MpsBodyIndOff();
-            res.body.ind_off = ind_ids;
+            res.body = reqBody;
 
             string json = JsonConvert.SerializeObject(res, Formatting.Indented);
             Public(res.properties.dest_id, json);
@@ -625,6 +639,51 @@ namespace CS_SMS_LIB
             {
                 m_indList.Remove(ind_id);
             }
+        }
+        public void led_on_req (string ind_id)
+        {
+            MpsReq<MpsBodyLEDOn> res = new MpsReq<MpsBodyLEDOn>();
+            long NowUnixTime = GetNowUTime();
+            res.properties = new MpsProperties
+            {
+                id = Guid.NewGuid().ToString(),
+                time = NowUnixTime * 1000,
+                source_id = m_serverTopic,
+                dest_id = m_gwID,
+                is_reply = false,
+            };
+            res.body = new MpsBodyLEDOn();
+            res.body.id = ind_id;
+
+            string json = JsonConvert.SerializeObject(res, Formatting.Indented);
+            Public(res.properties.dest_id, json);
+        }
+
+        public void led_off_req (string ind_id)
+        {
+            MpsReq<MpsBodyLEDOff> res = new MpsReq<MpsBodyLEDOff>();
+            long NowUnixTime = GetNowUTime();
+            res.properties = new MpsProperties
+            {
+                id = Guid.NewGuid().ToString(),
+                time = NowUnixTime * 1000,
+                source_id = m_serverTopic,
+                dest_id = m_gwID,
+                is_reply = false,
+            };
+            res.body = new MpsBodyLEDOff();
+            res.body.id = ind_id;
+
+            string json = JsonConvert.SerializeObject(res, Formatting.Indented);
+            Public(res.properties.dest_id, json);
+        }
+        private long GetNowUTime()
+        {
+            // 현재 시간부터 1970년 1월 1일 0시 0분 0초까지를 뺀다.
+            TimeSpan tsUnixTimeSpan = (DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0));
+            // 초단위 값을 Int 형으로 형변환
+            long NowUnixTime = System.Convert.ToInt64(tsUnixTimeSpan.TotalSeconds);
+            return NowUnixTime;
         }
     }
 }

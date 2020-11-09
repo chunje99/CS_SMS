@@ -48,8 +48,19 @@ namespace CS_SMS_APP
             SetSUBScanner();
             SetMqttHandler();
             indList.Clear();
+            string indStr = "";
+            int i = 0;
             foreach (string ind in global.mqc.m_indList)
-                indList.Add(ind);
+            {
+                indStr = indStr + ", " + ind;
+                if( (i % 10) == 9 )
+                {
+                    indList.Add(indStr);
+                    indStr = "";
+                }
+                i++;
+            }
+            indList.Add(indStr);
         }
 
         private async void IND1_ON_Click(object sender, RoutedEventArgs e)
@@ -57,15 +68,14 @@ namespace CS_SMS_APP
             var indicatorBody = await global.api.GetIndicatorList(1, "123");
             if(global.mqc.isConnect)
             {
-                //int id1 = Convert.ToInt32(IND1_ID.Text);
-                //int id2 = Convert.ToInt32(IND2_ID.Text);
-                //global.mqc.ind_on_req("F8C6FC", id1, id2);
-                foreach( var a in indicatorBody.ind_on)
+                CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { action = indicatorBody.action, action_type = indicatorBody.action_type, biz_type = indicatorBody.biz_type };
+                foreach (var a in indicatorBody.ind_on)
                 {
-                    int id1 = Convert.ToInt32(a.org_boxin_qty);
-                    int id2 = Convert.ToInt32(a.org_ea_qty);
-                    global.mqc.ind_on_req(a.id, id1, id2);
+                    int box = Convert.ToInt32(a.org_boxin_qty);
+                    int ea = Convert.ToInt32(a.org_ea_qty);
+                    reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a.id, org_box_qty = box, org_ea_qty = ea, biz_id = a.biz_id, view_type = a.view_type, seg_role = a.seg_role});
                 }
+                global.mqc.ind_on_req(reqBody);
                 UpdateUI("LED ON");
             }
             else
@@ -76,14 +86,11 @@ namespace CS_SMS_APP
 
         private async void IND1_OFF_Click(object sender, RoutedEventArgs e)
         {
-            //var indicatorOK = await global.api.IndicatorOK("asdf");
-            await global.api.IndicatorFull("asdf");
-            await global.api.IndicatorCancel("asdf");
-            await global.api.IndicatorModify("asdf");
             if(global.mqc.isConnect)
             {
                 List<string> ind_off = new List<string> { "F8C6FC" };
-                global.mqc.ind_off_req(ind_off);
+                CMqttApi.MpsBodyIndOff reqBody = new CMqttApi.MpsBodyIndOff { ind_off = ind_off };
+                global.mqc.ind_off_req(reqBody);
                 IND_GW_Status.Text = "IND OFF";
             }
             else
@@ -118,12 +125,14 @@ namespace CS_SMS_APP
             var indicatorBody = await global.api.GetIndicatorList(chute_num, barcode);
             if (global.mqc.isConnect)
             {
+                CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { action = indicatorBody.action, action_type = indicatorBody.action_type, biz_type = indicatorBody.biz_type };
                 foreach (var a in indicatorBody.ind_on)
                 {
-                    int id1 = Convert.ToInt32(a.org_boxin_qty);
-                    int id2 = Convert.ToInt32(a.org_ea_qty);
-                    global.mqc.ind_on_req(a.id, id1, id2);
+                    int box = Convert.ToInt32(a.org_boxin_qty);
+                    int ea = Convert.ToInt32(a.org_ea_qty);
+                    reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a.id, org_box_qty = box, org_ea_qty = ea, biz_id = a.biz_id, view_type = a.view_type, seg_role = a.seg_role});
                 }
+                global.mqc.ind_on_req(reqBody);
                 UpdateUI("LED ON");
             }
             else
@@ -217,14 +226,18 @@ namespace CS_SMS_APP
                 json.Add("org_ea_qty", res.body.org_ea_qty);
                 json.Add("res_box_qty", res.body.res_box_qty);
                 json.Add("res_ea_qty", res.body.res_ea_qty);
-                IndicatorOK(json);
+                IndicatorRes(json);
+                if (res.body.biz_flag == "full")
+                    global.mqc.led_on_req(res.body.id);
             };
         }
-        private async void IndicatorOK(JObject json)
+        private async void IndicatorRes(JObject json)
         {
-            Log.Information("IndicatorOK");
-            var indcatorOK = await global.api.IndicatorOK(json);
-            global.mqc.ind_off_req(indcatorOK.ind_off);
+            Log.Information("IndicatorRes");
+            var indicatorOK = await global.api.IndicatorRes(json);
+            ///indicator off
+            CMqttApi.MpsBodyIndOff reqBody = new CMqttApi.MpsBodyIndOff { ind_off = indicatorOK.ind_off };
+            global.mqc.ind_off_req(reqBody);
         }
     }
 }
