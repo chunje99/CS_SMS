@@ -60,10 +60,11 @@ namespace ConsoleApp1
                         udp.StartScaner();
                         foreach (CEA3600 scaner in udp.m_scaner)
                         {
-                            scaner.act0 = (name, chute_num, barcode) =>
+                            scaner.act0 = (job, name, chute_num, barcode) =>
                             {
                                 Log.Information("==============");
                                 Log.Information("MAIN");
+                                Log.Information(job);
                                 Log.Information(name);
                                 Log.Information(chute_num.ToString());
                                 Log.Information(barcode);

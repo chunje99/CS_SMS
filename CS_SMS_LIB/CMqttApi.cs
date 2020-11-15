@@ -31,13 +31,17 @@ namespace CS_SMS_LIB
 
         public CMqttApi()
         {
+            /*
             m_indList = new List<string> { 
                 "F8C6FC", "1135F2", "11364C", "1319C3", "131938", 
                 "11364B", "1135FB", "113601", "113650", "1135F6", 
                 "11346A", "1136B7", "1135F1", "113476", "1135F9", 
                 "11369E", "1319AB", "1136AE", "113506", "113653", 
                 "1135FD", "1135F5", "1319AA", "11364F", "11365A" };
-            m_gwID = "kakao/F4BD01";
+            */
+            m_indList = new List<string> { "F8C6FC", "113652" };
+            //m_gwID = "kakao/F4BD01";
+            m_gwID = "kakao/F718CA";
             m_serverTopic = "weng";
             m_brokerAddress = "52.78.48.7";
             m_user = "mqadmin";
@@ -125,7 +129,7 @@ namespace CS_SMS_LIB
                 ind_list = new List<MpsInd>();
                 ind_conf = new MpsIndConf();
                 svr_time = 0;
-                health_period = 0;
+                health_period = 5;
             }
             public class MpsGwConf
             {
@@ -402,6 +406,12 @@ namespace CS_SMS_LIB
                     else if (req.body.action == "GW_INIT_RPT")
                     {
                         ReqAck(req);
+                        ///전체 ind, led 소등
+                        MpsBodyIndOff reqBody = new MpsBodyIndOff();
+                        reqBody.ind_off = m_indList;
+                        ind_off_req(reqBody);
+                        foreach( var id in m_indList)
+                            led_off_req(id);
                     }
                     else if (req.body.action == "IND_INIT_RPT")
                     {

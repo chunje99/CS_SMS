@@ -63,19 +63,49 @@ namespace CS_SMS_APP
             indList.Add(indStr);
         }
 
-        private async void IND1_ON_Click(object sender, RoutedEventArgs e)
+        private async void IND_ON_Click(object sender, RoutedEventArgs e)
         {
-            var indicatorBody = await global.api.GetIndicatorList(1, "123");
+            //var indicatorBody = await global.api.GetIndicatorList(1, "123");
             if(global.mqc.isConnect)
             {
-                CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { action = indicatorBody.action, action_type = indicatorBody.action_type, biz_type = indicatorBody.biz_type };
-                foreach (var a in indicatorBody.ind_on)
+                CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { };
+                int box = Convert.ToInt32(IND1_ID.Text);
+                int ea = Convert.ToInt32(IND2_ID.Text);
+                foreach (var a in global.mqc.m_indList)
                 {
-                    int box = Convert.ToInt32(a.org_boxin_qty);
-                    int ea = Convert.ToInt32(a.org_ea_qty);
-                    reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a.id, org_box_qty = box, org_ea_qty = ea, biz_id = a.biz_id, view_type = a.view_type, seg_role = a.seg_role});
+                    reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a, org_box_qty = box, org_ea_qty = ea });
                 }
                 global.mqc.ind_on_req(reqBody);
+                UpdateUI("IND ON");
+            }
+            else
+            {
+                UpdateUI("disconnected");
+            }
+        }
+
+        private async void IND_OFF_Click(object sender, RoutedEventArgs e)
+        {
+            if(global.mqc.isConnect)
+            {
+                CMqttApi.MpsBodyIndOff reqBody = new CMqttApi.MpsBodyIndOff { ind_off = global.mqc.m_indList};
+                global.mqc.ind_off_req(reqBody);
+                UpdateUI("IND OFF");
+            }
+            else
+            {
+                UpdateUI("disconnected");
+            }
+        }
+
+        private async void LED_ON_Click(object sender, RoutedEventArgs e)
+        {
+            if(global.mqc.isConnect)
+            {
+                foreach( var id in global.mqc.m_indList)
+                {
+                    global.mqc.led_on_req(id);
+                }
                 UpdateUI("LED ON");
             }
             else
@@ -84,18 +114,19 @@ namespace CS_SMS_APP
             }
         }
 
-        private async void IND1_OFF_Click(object sender, RoutedEventArgs e)
+        private async void LED_OFF_Click(object sender, RoutedEventArgs e)
         {
             if(global.mqc.isConnect)
             {
-                List<string> ind_off = new List<string> { "F8C6FC" };
-                CMqttApi.MpsBodyIndOff reqBody = new CMqttApi.MpsBodyIndOff { ind_off = ind_off };
-                global.mqc.ind_off_req(reqBody);
-                IND_GW_Status.Text = "IND OFF";
+                foreach( var id in global.mqc.m_indList)
+                {
+                    global.mqc.led_off_req(id);
+                }
+                UpdateUI("LED OFF");
             }
             else
             {
-                IND_GW_Status.Text = "disconnected";
+                UpdateUI("disconnected");
             }
         }
 

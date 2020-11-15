@@ -5,15 +5,17 @@ using System.Text;
 
 using System.Runtime.InteropServices;
 
+
 namespace CS_SMS_LIB
 {
     public class BXLLApi_x64
     {
+        public const string dllPath = "C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll";
         //////////////////////////////////////////////////////////////////////
         //  Function List
         //////////////////////////////////////////////////////////////////////
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern int ConnectPrinterEx(
             int nInterface,
             [MarshalAs(UnmanagedType.LPStr)]string szPortName,
@@ -22,7 +24,7 @@ namespace CS_SMS_LIB
             int nParity,
             int nStopBits);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern int ConnectPrinterExW(
             int nInterface,
             [MarshalAs(UnmanagedType.LPWStr)]string szPortName,
@@ -31,7 +33,7 @@ namespace CS_SMS_LIB
             int nParity,
             int nStopBits);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectPrinter(
             int nInterface,
             [MarshalAs(UnmanagedType.LPStr)]string szPortName,
@@ -40,7 +42,7 @@ namespace CS_SMS_LIB
             int nParity,
             int nStopBits);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectPrinterW(
             int nInterface,
             [MarshalAs(UnmanagedType.LPWStr)]string szPortName,
@@ -49,7 +51,7 @@ namespace CS_SMS_LIB
             int nParity,
             int nStopBits);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectSerial(
             [MarshalAs(UnmanagedType.LPStr)]string szPortName,
             int nBaudRate,
@@ -57,7 +59,7 @@ namespace CS_SMS_LIB
             int nParity,
             int nStopBits);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectSerialW(
             [MarshalAs(UnmanagedType.LPWStr)]string szPortName,
             int nBaudRate,
@@ -65,31 +67,31 @@ namespace CS_SMS_LIB
             int nParity,
             int nStopBits);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectUsb();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectParallel([MarshalAs(UnmanagedType.LPStr)]string szPortName);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectParallelW([MarshalAs(UnmanagedType.LPWStr)]string szPortName);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectNet([MarshalAs(UnmanagedType.LPStr)]string szIpAddr, int nPortNum);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ConnectNetW([MarshalAs(UnmanagedType.LPWStr)]string szIpAddr, int nPortNum);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool DisconnectPrinter();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern int GetPrinterDPI();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool GetDllVersion(StringBuilder strDllVersion);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool Print1DBarcode(int nHorizontalPos,
                                                  int nVerticalPos,
                                                  int nBarcodeType,
@@ -100,7 +102,7 @@ namespace CS_SMS_LIB
                                                  int nHRI,
                                                  [MarshalAs(UnmanagedType.LPStr)]string pData);
         
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool Print1DBarcode(int nHorizontalPos,
                                                  int nVerticalPos,
                                                  int nBarcodeType,
@@ -111,7 +113,7 @@ namespace CS_SMS_LIB
                                                  int nHRI,
                                                  Byte[] pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintDeviceFont(int nHorizontalPos,
                                                   int nVerticalPos,
                                                   int nFontName,
@@ -121,7 +123,7 @@ namespace CS_SMS_LIB
                                                   bool bBold,
                                                   [MarshalAs(UnmanagedType.LPStr)]string szText);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintDeviceFontW(int nHorizontalPos,
                                                    int nVerticalPos,
                                                    int nFontName,
@@ -131,7 +133,7 @@ namespace CS_SMS_LIB
                                                    bool bBold,
                                                    [MarshalAs(UnmanagedType.LPWStr)]string szText);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool SetConfigOfPrinter(int nSpeed,
                                                      int nDensity,
                                                      int nOrientation,
@@ -139,13 +141,13 @@ namespace CS_SMS_LIB
                                                      int nCuttingPeriod,
                                                      bool bBackFeeding);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool Prints(int nLabelSet,int nCopiesOfEachLabel);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool SetCharacterset(int nInternationalCharacterSet, int nCodepage);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool SetPaper(int nHorizontalMagin,
                                            int nVerticalMargin,
                                            int nPaperWidth,
@@ -154,10 +156,10 @@ namespace CS_SMS_LIB
                                            int nOffSet,
                                            int nGapLengthORThicknessOfBlackLine);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ClearBuffer();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintBlock(int nHorizontalStartPos,
                                              int nVerticalStartPos,
                                              int nHorizontalEndPos,
@@ -165,16 +167,16 @@ namespace CS_SMS_LIB
                                              int nOption,
                                              int nThickness);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintCircle(int nHorizontalStartPos,
                                              int nVerticalStartPos,
                                              int nDiameter,
                                              int nMulti);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintDirect([MarshalAs(UnmanagedType.LPStr)]string pDirectData, bool bAddCrLf);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintTrueFont(
                                         int nXPos,
                                         int nYPos,
@@ -186,7 +188,7 @@ namespace CS_SMS_LIB
                                         bool bUnderline,
                                         [MarshalAs(UnmanagedType.LPStr)]string strText, bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintTrueFontW(
                                         int nXPos,
                                         int nYPos,
@@ -198,7 +200,7 @@ namespace CS_SMS_LIB
                                         bool bUnderline,
                                         [MarshalAs(UnmanagedType.LPWStr)]string strText, bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintTrueFontLib(int nXPos,
                                         int nYPos,
                                         [MarshalAs(UnmanagedType.LPStr)]string strFontName,
@@ -209,7 +211,7 @@ namespace CS_SMS_LIB
                                         bool bUnderline,
                                         [MarshalAs(UnmanagedType.LPStr)]string strText, bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintTrueFontLibW(int nXPos,
                                                     int nYPos,
                                                     [MarshalAs(UnmanagedType.LPWStr)]string strFontName,
@@ -220,7 +222,7 @@ namespace CS_SMS_LIB
                                                     bool bUnderline,
                                                     [MarshalAs(UnmanagedType.LPWStr)]string strText, bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintTrueFontLibWithAlign(int nXPos,
                                                     int nYPos,
                                                     [MarshalAs(UnmanagedType.LPStr)]string strFontName,
@@ -234,7 +236,7 @@ namespace CS_SMS_LIB
                                                     int nAlignment,
                                                     bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintTrueFontLibWithAlignW(int nXPos,
                                                     int nYPos,
                                                     [MarshalAs(UnmanagedType.LPWStr)]string strFontName,
@@ -248,7 +250,7 @@ namespace CS_SMS_LIB
                                                     int nAlignment,
                                                     bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintVectorFont(
                                                 int nXPos,
                                                 int nYPos,
@@ -264,7 +266,7 @@ namespace CS_SMS_LIB
                                                 int TextDirection,
                                                 [MarshalAs(UnmanagedType.LPStr)]string pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintVectorFontW(int nXPos,
                                                     int nYPos,
                                                     [MarshalAs(UnmanagedType.LPStr)]string FontSelection,
@@ -279,7 +281,7 @@ namespace CS_SMS_LIB
                                                     int TextDirection,
                                                     [MarshalAs(UnmanagedType.LPWStr)]string pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintQRCode(int nXPos,
                            int nYPos,
                            int nModel,
@@ -288,7 +290,7 @@ namespace CS_SMS_LIB
                            int nRotation,
                            [MarshalAs(UnmanagedType.LPStr)]string pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintQRCode(int nXPos,
                            int nYPos,
                            int nModel,
@@ -297,7 +299,7 @@ namespace CS_SMS_LIB
                            int nRotation,
                            Byte[] pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintPDF417(int nXPos,
                             int nYPos,
                             int nMaxRow,
@@ -311,13 +313,13 @@ namespace CS_SMS_LIB
                             int nRotation,
                            [MarshalAs(UnmanagedType.LPStr)]string pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintMaxiCode(int nXPos,
                            int nYPos,
                            int nMode,
                            [MarshalAs(UnmanagedType.LPStr)]string pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintDataMatrix(int nXPos,
                            int nYPos,
                            int nSize,
@@ -325,55 +327,55 @@ namespace CS_SMS_LIB
                            int nRotation,
                            [MarshalAs(UnmanagedType.LPStr)]string pData);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintImageLib(int nHorizontalStartPos,
                                                 int nVerticalStartPos,
                                                 [MarshalAs(UnmanagedType.LPStr)]string pBitmapFilename,
                                                 int nDither,
                                                 bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool PrintImageLibW(int nHorizontalStartPos,
                                                  int nVerticalStartPos,
                                                  [MarshalAs(UnmanagedType.LPWStr)]string pBitmapFilename,
                                                  int nDither,
                                                  bool bDataCompression);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool SetShowMsgBox(bool bShow);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern int checkStatus();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern int CheckStatus();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool WriteBuff(byte[] pBuffer, int dwNumberOfBytesToWrite, ref int dwWritten);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool ReadBuff(byte[] pBuffer, int dwNumberOfBytesToRead, ref int dwReaded);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool RFIDSetup(int RFIDType,
                                             int NumberOfRetries,
                                             int NumberOfLabel,
                                             int RadioPower);
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool RFIDCalibration();
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool RFIDWrite(int DataType,
                                             int StartingBlockNumber,
                                             int WriteByte,
                                             [MarshalAs(UnmanagedType.LPStr)]string Data);
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool RFIDPassword([MarshalAs(UnmanagedType.LPStr)]string OldAccessPwd,
                                                [MarshalAs(UnmanagedType.LPStr)]string OldKillPwd,
                                                [MarshalAs(UnmanagedType.LPStr)]string NewAccessPwd,
                                                [MarshalAs(UnmanagedType.LPStr)]string NewKillPwd);
 
-        [DllImport("C:\\Windows\\SysWOW64\\BXLLAPI_x64.dll")]
+        [DllImport(dllPath)]
         public static extern bool RFIDLock();
     }
 }

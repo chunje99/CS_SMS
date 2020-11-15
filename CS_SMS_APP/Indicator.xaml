@@ -17,8 +17,10 @@
         <TextBlock HorizontalAlignment="Left" Margin="350,100,0,0" Text="R LED" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="400,100,0,0" Text="222" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Name="IND2_ID"/>
         <TextBlock HorizontalAlignment="Left" Margin="600,100,0,0" Text="Disconected" TextWrapping="Wrap" VerticalAlignment="Top" Name="IND_GW_Status"/>
-        <Button Content="ON" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="IND1_ON" Click="IND1_ON_Click"/>
-        <Button Content="OFF" Margin="800,200,0,0" VerticalAlignment="Top" Width="152" Name="IND1_OFF" Click="IND1_OFF_Click"/>
+        <Button Content="IND ON" Margin="200,200,0,0" VerticalAlignment="Top" Width="152" Name="IND_ON" Click="IND_ON_Click"/>
+        <Button Content="IND OFF" Margin="400,200,0,0" VerticalAlignment="Top" Width="152" Name="IND_OFF" Click="IND_OFF_Click"/>
+        <Button Content="LED ON" Margin="600,200,0,0" VerticalAlignment="Top" Width="152" Name="LED_ON" Click="LED_ON_Click"/>
+        <Button Content="LED OFF" Margin="800,200,0,0" VerticalAlignment="Top" Width="152" Name="LED_OFF" Click="LED_OFF_Click"/>
 
         <ListView Margin="100,300,0,0" x:Name="IndList" ItemsSource="{x:Bind indList}" SelectionMode="None">
             <ListView.ItemTemplate>

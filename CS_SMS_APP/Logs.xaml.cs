@@ -104,8 +104,10 @@ namespace CS_SMS_APP
                     logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].leftChute.ToString() + "\n";
                     logs += "\t" + "\t" + "rightChute ";
                     logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].rightChute.ToString() + "\n";
-                    logs += "\t" + "\t" + "printButton ";
-                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].printButton.ToString() + "\n";
+                    logs += "\t" + "\t" + "lprintButton ";
+                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].lprintButton.ToString() + "\n";
+                    logs += "\t" + "\t" + "rprintButton ";
+                    logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].rprintButton.ToString() + "\n";
                     logs += "\t" + "\t" + "plusButton ";
                     logs += "\t" + "\t" + global.md.mdsData.moduleInfos[i].printInfos[j].plusButton.ToString() + "\n";
                     logs += "\t" + "\t" + "minusButton ";

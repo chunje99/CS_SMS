@@ -69,7 +69,8 @@ namespace CS_SMS_LIB
     {
         public int leftChute {get;set;} = 0;
         public int rightChute {get;set;} = 0;
-        public int printButton {get;set;} = 0;
+        public int lprintButton {get;set;} = 0;
+        public int rprintButton {get;set;} = 0;
         public int plusButton {get;set;} = 0;
         public int minusButton {get;set;} = 0;
     }

@@ -110,7 +110,7 @@ namespace CS_SMS_LIB
                 {
                     try
                     {
-                        //READ < 80
+                        //READ < 80  ; [1:79]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(0, 80);    //Read 10 Holding Registers from Server, starting with Address 1
@@ -156,7 +156,7 @@ namespace CS_SMS_LIB
                         }
                         
                         await Task.Delay(50);
-                        //READ < confirm word data 176
+                        //READ < confirm word data 176 [80:175]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(80, 96);    //Read 10 Holding Registers from Server, starting with Address 1
@@ -176,7 +176,7 @@ namespace CS_SMS_LIB
                             }
                         }
                         await Task.Delay(50);
-                        //READ < pid + confirm dword data 176
+                        //READ < pid + confirm dword data [500](pid) + [501:597]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(500, 98);    //Read 10 Holding Registers from Server, starting with Address 1
@@ -213,7 +213,7 @@ namespace CS_SMS_LIB
                             }
                         }
                         await Task.Delay(50);
-                        //READ print input
+                        //READ print input [176:295]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(176, 120);    //Read 10 Holding Registers from Server, starting with Address 1
@@ -223,14 +223,14 @@ namespace CS_SMS_LIB
                                 Log.Information("Read Error < 176 array" );
                                 break;
                             }
-                            int leftChute, rightChute, printButton, plusButton, minusButton;
+                            int leftChute, rightChute, lprintButton, plusButton, minusButton;
                             for(int i = 0 ; i < 12 ; i++ ) //module
                             {
                                 for (int j = 0; j < 2; j++) //chute
                                 {
                                     leftChute = r[i * 10 + j*5];
                                     rightChute = r[i * 10 + j*5 + 1];
-                                    printButton = r[i * 10 + j*5 + 2];
+                                    lprintButton = r[i * 10 + j*5 + 2];
                                     plusButton = r[i * 10 + j*5 + 3];
                                     minusButton = r[i * 10 + j*5 + 4];
 
@@ -258,12 +258,12 @@ namespace CS_SMS_LIB
                                         }
                                     }
 
-                                    if (printButton != mdsData.moduleInfos[i].printInfos[j].printButton)
+                                    if (lprintButton != mdsData.moduleInfos[i].printInfos[j].lprintButton)
                                     {
 
-                                        mdsData.moduleInfos[i].printInfos[j].printButton = printButton;
+                                        mdsData.moduleInfos[i].printInfos[j].lprintButton = lprintButton;
                                         if (onEvent != null)
-                                            onEvent(MDS_EVENT.PRINT, i, j, printButton);
+                                            onEvent(MDS_EVENT.PRINT, i, j, lprintButton);
                                     }
 
                                     if (plusButton != mdsData.moduleInfos[i].printInfos[j].plusButton)
@@ -283,7 +283,7 @@ namespace CS_SMS_LIB
                             }
                         }
                         await Task.Delay(50);
-                        ///read tracking data word
+                        ///read tracking data word [296:335]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(296, 40);    //Read 10 Holding Registers from Server, starting with Address 1
@@ -296,7 +296,7 @@ namespace CS_SMS_LIB
                             for(int i = 0 ; i < 40 ; i++ ) //module
                                 mdsData.positions[i].chuteNum = r[i];
                         }
-                        //READ < tracking data dword ??
+                        //READ < tracking data dword ?? [598:677]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(598, 80);    //Read 10 Holding Registers from Server, starting with Address 1
@@ -313,6 +313,33 @@ namespace CS_SMS_LIB
                                 mdsData.positions[i].pid = num;
                             }
                         }
+                        //READ < PrintInput data word ?? [801:824]
+                        {
+                            m_mutex.WaitOne();
+                            var r = m_modbusClient.ReadHoldingRegisters(801, 24);    //Read 10 Holding Registers from Server, starting with Address 1
+                            m_mutex.ReleaseMutex();
+                            if( r.Length != 24)
+                            {
+                                Log.Information("Read Error PrintInput Data" );
+                                break;
+                            }
+                            int rprintButton;
+                            for(int i = 0 ; i < 24 ; i++ ) //module
+                            {
+                                rprintButton = r[i];
+                                if (rprintButton != mdsData.moduleInfos[i/2].printInfos[i%2].rprintButton)
+                                {
+
+                                    mdsData.moduleInfos[i/2].printInfos[i%2].rprintButton = rprintButton;
+                                    if (onEvent != null)
+                                    {
+                                        Log.Information("Print Right Button: " + rprintButton);
+                                        //onEvent(MDS_EVENT.PRINT, i, j, lprintButton);
+                                    }
+                                }
+                            }
+                        }
+                        ///[499]
                         {
                             m_mutex.WaitOne();
                             var r = m_modbusClient.ReadHoldingRegisters(499, 1);    //Read Remain Cnt
