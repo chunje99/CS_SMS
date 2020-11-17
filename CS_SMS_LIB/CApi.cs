@@ -18,8 +18,8 @@ namespace CS_SMS_LIB
     public class CApi
     {
 #if DEBUG
-        //public string Domain { get; set; } = "http://sms-api.wtest.biz";
-        public string Domain { get; set; } = "http://sms-admin.wtest.biz";
+        public string Domain { get; set; } = "http://sms-api.wtest.biz";
+        //public string Domain { get; set; } = "http://sms-admin.wtest.biz";
 #else
         public string Domain { get; set; } = "http://127.0.0.1";
 #endif
@@ -514,7 +514,7 @@ namespace CS_SMS_LIB
         public async Task<IndicatorList> GetIndicatorList(int chute_num, string barcode)
         {
             HttpClient client = new HttpClient();
-            string url = "/dummy/api/scanChuteGoods.php";
+            string url = "/v2/dps/scanchutegoods";
             Log.Information(url);
             client.BaseAddress = new Uri(Domain + url);
             IndicatorList indicatorList = new IndicatorList();
@@ -558,7 +558,7 @@ namespace CS_SMS_LIB
         public async Task<IndicatorRes> IndicatorRes(JObject json)
         {
             HttpClient client = new HttpClient();
-            string url = "/dummy/api/indRes.php";
+            string url = "/v2/dps/indres";
             Log.Information(url);
             client.BaseAddress = new Uri(Domain + url);
             IndicatorRes indicatorRes = new IndicatorRes();
@@ -596,6 +596,50 @@ namespace CS_SMS_LIB
                 //pidData.msg = String.Format("{0} {1} ", url, e.ToString());
             }
             return indicatorRes;
+        }
+
+        public async Task<Product> FirstSensor()
+        {
+            Log.Information("===FirstSensor===");
+            Product product = new Product();
+
+            HttpClient client = new HttpClient();
+            string url = "/v2/product/firstsensor";
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            try
+            {
+                HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    var resp = response.Content.ReadAsStreamAsync();
+                    var serializer = new DataContractJsonSerializer(typeof(Product));
+                    var repositories = serializer.ReadObject(await resp) as Product;
+                    Log.Information(repositories.status);
+                    Log.Information(repositories.msg);
+                    if (repositories.status == "OK")
+                    {
+                        Log.Information("Product {@Product}", repositories);
+                        return repositories;
+                    }
+                }
+                else
+                {
+                    Log.Information("{0} {1} {2}", url, (int)response.StatusCode, response.ReasonPhrase);
+                    product.msg = String.Format("{0} {1} {2}", url, (int)response.StatusCode, response.ReasonPhrase);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                product.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+            return product;
         }
 
         public void SetTest(string j)
@@ -642,6 +686,7 @@ namespace CS_SMS_LIB
         public int remain_qty { get; set; }
         public string msg { get; set; }
         public int send_cnt { get; set; }
+        public int buffer { get; set; }
         public List<PListData> list { get; set; }
 
         public Product()
@@ -658,6 +703,7 @@ namespace CS_SMS_LIB
             remain_qty = 0;
             msg = "";
             send_cnt = 1;
+            buffer = 0;
             list = new List<PListData>();
         }
         public void Set(PListData p)
@@ -807,6 +853,7 @@ namespace CS_SMS_LIB
         public string biz_type { get; set; } = "";
         public string action_type { get; set; } = "";
         public List<IndicatorData> ind_on { get; set; } = new List<IndicatorData>();
+        public List<string> ind_off { get; set; } = new List<string>();
         public IndicatorList() { }
     }
     //{"status":"OK","msg":"","action":"IND_OFF_REQ","end_off_flag":"false","force_flag":"true",

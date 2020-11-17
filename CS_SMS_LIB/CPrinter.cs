@@ -502,6 +502,38 @@ namespace CS_SMS_LIB
 
         }
 
+        public void PrintIndicator()
+        {
+            if (!ConnectPrinter())
+                return;
+
+            int multiplier = 1;
+
+            int resolution = BXLLApi.GetPrinterDPI();
+            int dotsPer1mm = (int)Math.Round((float)resolution / 25.4f);
+            if (resolution >= 600)
+                multiplier = 3;
+
+            SendPrinterSettingCommand();
+
+
+            for (int j = 0; j < 4; j++)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    int chute_num = j * 4 + i;
+                    BXLLApi.PrintQRCode((2 + i * 25) * dotsPer1mm, (2 + j*20) * dotsPer1mm, 1, 4, 4, 0, "INDIC_" + chute_num.ToString()); ;
+                    BXLLApi.PrintDeviceFont((17 + i * 25) * dotsPer1mm, (7 + j*20) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, chute_num.ToString());
+                }
+            }
+            //	Print Command
+            BXLLApi.Prints(1, 1);
+
+            // Disconnect printer
+            BXLLApi.DisconnectPrinter();
+
+        }
+
         public void PrintChute2()
         {
             if (!ConnectPrinter())
@@ -540,7 +572,7 @@ namespace CS_SMS_LIB
 
         }
 
-        public void PrintIndicator()
+        public void PrintIndicator2()
         {
             if (!ConnectPrinter())
                 return;

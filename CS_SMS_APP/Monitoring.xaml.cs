@@ -165,6 +165,9 @@ namespace CS_SMS_APP
                         ///chute_num, 0, onoff
                         OnEvent_FULL(id0, id1, id2);
                         break;
+                    case MDS_EVENT.FIRSTSENSOR:
+                        OnEvent_FIRSTSENSOR(id0, id1, id2);
+                        break;
                 }
             };
         }
@@ -274,31 +277,18 @@ namespace CS_SMS_APP
             });
             Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint+1);
         }
-        private void OnEvent_PRINT(int module, int direct, int value)
+        private void OnEvent_PRINT(int chute_num, int value, int id2)
         {
             Task.Run(() =>
             {
-                Log.Information("OnEvent_PRINT {0} {1} {2} START", module, direct, value);
+                Log.Information("OnEvent_LPRINT {0} {1} {2} START", chute_num, value, id2);
                 if (value == 0)
                     return;
 
-                int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;   ///left
-                int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2; ///right
-                if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 1) ///left
-                {
-                    Printing(chute_num1);
-                }
-                else if (global.md.mdsData.moduleInfos[module].printInfos[direct].rightChute == 1) ///right
-                {
-                    Printing(chute_num2);
-                }
-                else if (global.md.mdsData.moduleInfos[module].printInfos[direct].leftChute == 0 &&   ///left & right
-                         global.md.mdsData.moduleInfos[module].printInfos[direct].rightChute == 0)
-                {
-                    Printing(chute_num1);
-                    Printing(chute_num2);
-                }
-                Log.Information("OnEvent_PRINT {0} {1} {2} END", module, direct, value);
+                //int chute_num1 = module * 4 + direct * 2 + (1 + direct) % 2;   ///left
+                //int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2; ///right
+                Printing(chute_num);
+                Log.Information("OnEvent_PRINT {0} {1} {2} END", chute_num, value, id2);
             });
         }
 
@@ -328,6 +318,40 @@ namespace CS_SMS_APP
                 int chute_num2 = module * 4 + direct * 2 + (1 + direct) % 2 + 2;
                 global.api.AddStatus(chute_num1, "-");
                 global.api.AddStatus(chute_num2, "-");
+            });
+        }
+
+        private void OnEvent_FIRSTSENSOR(int value, int id1, int id2)
+        {
+            Task.Run(async () =>
+            {
+                Log.Information("OnEvent_FIRSTSENSOR value {0}", value);
+                if (value == 0)
+                    return;
+
+                var tData = await global.api.FirstSensor();
+                if (tData.status == "OK" && tData.buffer > 0)
+                {
+                    m_lastData = tData;
+                    m_cancelData = m_lastData;
+                    cancelList.Clear();
+                    cancelList.Add(m_lastData);
+
+                    m_lastData.send_cnt = 1;
+                    Log.Information(m_lastData.chute_num.ToString());
+                    Log.Information("======={0}======", m_lastData.sku_nm);
+                    Log.Information("=======ADD QUEUE======");
+                    m_queueData.Enqueue(m_lastData);
+
+                    mdsList.Clear();
+                    foreach (var data in m_lastData.list)
+                    {
+                        if (data.highlight == "yellow")
+                            data.leave_qty_color = "red";
+                        Log.Information(data.highlight);
+                        mdsList.Add(data);
+                    }
+                }
             });
         }
 
@@ -382,6 +406,10 @@ namespace CS_SMS_APP
             var indicatorBody = await global.api.GetIndicatorList(chute_num, barcode);
             if (global.mqc.isConnect)
             {
+                CMqttApi.MpsBodyIndOff offReqBody = new CMqttApi.MpsBodyIndOff { ind_off = indicatorBody.ind_off };
+                //first ind off
+                global.mqc.ind_off_req(offReqBody);
+
                 CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { action = indicatorBody.action, action_type = indicatorBody.action_type, biz_type = indicatorBody.biz_type };
                 foreach (var a in indicatorBody.ind_on)
                 {
@@ -389,6 +417,7 @@ namespace CS_SMS_APP
                     int ea = Convert.ToInt32(a.org_ea_qty);
                     reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a.id, org_box_qty = box, org_ea_qty = ea, biz_id = a.biz_id, view_type = a.view_type, seg_role = a.seg_role});
                 }
+                //and ind on
                 global.mqc.ind_on_req(reqBody);
                 //UpdateUI("LED ON");
             }

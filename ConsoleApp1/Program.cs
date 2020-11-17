@@ -103,6 +103,32 @@ namespace ConsoleApp1
             api.AddStatus(3, "+");
             
         }
+        static public async void Test4()
+        {
+            CApi api = new CApi();
+            Product p = await api.FirstSensor();
+            CMqttApi mqc = new CMqttApi();
+            await mqc.Connect();
+            var indicatorBody = await api.GetIndicatorList(1, "asdfasdf");
+            if (mqc.isConnect)
+            {
+                CMqttApi.MpsBodyIndOff offReqBody = new CMqttApi.MpsBodyIndOff { ind_off = indicatorBody.ind_off };
+                //first ind off
+                mqc.ind_off_req(offReqBody);
+
+                CMqttApi.MpsBodyIndOn reqBody = new CMqttApi.MpsBodyIndOn { action = indicatorBody.action, action_type = indicatorBody.action_type, biz_type = indicatorBody.biz_type };
+                foreach (var a in indicatorBody.ind_on)
+                {
+                    int box = Convert.ToInt32(a.org_boxin_qty);
+                    int ea = Convert.ToInt32(a.org_ea_qty);
+                    reqBody.ind_on.Add(new CMqttApi.MpsIndOn { id=a.id, org_box_qty = box, org_ea_qty = ea, biz_id = a.biz_id, view_type = a.view_type, seg_role = a.seg_role});
+                }
+                //and ind on
+                mqc.ind_on_req(reqBody);
+                //UpdateUI("LED ON");
+            }
+            
+        }
         static void Main(string[] args)
         {
             //Log.Logger = new LoggerConfiguration().WriteTo.Debug().CreateLogger();
@@ -117,7 +143,8 @@ namespace ConsoleApp1
             Log.Information("Serilog");
             //Program.Test1();
             //Program.Test2();
-            Program.Test3();
+            //Program.Test3();
+            Program.Test4();
 
             bool active = true;
             while (active)

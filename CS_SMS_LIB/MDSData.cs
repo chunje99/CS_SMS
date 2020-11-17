@@ -19,6 +19,7 @@ namespace CS_SMS_LIB
         public int remainCnt {get;set;} = 0;
         public List<ModuleInfo> moduleInfos = new List<ModuleInfo>();
         public List<TrackingData> positions {get;set;} = new List<TrackingData>();
+        public int firstSensor { get; set; } = 0;
 
         ///요청 데이터
         public DistributionData distributionData = new DistributionData();

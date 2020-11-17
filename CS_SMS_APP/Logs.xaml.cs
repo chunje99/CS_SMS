@@ -70,6 +70,8 @@ namespace CS_SMS_APP
             logs += global.md.mdsData.settingData.moduleSpeed.ToString() + "\n";
             logs += "currentModuleSpeed ";
             logs += global.md.mdsData.currentModuleSpeed.ToString() + "\n";
+            logs += "firstsensor";
+            logs += global.md.mdsData.firstSensor.ToString() + "\n";
             logs += "remainCnt";
             logs += global.md.mdsData.remainCnt.ToString() + "\n";
             for (int i = 0; i < 3; i++)
