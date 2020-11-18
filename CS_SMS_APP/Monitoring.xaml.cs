@@ -270,12 +270,13 @@ namespace CS_SMS_APP
                 locPrint = 3;
 
             PrintList p = await global.api.Print(chute_num, "", "");
+            Log.Information("Printing Location {0}", locPrint);
             global.m_printer[locPrint].PrintData(p);
-            var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
-            });
-            Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint+1);
+            //var ignored = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            //{
+            UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
+            //});
+            Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint + 1);
         }
         private void OnEvent_PRINT(int chute_num, int value, int id2)
         {
@@ -330,26 +331,32 @@ namespace CS_SMS_APP
                     return;
 
                 var tData = await global.api.FirstSensor();
-                if (tData.status == "OK" && tData.buffer > 0)
+                Log.Information("===First Data===");
+                if (tData.status == "OK")
                 {
-                    m_lastData = tData;
-                    m_cancelData = m_lastData;
-                    cancelList.Clear();
-                    cancelList.Add(m_lastData);
-
-                    m_lastData.send_cnt = 1;
-                    Log.Information(m_lastData.chute_num.ToString());
-                    Log.Information("======={0}======", m_lastData.sku_nm);
-                    Log.Information("=======ADD QUEUE======");
-                    m_queueData.Enqueue(m_lastData);
-
-                    mdsList.Clear();
-                    foreach (var data in m_lastData.list)
+                    if (tData.buffer > 0)
                     {
-                        if (data.highlight == "yellow")
-                            data.leave_qty_color = "red";
-                        Log.Information(data.highlight);
-                        mdsList.Add(data);
+                        m_lastData = tData;
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                        () =>
+                        {
+                            m_cancelData = m_lastData;
+                            cancelList.Clear();
+                            cancelList.Add(m_lastData);
+                            m_lastData.send_cnt = 1;
+                            Log.Information(m_lastData.chute_num.ToString());
+                            Log.Information("======={0}======", m_lastData.sku_nm);
+                            Log.Information("=======ADD QUEUE======");
+                            m_queueData.Enqueue(m_lastData);
+                            mdsList.Clear();
+                            foreach (var data in m_lastData.list)
+                            {
+                                if (data.highlight == "yellow")
+                                    data.leave_qty_color = "red";
+                                Log.Information(data.highlight);
+                                mdsList.Add(data);
+                            }
+                        });
                     }
                 }
             });

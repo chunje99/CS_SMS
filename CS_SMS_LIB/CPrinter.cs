@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Serilog;
 
 namespace CS_SMS_LIB
@@ -44,6 +46,7 @@ namespace CS_SMS_LIB
         public const int IBluetooth = 5;
 
         public Action<int, string> act0 { get; set; } = null;
+        private static object lockObject = new object();
 
         private bool ConnectPrinter()
         {
@@ -176,195 +179,198 @@ namespace CS_SMS_LIB
 
         public void PrintData(string printer)
         {
-            if (!ConnectPrinter())
-                return;
-
-            int multiplier = 1;
-
-            int resolution = BXLLApi.GetPrinterDPI();
-            int dotsPer1mm = (int)Math.Round((float)resolution / 25.4f);
-            if (resolution >= 600)
-                multiplier = 3;
-
-            SendPrinterSettingCommand();
-
-            List<cnc> t = new List<cnc>();
-            t.Add(new cnc("FRPBMZGPP0019", "4컬러+샤프 멀티펜_AP_스케치북 4컬로 샤프입니다. 가나다라 마바사 아자카차차+2", "123"));
-            t.Add(new cnc("FRPBMZGPP0019", "123456789012345678901234567890123456789012345678901234567890", "123"));
-            t.Add(new cnc("FRPBMZGPP0019", "4컬러+샤프 멀티펜_AP_스케치북", "123"));
-
-            for (int j = 0; j < 3 ; j++)
+            lock (lockObject)
             {
+                if (!ConnectPrinter())
+                    return;
 
-                // Prints string using TrueFont
-                //BXLLApi.PrintTrueFont(40 * dotsPer1mm, 5 * dotsPer1mm, "Arial", 20, 0, true, true, false, "여의도 CGV점(F020)", false);
-                //BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 5 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "여의도 CGV점 (F020)");
-                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true, "여의도 CGV점 (F020)");
-                //BXLLApi.PrintVectorFont(40 * dotsPer1mm, 5* dotsPer1mm, string FontSelection, int FontWidth, int FontHeight, string RightSideCharSpacing, bool bBold, bool ReversePrinting, bool TextStyle, int Rotation, string TextAlignment, int TextDirection, string pData)
+                int multiplier = 1;
 
-                //	Draw Lines
-                //BXLLApi.PrintBlock(5 * dotsPer1mm, 11 * dotsPer1mm, 95 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.LINE_OVER_WRITING, 0);
-                BXLLApi.PrintBlock(1 * dotsPer1mm, 1 * dotsPer1mm, 99 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+                int resolution = BXLLApi.GetPrinterDPI();
+                int dotsPer1mm = (int)Math.Round((float)resolution / 25.4f);
+                if (resolution >= 600)
+                    multiplier = 3;
 
+                SendPrinterSettingCommand();
 
-                //Print string using Vector Font
-                //BXLLApi.PrintVectorFont(5*dotsPer1mm, 16*dotsPer1mm, "K", 34, 34, "0", false, false, false, (int)SLCS_ROTATION.ROTATE_0, SLCS_FONT_ALIGNMENT.LEFTALIGN.ToString(), (int)SLCS_FONT_DIRECTION.LEFTTORIGHT, "Sample Label-2");
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품코드");
-                BXLLApi.PrintDeviceFont(43 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품명");
-                BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "EA");
+                List<cnc> t = new List<cnc>();
+                t.Add(new cnc("FRPBMZGPP0019", "4컬러+샤프 멀티펜_AP_스케치북 4컬로 샤프입니다. 가나다라 마바사 아자카차차+2", "123"));
+                t.Add(new cnc("FRPBMZGPP0019", "123456789012345678901234567890123456789012345678901234567890", "123"));
+                t.Add(new cnc("FRPBMZGPP0019", "4컬러+샤프 멀티펜_AP_스케치북", "123"));
 
-                int i = 0;
-                foreach (var item in t)
+                for (int j = 0; j < 3; j++)
                 {
-                    BXLLApi.PrintDeviceFont(3 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, item.code);
-                    if (item.name.Length <= 25)
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, item.name);
-                    else if (item.name.Length > 25 && item.name.Length < 50)
+
+                    // Prints string using TrueFont
+                    //BXLLApi.PrintTrueFont(40 * dotsPer1mm, 5 * dotsPer1mm, "Arial", 20, 0, true, true, false, "여의도 CGV점(F020)", false);
+                    //BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 5 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "여의도 CGV점 (F020)");
+                    BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true, "여의도 CGV점 (F020)");
+                    //BXLLApi.PrintVectorFont(40 * dotsPer1mm, 5* dotsPer1mm, string FontSelection, int FontWidth, int FontHeight, string RightSideCharSpacing, bool bBold, bool ReversePrinting, bool TextStyle, int Rotation, string TextAlignment, int TextDirection, string pData)
+
+                    //	Draw Lines
+                    //BXLLApi.PrintBlock(5 * dotsPer1mm, 11 * dotsPer1mm, 95 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.LINE_OVER_WRITING, 0);
+                    BXLLApi.PrintBlock(1 * dotsPer1mm, 1 * dotsPer1mm, 99 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+
+
+                    //Print string using Vector Font
+                    //BXLLApi.PrintVectorFont(5*dotsPer1mm, 16*dotsPer1mm, "K", 34, 34, "0", false, false, false, (int)SLCS_ROTATION.ROTATE_0, SLCS_FONT_ALIGNMENT.LEFTALIGN.ToString(), (int)SLCS_FONT_DIRECTION.LEFTTORIGHT, "Sample Label-2");
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품코드");
+                    BXLLApi.PrintDeviceFont(43 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품명");
+                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "EA");
+
+                    int i = 0;
+                    foreach (var item in t)
                     {
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            item.name.Substring(0, 25));
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            item.name.Substring(25, item.name.Length - 25));
+                        BXLLApi.PrintDeviceFont(3 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, item.code);
+                        if (item.name.Length <= 25)
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, item.name);
+                        else if (item.name.Length > 25 && item.name.Length < 50)
+                        {
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                item.name.Substring(0, 25));
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                item.name.Substring(25, item.name.Length - 25));
+                        }
+                        else
+                        {
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                item.name.Substring(0, 25));
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                item.name.Substring(25, 25));
+                        }
+                        BXLLApi.PrintDeviceFont(85 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, item.cnt);
+                        i++;
                     }
-                    else
-                    {
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            item.name.Substring(0, 25));
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            item.name.Substring(25, 25));
-                    }
-                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, item.cnt);
-                    i++;
+
+                    /*
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 22 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
+                    BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 22 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
+                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 22 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
+
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 32 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
+                    BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 32 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
+                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 32 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
+
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 42 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
+                    BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 42 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
+                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 42 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
+                    */
+
+                    BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "MPIBR1003F0200017");
+                    BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "MPIBR1003F0200017");
+
+                    BXLLApi.PrintBlock(1 * dotsPer1mm, 66 * dotsPer1mm, 99 * dotsPer1mm, 67 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "No.");
+                    BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "13");
+                    BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "배송");
+                    BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "2019-11-27");
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "LOC");
+                    BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "M01-0101");
+                    BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "차수");
+                    BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "1");
+
+
+                    /*
+                    BXLLApi.PrintDeviceFont(2 * dotsPer1mm, 17 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "CJ 대한통운");
+
+                    BXLLApi.PrintDeviceFont(3 * dotsPer1mm, 24 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "바코드 CODE39");
+                    BXLLApi.Print1DBarcode(3 * dotsPer1mm, 28 * dotsPer1mm, (int)SLCS_BARCODE.CODE39, 4 * multiplier, 6 * multiplier, 48 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "1234567890");
+                    BXLLApi.PrintDeviceFont(3 * dotsPer1mm, 44 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "바코드 CODE128");
+                    BXLLApi.Print1DBarcode(3 * dotsPer1mm, 48 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 4 * multiplier, 6 * multiplier, 48 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "1234567890abcdefg");
+                    */
+
+                    //	Print Command
+                    BXLLApi.Prints(1, 1);
                 }
 
-                /*
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 22 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
-                BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 22 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
-                BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 22 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
-
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 32 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
-                BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 32 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
-                BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 32 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
-
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 42 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "69816");
-                BXLLApi.PrintDeviceFont(35 * dotsPer1mm, 42 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "슬리퍼");
-                BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 42 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "3");
-                */
-
-                BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "MPIBR1003F0200017");
-                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "MPIBR1003F0200017");
-
-                BXLLApi.PrintBlock(1 * dotsPer1mm, 66 * dotsPer1mm, 99 * dotsPer1mm, 67 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
-
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "No.");
-                BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "13");
-                BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "배송");
-                BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "2019-11-27");
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "LOC");
-                BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "M01-0101");
-                BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "차수");
-                BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "1");
-
-
-                /*
-                BXLLApi.PrintDeviceFont(2 * dotsPer1mm, 17 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "CJ 대한통운");
-
-                BXLLApi.PrintDeviceFont(3 * dotsPer1mm, 24 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "바코드 CODE39");
-                BXLLApi.Print1DBarcode(3 * dotsPer1mm, 28 * dotsPer1mm, (int)SLCS_BARCODE.CODE39, 4 * multiplier, 6 * multiplier, 48 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "1234567890");
-                BXLLApi.PrintDeviceFont(3 * dotsPer1mm, 44 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, "바코드 CODE128");
-                BXLLApi.Print1DBarcode(3 * dotsPer1mm, 48 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 4 * multiplier, 6 * multiplier, 48 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, "1234567890abcdefg");
-                */
-
-                //	Print Command
-                BXLLApi.Prints(1, 1);
+                // Disconnect printer
+                BXLLApi.DisconnectPrinter();
             }
-
-            // Disconnect printer
-            BXLLApi.DisconnectPrinter();
-
         }
 
         public void PrintData(PrintList printList)
         {
-
-            if (!ConnectPrinter())
-                return;
-
-            int multiplier = 1;
-
-            int resolution = BXLLApi.GetPrinterDPI();
-            int dotsPer1mm = (int)Math.Round((float)resolution / 25.4f);
-            if (resolution >= 600)
-                multiplier = 3;
-
-            SendPrinterSettingCommand();
-
-            for (int j = 0; j < printList.list.Count ;)
+            lock (lockObject)
             {
+                if (!ConnectPrinter())
+                    return;
 
-                // Prints string using TrueFont
-                BXLLApi.PrintDeviceFont(20 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true,
-                    printList.cust_cd + " (" + printList.cust_nm + ")");
+                int multiplier = 1;
 
-                //	Draw Lines
-                BXLLApi.PrintBlock(1 * dotsPer1mm, 1 * dotsPer1mm, 99 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+                int resolution = BXLLApi.GetPrinterDPI();
+                int dotsPer1mm = (int)Math.Round((float)resolution / 25.4f);
+                if (resolution >= 600)
+                    multiplier = 3;
 
+                SendPrinterSettingCommand();
 
-                //Print string using Vector Font
-                //BXLLApi.PrintVectorFont(5*dotsPer1mm, 16*dotsPer1mm, "K", 34, 34, "0", false, false, false, (int)SLCS_ROTATION.ROTATE_0, SLCS_FONT_ALIGNMENT.LEFTALIGN.ToString(), (int)SLCS_FONT_DIRECTION.LEFTTORIGHT, "Sample Label-2");
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품코드");
-                BXLLApi.PrintDeviceFont(43 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품명");
-                BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "EA");
-
-                for(int i = 0; i < 3 && j < printList.list.Count; i++, j++)
+                for (int j = 0; j < printList.list.Count;)
                 {
-                    string sku_cd = printList.list[j].sku_cd;
-                    string sku_nm = printList.list[j].sku_nm;
-                    string cnt = printList.list[j].cnt;
-                    BXLLApi.PrintDeviceFont(3 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, sku_cd );
-                    if (sku_nm.Length <= 25)
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, sku_nm);
-                    else if (sku_nm.Length > 25 && sku_nm.Length < 50)
+
+                    // Prints string using TrueFont
+                    BXLLApi.PrintDeviceFont(20 * dotsPer1mm, 2 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, 2, 2, (int)SLCS_ROTATION.ROTATE_0, true,
+                        printList.cust_cd + " (" + printList.cust_nm + ")");
+
+                    //	Draw Lines
+                    BXLLApi.PrintBlock(1 * dotsPer1mm, 1 * dotsPer1mm, 99 * dotsPer1mm, 12 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+
+
+                    //Print string using Vector Font
+                    //BXLLApi.PrintVectorFont(5*dotsPer1mm, 16*dotsPer1mm, "K", 34, 34, "0", false, false, false, (int)SLCS_ROTATION.ROTATE_0, SLCS_FONT_ALIGNMENT.LEFTALIGN.ToString(), (int)SLCS_FONT_DIRECTION.LEFTTORIGHT, "Sample Label-2");
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품코드");
+                    BXLLApi.PrintDeviceFont(43 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "상품명");
+                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, 16 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "EA");
+
+                    for (int i = 0; i < 3 && j < printList.list.Count; i++, j++)
                     {
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            sku_nm.Substring(0, 25));
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            sku_nm.Substring(25, sku_nm.Length - 25));
+                        string sku_cd = printList.list[j].sku_cd;
+                        string sku_nm = printList.list[j].sku_nm;
+                        string cnt = printList.list[j].cnt;
+                        BXLLApi.PrintDeviceFont(3 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, sku_cd);
+                        if (sku_nm.Length <= 25)
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, sku_nm);
+                        else if (sku_nm.Length > 25 && sku_nm.Length < 50)
+                        {
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                sku_nm.Substring(0, 25));
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                sku_nm.Substring(25, sku_nm.Length - 25));
+                        }
+                        else
+                        {
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                sku_nm.Substring(0, 25));
+                            BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                                sku_nm.Substring(25, 25));
+                        }
+                        BXLLApi.PrintDeviceFont(85 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, cnt);
                     }
-                    else
-                    {
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            sku_nm.Substring(0, 25));
-                        BXLLApi.PrintDeviceFont(25 * dotsPer1mm, (26 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
-                            sku_nm.Substring(25, 25));
-                    }
-                    BXLLApi.PrintDeviceFont(85 * dotsPer1mm, (22 + i * 10) * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, cnt);
+
+
+                    BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT,
+                        printList.barcode);
+                    BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false,
+                        printList.barcode);
+
+                    BXLLApi.PrintBlock(1 * dotsPer1mm, 66 * dotsPer1mm, 99 * dotsPer1mm, 67 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
+
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "No.");
+                    BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.no);
+                    BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "배송");
+                    BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.delivery_date);
+                    BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "LOC");
+                    BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.loc);
+                    BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "차수");
+                    BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.no2);
+
+                    //	Print Command
+                    BXLLApi.Prints(1, 1);
                 }
 
-
-                BXLLApi.Print1DBarcode(25 * dotsPer1mm, 55 * dotsPer1mm, (int)SLCS_BARCODE.CODE128, 2 * multiplier, 3 * multiplier, 50 * multiplier, (int)SLCS_ROTATION.ROTATE_0, (int)SLCS_HRI.HRI_NOT_PRINT, 
-                    printList.barcode);
-                BXLLApi.PrintDeviceFont(40 * dotsPer1mm, 62 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_20X26, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, 
-                    printList.barcode);
-
-                BXLLApi.PrintBlock(1 * dotsPer1mm, 66 * dotsPer1mm, 99 * dotsPer1mm, 67 * dotsPer1mm, (int)SLCS_BLOCK_OPTION.BOX, 1);
-
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "No.");
-                BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.no);
-                BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "배송");
-                BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 68 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.delivery_date);
-                BXLLApi.PrintDeviceFont(5 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "LOC");
-                BXLLApi.PrintDeviceFont(15 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.loc);
-                BXLLApi.PrintDeviceFont(60 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, true, "차수");
-                BXLLApi.PrintDeviceFont(72 * dotsPer1mm, 74 * dotsPer1mm, (int)SLCS_DEVICE_FONT.KOR_38X38, multiplier, multiplier, (int)SLCS_ROTATION.ROTATE_0, false, printList.no2);
-
-                //	Print Command
-                BXLLApi.Prints(1, 1);
+                // Disconnect printer
+                BXLLApi.DisconnectPrinter();
             }
-
-            // Disconnect printer
-            BXLLApi.DisconnectPrinter();
-
         }
 
         public void PrintSample(string printer)

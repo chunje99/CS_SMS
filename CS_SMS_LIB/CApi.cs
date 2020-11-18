@@ -619,13 +619,13 @@ namespace CS_SMS_LIB
                 {
                     var resp = response.Content.ReadAsStreamAsync();
                     var serializer = new DataContractJsonSerializer(typeof(Product));
-                    var repositories = serializer.ReadObject(await resp) as Product;
-                    Log.Information(repositories.status);
-                    Log.Information(repositories.msg);
-                    if (repositories.status == "OK")
+                    product = serializer.ReadObject(await resp) as Product;
+                    Log.Information(product.status);
+                    Log.Information(product.msg);
+                    if (product.status == "OK")
                     {
-                        Log.Information("Product {@Product}", repositories);
-                        return repositories;
+                        Log.Information("Product {@Product}", product);
+                        return product;
                     }
                 }
                 else

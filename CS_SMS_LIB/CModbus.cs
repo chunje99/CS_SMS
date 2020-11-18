@@ -212,7 +212,6 @@ namespace CS_SMS_LIB
                             //    break;
                             //}
                             var r = readData.SubArray(0,80);
-                            Log.Information("R : " + r[0]);
                             mdsData.moduleCnt = r[1];
                             mdsData.heartBest = r[2];
                             ///status
@@ -428,8 +427,6 @@ namespace CS_SMS_LIB
                             //    break;
                             //}
                             var r = readData.SubArray(801,25);
-                            Log.Information("R801:" + r[0]);
-                            Log.Information("R802:" + r[1]);
                             int rprintButton;
                             for(int i = 0 ; i < 24 ; i++ ) //module
                             {
@@ -455,7 +452,6 @@ namespace CS_SMS_LIB
                                     onEvent(MDS_EVENT.FIRSTSENSOR, firstSensor, 0, 0);
                             }
                             mdsData.firstSensor = firstSensor;
-                            Log.Information("firstSensor :" + firstSensor);
                         }
                         ///[499]
                         {
