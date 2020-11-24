@@ -320,6 +320,62 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
+            <Button Content="취소" Margin="260,159,0,0" VerticalAlignment="Top" Name="Monitoring_cancelScan" Click="CancelScan_Click" Width="160" Height="40" Background="#337BD2" Foreground="White">
+                <Button.Flyout>
+                    <Flyout LightDismissOverlayMode="On" Placement="Full">
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="MinHeight" Value="602"/>
+                                <Setter Property="MinWidth" Value="1260"/>
+                                <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
+                                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+                                <Setter Property="IsTabStop" Value="True"/>
+                                <Setter Property="TabNavigation" Value="Cycle"/>
+                                <Setter Property="Background" Value="White"/>
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+                        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="1260">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="100"/>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <TextBlock HorizontalAlignment="Left" Margin="60,31,0,0" FontSize="18" Text="취소처리" VerticalAlignment="Top" FontWeight="Bold" />
+                                <TextBlock HorizontalAlignment="Left" Margin="882,40,0,0" FontSize="14" Text="직접입력 " VerticalAlignment="Top"/>
+                                <TextBox HorizontalAlignment="Left" Margin="960,30,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" BorderThickness="1" Name="CancelScan_input" KeyDown="Input_Keydown"/>
+                                <Button HorizontalAlignment="Left" Margin="1200,0,0,0" VerticalAlignment="Top" Click="CancelScan_Close">X</Button>
+                            </Grid>
+                            <Grid Grid.Row="1" BorderThickness="0,0,0,1" BorderBrush="#C7C7C7">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="상품코드" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ListView Grid.Row="2"  x:Name="CancelScanData" ItemsSource="{x:Bind cancelScanList, Mode=OneWay}" SelectionMode="None" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1260">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="CS_SMS_LIB:Product">
+                                        <Grid Width="1260" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{x:Bind chute_num}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind sku_cd}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
         <TextBlock Text="LOGS" Margin="52,346,0,0" />
         <Grid Margin="39,383,0,0" Background="White" Width="1260" HorizontalAlignment="Left" VerticalAlignment="Top">

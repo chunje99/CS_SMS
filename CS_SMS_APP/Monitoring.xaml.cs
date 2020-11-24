@@ -38,10 +38,12 @@ namespace CS_SMS_APP
         ObservableCollection<PListData> bundleList = new ObservableCollection<PListData>();
         ObservableCollection<PListData> remainList = new ObservableCollection<PListData>();
         ObservableCollection<Product> cancelList = new ObservableCollection<Product>();
+        ObservableCollection<Product> cancelScanList = new ObservableCollection<Product>();
         ObservableCollection<PListData> mdsList = new ObservableCollection<PListData>();
 
 
 
+        private int m_cancelCnt = 0;
         public string m_lastCode { get; set; } = "";
         public DateTime m_lastTime = DateTime.Now;
         //public CMPS m_lastData = new CMPS();
@@ -717,6 +719,22 @@ namespace CS_SMS_APP
                 Alert(tData.msg);
         }
 
+        private async void CancelScan_Processing()
+        {
+            Log.Information("=======CancelScan Processing======");
+            if (!global.md.m_isCon)
+            {
+                Alert("MDS 접속에러");
+                return;
+            }
+            //cancelScanList.Clear();
+            //mdsList.Clear();
+            Log.Information("=======CancelScan api======");
+            cancelScanList.Add(new Product { chute_num = m_cancelCnt });
+            m_cancelCnt++;
+            return;
+        }
+
         private async void MDS_Processing()
         {
             Log.Information("=======MDS_Processing======");
@@ -794,6 +812,10 @@ namespace CS_SMS_APP
                     {
                         Remain_Processing();
                     }
+                    else if( Monitoring_cancelScan.Flyout.IsOpen)
+                    {
+                        CancelScan_Processing();
+                    }
                     else if (global.md.m_isCon)
                     {
                         MDS_Processing();
@@ -823,6 +845,18 @@ namespace CS_SMS_APP
             Monitoring_cancel.Flyout.ShowAt(Monitoring_Main_Grid as UIElement, options);
         }
 
+        private void CancelScan_Click(object sender, RoutedEventArgs e)
+        {
+            Log.Information("===CancelScan======");
+            cancelScanList.Clear();
+            var options = new FlyoutShowOptions()
+            {
+                Position = new Point(0,100),
+                ShowMode = FlyoutShowMode.Transient
+            };
+            Monitoring_cancelScan.Flyout.ShowAt(Monitoring_Main_Grid as UIElement, options);
+        }
+
         private void Cancel_Confirm(object sender, RoutedEventArgs e)
         {
             if (!global.md.m_isCon)
@@ -837,7 +871,37 @@ namespace CS_SMS_APP
             cancelList.Clear();
         }
 
+        private void CancelScan_Confirm(object sender, RoutedEventArgs e)
+        {
+            if (!global.md.m_isCon)
+            {
+                Alert("MDS 접속에러");
+                return;
+            }
+            Monitoring_cancelScan.Flyout.Hide();
+            Log.Information("===Cancel confirm======");
+            global.api.Cancel(global.md.mdsData.pid);
+            global.md.CancelPID();
+            cancelList.Clear();
+        }
+
         private void Input_Keydown(object sender, KeyRoutedEventArgs e)
+        {
+            if( e.Key == VirtualKey.Enter )
+            {
+                if (!global.md.m_isCon)
+                {
+                    Alert("MDS 접속에러");
+                    return;
+                }
+                TextBox box = sender as TextBox;
+                Log.Information(box.Text);
+                Scanner_Process(box.Text, Monitoring_scanner0, 100);
+                box.Text = "";
+            }
+        }
+
+        private void CancelScan_Keydown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {
@@ -893,6 +957,11 @@ namespace CS_SMS_APP
         private void Cancel_Close(object sender, RoutedEventArgs e)
         {
             Monitoring_cancel.Flyout.Hide();
+        }
+
+        private void CancelScan_Close(object sender, RoutedEventArgs e)
+        {
+            Monitoring_cancelScan.Flyout.Hide();
         }
 
         private void SetMqttHandler()
