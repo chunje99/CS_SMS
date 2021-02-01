@@ -181,6 +181,60 @@ namespace CS_SMS_LIB
             }
         }
 
+        public async Task<Product> CancelScan(string barcode)
+        {
+            Product product = new Product();
+            HttpClient client = new HttpClient();
+            string url = "/v2/product/cancelscan/" + barcode;
+            Log.Information(url);
+            client.BaseAddress = new Uri(Domain + url);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // List data response.
+            try
+            {
+                HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    //var resp = response.Content.ReadAsStringAsync();
+                    //Log.Information(await resp);
+                    var resp = response.Content.ReadAsStreamAsync();
+                    //List<Contributor> contributors = JsonConvert.DeserializeObject<List<Contributor>>(resp);
+                    //contributors.ForEach(Console.WriteLine);
+                    var serializer = new DataContractJsonSerializer(typeof(Product));
+                    var repositories = serializer.ReadObject(await resp) as Product;
+                    Log.Information(barcode);
+                    Log.Information(repositories.status);
+                    Log.Information(repositories.msg);
+                    if (repositories.status == "OK")
+                    {
+                        Log.Information(repositories.chute_num.ToString());
+                        m_chute = repositories.chute_num;
+                        foreach (var item in repositories.list)
+                        {
+                            Log.Information(item.cust_nm);
+                            Log.Information(item.sku_nm);
+                        }
+                    }
+                    return repositories;
+                }
+                else
+                {
+                    Log.Information("{0} {1} {2} {3}", url, (int)response.StatusCode, response.ReasonPhrase, barcode);
+                    product.msg = String.Format("{0} {1} {2} {3}", url, (int)response.StatusCode, response.ReasonPhrase, barcode);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.ToString());
+                product.msg = String.Format("{0} {1} ", url, e.ToString());
+            }
+            return product;
+        }
+
         public void Release(int pid, int confirm_data, int stack_count, int chute_num)
         {
             Log.Information("===Release===");

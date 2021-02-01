@@ -43,7 +43,6 @@ namespace CS_SMS_APP
 
 
 
-        private int m_cancelCnt = 0;
         public string m_lastCode { get; set; } = "";
         public DateTime m_lastTime = DateTime.Now;
         //public CMPS m_lastData = new CMPS();
@@ -730,8 +729,12 @@ namespace CS_SMS_APP
             //cancelScanList.Clear();
             //mdsList.Clear();
             Log.Information("=======CancelScan api======");
-            cancelScanList.Add(new Product { chute_num = m_cancelCnt });
-            m_cancelCnt++;
+            var tData = await global.api.CancelScan(m_lastCode);
+            if (tData.status == "OK")
+            {
+                cancelScanList.Add(tData);
+            }
+            //cancelScanList.Add(new Product { chute_num = m_cancelCnt });
             return;
         }
 
@@ -871,37 +874,7 @@ namespace CS_SMS_APP
             cancelList.Clear();
         }
 
-        private void CancelScan_Confirm(object sender, RoutedEventArgs e)
-        {
-            if (!global.md.m_isCon)
-            {
-                Alert("MDS 접속에러");
-                return;
-            }
-            Monitoring_cancelScan.Flyout.Hide();
-            Log.Information("===Cancel confirm======");
-            global.api.Cancel(global.md.mdsData.pid);
-            global.md.CancelPID();
-            cancelList.Clear();
-        }
-
         private void Input_Keydown(object sender, KeyRoutedEventArgs e)
-        {
-            if( e.Key == VirtualKey.Enter )
-            {
-                if (!global.md.m_isCon)
-                {
-                    Alert("MDS 접속에러");
-                    return;
-                }
-                TextBox box = sender as TextBox;
-                Log.Information(box.Text);
-                Scanner_Process(box.Text, Monitoring_scanner0, 100);
-                box.Text = "";
-            }
-        }
-
-        private void CancelScan_Keydown(object sender, KeyRoutedEventArgs e)
         {
             if( e.Key == VirtualKey.Enter )
             {

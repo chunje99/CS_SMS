@@ -350,11 +350,29 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="상품코드" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="슈트번호" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
-                                <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center" 
+                                <TextBlock Text="상품코드" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
+                                <TextBlock Text="상품명" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                <TextBlock Text="작업장" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                                <TextBlock Text="LOC_CD" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                                <TextBlock Text="낱개수량" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                                <TextBlock Text="처리수량" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                                <TextBlock Text="남은수량" FontSize="16" HorizontalAlignment="Center" 
+                                Grid.Column="7" VerticalAlignment="Center"/>
                             </Grid>
                             <ListView Grid.Row="2"  x:Name="CancelScanData" ItemsSource="{x:Bind cancelScanList, Mode=OneWay}" SelectionMode="None" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1260">
                                 <ListView.ItemTemplate>
@@ -363,11 +381,29 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="100"/>
                                                 <ColumnDefinition />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="100"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="{x:Bind chute_num}" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="0" VerticalAlignment="Center"/>
                                             <TextBlock Text="{x:Bind sku_cd}" FontSize="14" HorizontalAlignment="Center" 
                                 Grid.Column="1" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind sku_nm}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind cust_nm}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind cust_cd}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind total_qty}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="5" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind leave_qty}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{x:Bind remain_qty}" FontSize="14" HorizontalAlignment="Center" 
+                                Grid.Column="7" VerticalAlignment="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
