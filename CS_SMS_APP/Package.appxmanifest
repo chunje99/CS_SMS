@@ -9,7 +9,7 @@
   <Identity
     Name="64f5a97d-3870-450a-b5ed-430964219b22"
     Publisher="CN=ho80"
-    Version="1.1.93.0" />
+    Version="1.1.99.0" />
 
   <mp:PhoneIdentity PhoneProductId="64f5a97d-3870-450a-b5ed-430964219b22" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -37,7 +37,7 @@
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="CS_SMS_APP"
         BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>

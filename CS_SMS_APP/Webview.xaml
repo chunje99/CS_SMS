@@ -9,7 +9,8 @@
     Background="#DDE7F3"
     Loaded="OnLoad"
     >
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="auto" >
-        <WebView Source="http://127.0.0.1:8080/config/chute_allocation.php" Name="MyWebview"></WebView>
+    <Grid Name="WebviewGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="1400" Height="900">
+        <!--WebView Source="http://sms-admin:8080/app/index.php" Name="MyWebview"></-->
+        <WebView Source="http://127.0.0.1:8080/app/index.php" Name="MyWebview"></WebView>
     </Grid>
 </Page>

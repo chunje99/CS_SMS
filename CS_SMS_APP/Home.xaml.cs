@@ -159,6 +159,7 @@ namespace CS_SMS_APP
                     UpdateUI(msg);
                     global.udp.StartScaner(device.Value.Key, 54321, "Scanner_" + i.ToString());
                     Thread.Sleep(100);
+                    i++;
                 }
 
                 foreach (var scanner in global.udp.m_scaner)

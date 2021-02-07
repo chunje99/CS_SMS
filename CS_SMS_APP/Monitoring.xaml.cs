@@ -261,6 +261,15 @@ namespace CS_SMS_APP
         {
             Log.Information("Printing chute_num {0} start", chute_num);
             int locPrint = 0;
+            if (chute_num == 1 || chute_num == 3)
+                locPrint = 0;
+            else if (chute_num == 2 || chute_num == 4)
+                locPrint = 1;
+            else if (chute_num == 5 || chute_num == 7)
+                locPrint = 2;
+            else if (chute_num == 6 || chute_num == 8)
+                locPrint = 3;
+            /*
             if (chute_num == 1 || chute_num == 3 || chute_num == 5)
                 locPrint = 0;
             else if (chute_num == 2 || chute_num == 4 || chute_num == 6)
@@ -269,6 +278,7 @@ namespace CS_SMS_APP
                 locPrint = 2;
             else if (chute_num == 8 || chute_num == 10 || chute_num == 12)
                 locPrint = 3;
+            */
 
             PrintList p = await global.api.Print(chute_num, "", "");
             Log.Information("Printing Location {0}", locPrint);

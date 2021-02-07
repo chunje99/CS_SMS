@@ -27,14 +27,25 @@ namespace CS_SMS_APP
         {
             this.InitializeComponent();
 #if DEBUG
-            Uri siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
+            //Uri siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
+            Uri siteUri = new Uri("https://naver.com");
             MyWebview.Source = siteUri;
 #endif
         }
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
-            global.m_mainTopTB.Text = global.m_mainTopPrefix + "거래처 할당";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "슈트(셀) 관리";
+            Log.Information("webview {0} {1}", ((Frame)Window.Current.Content).ActualWidth, ((Frame)Window.Current.Content).ActualHeight);
+            WebviewGrid.Width = ((Frame)Window.Current.Content).ActualWidth;
+            WebviewGrid.Height = ((Frame)Window.Current.Content).ActualHeight;
+        }
+
+        private void PageSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Log.Information("webViewSize : {0} {1}", e.NewSize.Width, e.NewSize.Height);
+            WebviewGrid.Width = ((Frame)Window.Current.Content).ActualWidth;
+            WebviewGrid.Height = ((Frame)Window.Current.Content).ActualHeight;
         }
     }
 }

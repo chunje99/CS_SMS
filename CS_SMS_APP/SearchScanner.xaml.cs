@@ -172,7 +172,7 @@ namespace CS_SMS_APP
 
         private void OnLoad(object sender, RoutedEventArgs e)
         {
-            global.m_mainTopTB.Text = global.m_mainTopPrefix + "핸드 스캐너";
+            global.m_mainTopTB.Text = global.m_mainTopPrefix + "스캐너 테스트";
             foreach (var scanner in global.udp.m_scaner)
             {
                 if (scanner.m_isCon)

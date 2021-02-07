@@ -52,6 +52,7 @@ namespace CS_SMS_LIB
             m_gwID = "kakao/F4BD01";
             //m_gwID = "kakao/F718CA";
             m_serverTopic = "weng";
+            //m_brokerAddress = "sms-mqtt";
             m_brokerAddress = "172.16.0.209";
             m_user = "mqadmin";
             m_passwd = "mqadminpassword";

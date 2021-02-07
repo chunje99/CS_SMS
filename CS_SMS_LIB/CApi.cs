@@ -21,6 +21,7 @@ namespace CS_SMS_LIB
         public string Domain { get; set; } = "http://sms-api.wtest.biz";
         //public string Domain { get; set; } = "http://sms-admin.wtest.biz";
 #else
+        //public string Domain { get; set; } = "http://sms-api";
         public string Domain { get; set; } = "http://127.0.0.1";
 #endif
         public string urlParameters { get; set; } = "";
