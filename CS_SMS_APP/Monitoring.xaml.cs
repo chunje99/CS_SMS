@@ -351,10 +351,12 @@ namespace CS_SMS_APP
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                         () =>
                         {
+                            m_lastData.send_cnt = 1;
+                            if(m_lastData.leave_qty > 1)
+                                m_lastData.send_cnt = m_lastData.leave_qty;
                             m_cancelData = m_lastData;
                             cancelList.Clear();
                             cancelList.Add(m_lastData);
-                            m_lastData.send_cnt = 1;
                             Log.Information(m_lastData.chute_num.ToString());
                             Log.Information("======={0}======", m_lastData.sku_nm);
                             Log.Information("=======ADD QUEUE======");

@@ -35,6 +35,8 @@ namespace CS_SMS_APP
         public static List<CPrinter> m_printer = new List<CPrinter>(new CPrinter[] { new CPrinter(), new CPrinter(), new CPrinter(), new CPrinter()});
         public static TextBlock m_mainTopTB = new TextBlock();
         public static string m_mainTopPrefix = "DAS_카카오분류-";
+        public static Page m_currentPage = new Page();
+        public static double m_paneLength = 240;
         public global()
         {
         }
@@ -124,10 +126,17 @@ namespace CS_SMS_APP
 
         private void PageSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Log.Information("PageSize : {0} {1}", e.NewSize.Width, e.NewSize.Height);
+            Log.Information("PageSize : {0} {1} {2} {3}", 
+                   e.NewSize.Width, e.NewSize.Height, NavView.OpenPaneLength, NavView.IsPaneOpen);
             ContentFrame.Width = e.NewSize.Width;
             ContentFrame.Height = e.NewSize.Height - 10;
             MainGrid.Height = e.NewSize.Height - 10;
+            if (NavView.IsPaneOpen)
+                global.m_paneLength = NavView.OpenPaneLength;
+            else
+                global.m_paneLength = 0;
+            global.m_currentPage.Width = e.NewSize.Width;
+            global.m_currentPage.Height = e.NewSize.Height - 10;
         }
     }
 }

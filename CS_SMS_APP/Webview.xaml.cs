@@ -26,6 +26,7 @@ namespace CS_SMS_APP
         public Webview()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
 #if DEBUG
             //Uri siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
             Uri siteUri = new Uri("https://naver.com");
@@ -36,15 +37,15 @@ namespace CS_SMS_APP
         private void OnLoad(object sender, RoutedEventArgs e)
         {
             global.m_mainTopTB.Text = global.m_mainTopPrefix + "슈트(셀) 관리";
-            Log.Information("webview {0} {1}", ((Frame)Window.Current.Content).ActualWidth, ((Frame)Window.Current.Content).ActualHeight);
-            WebviewGrid.Width = ((Frame)Window.Current.Content).ActualWidth;
-            WebviewGrid.Height = ((Frame)Window.Current.Content).ActualHeight;
+            global.m_currentPage = this;
         }
 
         private void PageSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Log.Information("webViewSize : {0} {1}", e.NewSize.Width, e.NewSize.Height);
-            WebviewGrid.Width = ((Frame)Window.Current.Content).ActualWidth;
+            Log.Information("WebviewSize : {0} {1} {2} {3}", e.NewSize.Width, e.NewSize.Height, ((Frame)Window.Current.Content).ActualWidth, ((Frame)Window.Current.Content).ActualHeight );
+            //WebviewGrid.Width = e.NewSize.Width;
+            //WebviewGrid.Height = e.NewSize.Height;
+            WebviewGrid.Width = ((Frame)Window.Current.Content).ActualWidth - global.m_paneLength;
             WebviewGrid.Height = ((Frame)Window.Current.Content).ActualHeight;
         }
     }

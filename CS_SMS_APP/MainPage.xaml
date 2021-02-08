@@ -34,7 +34,7 @@
                 <SolidColorBrush x:Key="NavigationViewItemForegroundPressed" Color="Blue"/>
                 <SolidColorBrush x:Key="NavigationViewItemForegroundSelectedPressed" Color="Blue"/ -->
                 </NavigationView.Resources>
-                <NavigationView.MenuItems>
+                <NavigationView.MenuItems >
                     <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home" Foreground="White" FontSize="14">
                         <NavigationViewItem.Icon>
                             <FontIcon Glyph="&#xE10F;"/>
