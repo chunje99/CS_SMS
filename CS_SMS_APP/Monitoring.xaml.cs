@@ -40,6 +40,7 @@ namespace CS_SMS_APP
         ObservableCollection<Product> cancelList = new ObservableCollection<Product>();
         ObservableCollection<Product> cancelScanList = new ObservableCollection<Product>();
         ObservableCollection<PListData> mdsList = new ObservableCollection<PListData>();
+        ObservableCollection<PListData> mdsListHistory = new ObservableCollection<PListData>();
 
 
 
@@ -260,15 +261,7 @@ namespace CS_SMS_APP
         private async void Printing(int chute_num)
         {
             Log.Information("Printing chute_num {0} start", chute_num);
-            int locPrint = 0;
-            if (chute_num == 1 || chute_num == 3)
-                locPrint = 0;
-            else if (chute_num == 2 || chute_num == 4)
-                locPrint = 1;
-            else if (chute_num == 5 || chute_num == 7)
-                locPrint = 2;
-            else if (chute_num == 6 || chute_num == 8)
-                locPrint = 3;
+            int locPrint = global.m_matchPrintChute[chute_num];
             /*
             if (chute_num == 1 || chute_num == 3 || chute_num == 5)
                 locPrint = 0;
@@ -287,6 +280,26 @@ namespace CS_SMS_APP
             //{
             UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
             //});
+            Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint + 1);
+        }
+        private async void Printing(int chute_num, string job_dt, string box_num)
+        {
+            Log.Information("Printing chute_num {0} job_dt {1} box_num {2} start", chute_num, job_dt, box_num);
+            int locPrint = global.m_matchPrintChute[chute_num];
+            PrintList p = await global.api.Print(chute_num, job_dt, box_num);
+            Log.Information("Printing Location {0}", locPrint);
+            global.m_printer[locPrint].PrintData(p);
+            UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
+            Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint + 1);
+        }
+        private async void PrintingRack(int rack_num, int chute_num, string job_dt, string box_num)
+        {
+            Log.Information("PrintingRack chute_num {0} job_dt {1} box_num {2} start", chute_num, job_dt, box_num);
+            int locPrint = global.m_matchPrintRack[rack_num];
+            PrintList p = await global.api.Print(chute_num, job_dt, box_num);
+            Log.Information("Printing Location {0}", locPrint);
+            global.m_printer[locPrint].PrintData(p);
+            UpdateUI(Monitoring_printer, "Printing " + (locPrint + 1).ToString());
             Log.Information("Printing chute_num {0} locPrint {1} end", chute_num, locPrint + 1);
         }
         private void OnEvent_PRINT(int chute_num, int value, int id2)
@@ -352,8 +365,8 @@ namespace CS_SMS_APP
                         () =>
                         {
                             m_lastData.send_cnt = 1;
-                            if(m_lastData.leave_qty > 1)
-                                m_lastData.send_cnt = m_lastData.leave_qty;
+                            if(m_lastData.buffer > 1)
+                                m_lastData.send_cnt = m_lastData.buffer;
                             m_cancelData = m_lastData;
                             cancelList.Clear();
                             cancelList.Add(m_lastData);
@@ -368,6 +381,12 @@ namespace CS_SMS_APP
                                     data.leave_qty_color = "red";
                                 Log.Information(data.highlight);
                                 mdsList.Add(data);
+                                if (data.highlight == "yellow" || data.highlight == "gray")
+                                {
+                                    var historyData = new PListData(data);
+                                    historyData.highlight = "white";
+                                    mdsListHistory.Insert(0, historyData);
+                                }
                             }
                         });
                     }
@@ -531,6 +550,12 @@ namespace CS_SMS_APP
                                     d.leave_qty_color = "red";
                                 }
                                 mdsList.Add(d);
+                                if (d.highlight == "yellow" || d.highlight == "gray")
+                                {
+                                    var historyData = new PListData(d);
+                                    historyData.highlight = "white";
+                                    mdsListHistory.Insert(0, historyData);
+                                }
                             }
                             //Log.Information("=======Make PID======");
                             //global.md.MakePID();
@@ -598,6 +623,12 @@ namespace CS_SMS_APP
                                 if (data.seq == d.seq)
                                     data.highlight = "yellow";
                                 mdsList.Add(d);
+                                if (d.highlight == "yellow" || d.highlight == "gray")
+                                {
+                                    var historyData = new PListData(d);
+                                    historyData.highlight = "white";
+                                    mdsListHistory.Insert(0, historyData);
+                                }
                             }
                             global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
                         }
@@ -675,6 +706,12 @@ namespace CS_SMS_APP
                     //d.highlight = "yellow";
                     //d.leave_qty_color = "red";
                     mdsList.Add(data);
+                    if (data.highlight == "yellow" || data.highlight == "gray")
+                    {
+                        var historyData = new PListData(data);
+                        historyData.highlight = "white";
+                        mdsListHistory.Insert(0, historyData);
+                    }
                 }
             }
             else
@@ -724,6 +761,12 @@ namespace CS_SMS_APP
                     //d.highlight = "yellow";
                     //d.leave_qty_color = "red";
                     mdsList.Add(data);
+                    if (data.highlight == "yellow" || data.highlight == "gray")
+                    {
+                        var historyData = new PListData(data);
+                        historyData.highlight = "white";
+                        mdsListHistory.Insert(0, historyData);
+                    }
                 }
             }
             else
@@ -785,6 +828,12 @@ namespace CS_SMS_APP
                         data.leave_qty_color = "red";
                     Log.Information(data.highlight);
                     mdsList.Add(data);
+                    if (data.highlight == "yellow" || data.highlight == "gray")
+                    {
+                        var historyData = new PListData(data);
+                        historyData.highlight = "white";
+                        mdsListHistory.Insert(0,historyData);
+                    }
                 }
             }
             else
@@ -970,6 +1019,25 @@ namespace CS_SMS_APP
                 IndicatorRes(json);
                 if (res.body.biz_flag == "full")
                     global.mqc.led_on_req(res.body.id);
+            };
+            global.mqc.handleWebPrintingRack = (CMqttApi.WebReq<CMqttApi.WebPropertiesPrintRack> res) =>
+            {
+                int rack_num = res.properties.rack_num;
+                int chute_num = res.properties.chute_num;
+                string job_dt = res.properties.job_dt;
+                string box_num = res.properties.box_num;
+                Log.Information("handleWebPrintingRack rack_num {0} chute_num {1} job_dt {2} box_num {3}",
+                            rack_num, chute_num, job_dt, box_num);
+                Printing(chute_num, job_dt, box_num);
+            };
+            global.mqc.handleWebPrintingChute = (CMqttApi.WebReq<CMqttApi.WebPropertiesPrintChute> res) =>
+            {
+                int chute_num = res.properties.chute_num;
+                string job_dt = res.properties.job_dt;
+                string box_num = res.properties.box_num;
+                Log.Information("handleWebPrintingChute chute_num {0} job_dt {1} box_num {2}",
+                            chute_num, job_dt, box_num);
+                Printing(chute_num, job_dt, box_num);
             };
         }
         private async void IndicatorRes(JObject json)

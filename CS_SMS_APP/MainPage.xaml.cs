@@ -33,12 +33,29 @@ namespace CS_SMS_APP
         public static TextBox[] m_scanner = new TextBox[5];
         public static Queue<string> m_msgQueue = new Queue<string>();
         public static List<CPrinter> m_printer = new List<CPrinter>(new CPrinter[] { new CPrinter(), new CPrinter(), new CPrinter(), new CPrinter()});
+        public static List<int> m_matchPrintChute = new List<int>(new int[64]);
+        public static List<int> m_matchPrintRack = new List<int>(new int[32]);
         public static TextBlock m_mainTopTB = new TextBlock();
         public static string m_mainTopPrefix = "DAS_카카오분류-";
         public static Page m_currentPage = new Page();
         public static double m_paneLength = 240;
-        public global()
+        static global()
         {
+            ///Chute 프린터 배치
+            m_matchPrintChute[1] = 0;
+            m_matchPrintChute[3] = 0;
+
+            m_matchPrintChute[2] = 1;
+            m_matchPrintChute[4] = 1;
+
+            m_matchPrintChute[5] = 2;
+            m_matchPrintChute[7] = 2;
+
+            m_matchPrintChute[6] = 3;
+            m_matchPrintChute[8] = 3;
+            ///Rack 프린터 배치
+            m_matchPrintRack[1] = 0;
+            m_matchPrintRack[2] = 2;
         }
     }
 

@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    hello
+    <h2>JavaScript Objects</h2>
+
+    <p id="demo"></p>
+    <button onclick="alert('asdf');">Click me</button>
+
+    <script>
+        // Create an object:
+        //window.external.notify("asdfasf");
+        window.alert("asdfasf");
+        var person = { firstName: "John", lastName: "Doe", age: 50, eyeColor: "blue" };
+
+        // Display some data from the object:
+        document.getElementById("demo").innerHTML =
+            person.firstName + " is " + person.age + " years old.";
+    </script>
+</body>
+</html>

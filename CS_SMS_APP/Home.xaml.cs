@@ -113,6 +113,9 @@ namespace CS_SMS_APP
                 await global.mqc.Subscribe(global.mqc.m_serverTopic);
                 msg = global.mqc.m_serverTopic + " 구독";
                 UpdateUI(msg);
+                await global.mqc.Subscribe(global.mqc.m_serverTopicWeb);
+                msg = global.mqc.m_serverTopicWeb + " 구독";
+                UpdateUI(msg);
                 await global.mqc.Subscribe(global.mqc.m_gwID);
                 msg = global.mqc.m_gwID + " 구독";
                 UpdateUI(msg);
@@ -253,7 +256,22 @@ namespace CS_SMS_APP
                     global.m_printer[i].PrintConnect();
                     Thread.Sleep(500);
                 }
-
+                msg = "Alloc Chute";
+                UpdateUI(msg);
+                msg = "";
+                for(int i = 1; i <= 8; i++)
+                {
+                    msg += "Chute:" + i.ToString() + "=" + global.m_matchPrintChute[i].ToString() + ", ";
+                }
+                UpdateUI(msg);
+                msg = "Alloc Rack";
+                UpdateUI(msg);
+                msg = "";
+                for(int i = 1; i <= 2; i++)
+                {
+                    msg += "Rack:" + i.ToString() + "=" + global.m_matchPrintRack[i].ToString() + ", ";
+                }
+                UpdateUI(msg);
             });
             return 0;
         }

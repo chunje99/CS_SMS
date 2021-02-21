@@ -413,8 +413,8 @@
                 </Button.Flyout>
             </Button>
         </Grid>
-        <TextBlock Text="LOGS" Margin="52,346,0,0" />
-        <Grid Margin="39,383,0,0" Background="White" Width="1260" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <TextBlock Text="CURRENT" Margin="52,346,0,0" />
+        <Grid Margin="39,383,0,0" Background="White" Width="1260" HorizontalAlignment="Left" VerticalAlignment="Top" MaxHeight="200">
             <ListView Margin="0,0,0,0" x:Name="listView" SelectionMode="None">
                 <Grid Margin="0,0,0,0" Width="1260">
                     <Grid.RowDefinitions>
@@ -516,6 +516,50 @@
                 <StackPanel x:Name="InputData">
                 </StackPanel>
             </Grid-->
+            </ListView>
+        </Grid>
+        <TextBlock Text="HISTORY" Margin="52,586,0,0" />
+        <Grid Margin="39,613,0,0" Background="White" Width="1260" HorizontalAlignment="Left" VerticalAlignment="Top" MaxHeight="400">
+            <ListView Margin="0,0,0,0" x:Name="listViewHistory" SelectionMode="None">
+                <Grid Margin="0,0,0,0" Width="1260">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ListView Grid.Row="1"  x:Name="MDSDataHistory" ItemsSource="{x:Bind mdsListHistory}" SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="CS_SMS_LIB:PListData">
+                                <Grid Background="{x:Bind highlight}" Width="1260">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{x:Bind sku_cd}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind sku_nm}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="1" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind cust_nm}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="2" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind cust_cd}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="3" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind total_qty}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="4" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind leave_qty}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="5" VerticalAlignment="Center" Foreground="{x:Bind leave_qty_color}"/>
+                                    <TextBlock Text="{x:Bind remain_qty}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="6" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{x:Bind chute_num}" FontSize="14"  HorizontalAlignment="Center"
+                                Grid.Column="7" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
             </ListView>
         </Grid>
     </Grid>

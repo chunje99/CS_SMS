@@ -27,11 +27,27 @@ namespace CS_SMS_APP
         {
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+            MyWebview.ScriptNotify += webview_notify;
+            MyWebview.NavigationCompleted += webView_NavigationCompleted;
 #if DEBUG
             //Uri siteUri = new Uri("http://sms-admin.wtest.biz/config/chute_allocation.php");
-            Uri siteUri = new Uri("https://naver.com");
-            MyWebview.Source = siteUri;
+            Uri siteUri = new Uri("http://sms-admin.wtest.biz/auth/login.php");
+            //Uri siteUri = new Uri("ms-appx-web:///HTMLPage1.html");
+            //MyWebview.Source = siteUri;
+            //MyWebview.NavigateToString("ms-appx-web:///HTMLPage1.html");
+            MyWebview.Navigate(siteUri);
 #endif
+        }
+        async void webView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        {
+            await MyWebview.InvokeScriptAsync("eval", new string[] { "window.confirm = function(confirmMessage) { window.external.notify('typeConfirm:' + confirmMessage) }" });
+            await MyWebview.InvokeScriptAsync("eval", new string[] { "window.alert = function(AlertMessage) { window.external.notify(AlertMessage) }" });
+        }
+        private async void webview_notify(object sender, NotifyEventArgs e)
+        {
+            Log.Information("wevview_notify");
+            Windows.UI.Popups.MessageDialog dialog = new Windows.UI.Popups.MessageDialog(e.Value);
+            await dialog.ShowAsync();
         }
 
         private void OnLoad(object sender, RoutedEventArgs e)

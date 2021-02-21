@@ -9,7 +9,7 @@
   <Identity
     Name="64f5a97d-3870-450a-b5ed-430964219b22"
     Publisher="CN=ho80"
-    Version="1.1.103.0" />
+    Version="1.1.107.0" />
 
   <mp:PhoneIdentity PhoneProductId="64f5a97d-3870-450a-b5ed-430964219b22" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -40,6 +40,11 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <uap:ApplicationContentUriRules>
+        <uap:Rule Type="include" Match="http://sms-admin.wtest.biz" WindowsRuntimeAccess="all"/>
+        <uap:Rule Type="include" Match="http://sms-admin" WindowsRuntimeAccess="all"/>
+        <uap:Rule Type="include" Match="http://sms-admin:8080" WindowsRuntimeAccess="none"/>
+      </uap:ApplicationContentUriRules>
     </Application>
   </Applications>
 

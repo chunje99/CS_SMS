@@ -11,7 +11,7 @@
     Loaded="OnLoad"
     >
     <Grid Name="WebviewGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="1100" Height="900" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">
-        <WebView Source="http://sms-admin:8080/app/index.php" Name="MyWebview"></WebView>
+        <WebView Source="http://sms-admin:8080/app/index.php" Name="MyWebview"/>
         <!--WebView Source="http://127.0.0.1:8080/app/index.php" Name="MyWebview"></-->
     </Grid>
 </Page>

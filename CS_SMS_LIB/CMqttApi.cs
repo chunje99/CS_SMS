@@ -24,10 +24,13 @@ namespace CS_SMS_LIB
         public List<string> m_indList;
         public string m_gwID { get; set; }
         public string m_serverTopic { get; set; }
+        public string m_serverTopicWeb { get; set; }
         public string m_brokerAddress { get; set; }
         public string m_user { get; set; }
         public string m_passwd { get; set; }
         public Action<MpsRes<MpsBodyIndOnRes>> handleIndOnRes = null;
+        public Action<WebReq<WebPropertiesPrintRack>> handleWebPrintingRack = null;
+        public Action<WebReq<WebPropertiesPrintChute>> handleWebPrintingChute = null;
 
         public CMqttApi()
         {
@@ -52,8 +55,13 @@ namespace CS_SMS_LIB
             m_gwID = "kakao/F4BD01";
             //m_gwID = "kakao/F718CA";
             m_serverTopic = "weng";
-            m_brokerAddress = "sms-mqtt";
+            m_serverTopicWeb = "weng_web";
+#if DEBUG
             //m_brokerAddress = "172.16.0.209";
+            m_brokerAddress = "mqtt.wtest.biz";
+#else
+            m_brokerAddress = "sms-mqtt";
+#endif
             m_user = "mqadmin";
             m_passwd = "mqadminpassword";
         }
@@ -276,6 +284,37 @@ namespace CS_SMS_LIB
             public int res_ea_qty { get; set; }
         }
 
+        public class WebProperties : ICloneable
+        {
+            public object Clone() { return this.MemberwiseClone(); }
+        }
+
+        public class WebBody
+        {
+            public string action { get; set; }
+        }
+        public class WebReq<T>
+        {
+            public WebReq()
+            {
+            }
+            public T properties;
+            public WebBody body;
+        }
+        public class WebPropertiesPrintRack : WebProperties
+        {
+            public int rack_num { get; set; }
+            public int chute_num { get; set; }
+            public string job_dt { get; set; }
+            public string box_num { get; set; }
+        }
+        public class WebPropertiesPrintChute : WebProperties
+        {
+            public int chute_num { get; set; }
+            public string job_dt { get; set; }
+            public string box_num { get; set; }
+        }
+
         private async Task HandleReceivedApplicationMessage(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
             var item = $"Timestamp: {DateTime.Now:O} | Topic: {eventArgs.ApplicationMessage.Topic} | Payload: {eventArgs.ApplicationMessage.ConvertPayloadToString()} | QoS: {eventArgs.ApplicationMessage.QualityOfServiceLevel}";
@@ -420,7 +459,7 @@ namespace CS_SMS_LIB
                         MpsBodyIndOff reqBody = new MpsBodyIndOff();
                         reqBody.ind_off = m_indList;
                         ind_off_req(reqBody);
-                        foreach( var id in m_indList)
+                        foreach (var id in m_indList)
                             led_off_req(id);
                     }
                     else if (req.body.action == "IND_INIT_RPT")
@@ -440,11 +479,85 @@ namespace CS_SMS_LIB
                     Log.Information("Parse Error");
                 }
             }
+            else if (Topic == m_serverTopicWeb)
+            {
+                Log.Information("Topic: " + Topic);
+                Log.Information(body);
+                WebReq<WebProperties> req = ParseWebReq(body);
+                if( req.body.action == "print_rack")
+                {
+                    if (handleWebPrintingRack != null)
+                        handleWebPrintingRack(ParseWebReqPrintRack(body));
+                }
+                else if( req.body.action == "print_chute")
+                {
+                    if (handleWebPrintingChute != null)
+                        handleWebPrintingChute(ParseWebReqPrintChute(body));
+                }
+                else
+                {
+                    Log.Information("unknown api action");
+                    Log.Information(body);
+                }
+            }
             else
             {
                 Log.Information("Topic: " + Topic);
                 Log.Information(body);
             }
+        }
+
+        WebReq<WebProperties> ParseWebReq(string json)
+        {
+            WebReq<WebProperties> req = new WebReq<WebProperties>();
+            try
+            {
+                req = JsonConvert.DeserializeObject<WebReq<WebProperties>>(json);
+                if (req.body != null)
+                {
+                    Log.Information(req.body.action);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.Message);
+            }
+            return req;
+        }
+
+        WebReq<WebPropertiesPrintRack> ParseWebReqPrintRack(string json)
+        {
+            WebReq<WebPropertiesPrintRack> req = new WebReq<WebPropertiesPrintRack>();
+            try
+            {
+                req = JsonConvert.DeserializeObject<WebReq<WebPropertiesPrintRack>>(json);
+                if (req.body != null)
+                {
+                    Log.Information(req.body.action);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.Message);
+            }
+            return req;
+        }
+        WebReq<WebPropertiesPrintChute> ParseWebReqPrintChute(string json)
+        {
+            WebReq<WebPropertiesPrintChute> req = new WebReq<WebPropertiesPrintChute>();
+            try
+            {
+                req = JsonConvert.DeserializeObject<WebReq<WebPropertiesPrintChute>>(json);
+                if (req.body != null)
+                {
+                    Log.Information(req.body.action);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Information(e.Message);
+            }
+            return req;
         }
 
         MpsReq<MpsBody> ParseMpsReq(string json)
