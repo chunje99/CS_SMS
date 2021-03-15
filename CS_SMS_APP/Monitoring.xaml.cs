@@ -84,16 +84,22 @@ namespace CS_SMS_APP
                         m_currentData.Enqueue(pData);
                         ///MakePID
                         Log.Information("=======Make PID====== {0}", taskCnt++);
-                        PIDData pidData = await global.api.GetPID();
-                        if (pidData.status == "OK")
+                        if (pData.pid < 1)
                         {
-                            ///Distribution
-                            global.md.mdsData.pid = pidData.pid;
-                            OnEvent_PID(pidData.pid);
+                            PIDData pidData = await global.api.GetPID();
+                            if (pidData.status == "OK")
+                            {
+                                ///Distribution
+                                //global.md.mdsData.pid = pidData.pid;
+                                //OnEvent_PID(pidData.pid);
+                                pData.pid = pidData.pid;
+                            }
+                            else
+                                Alert(pidData.msg);
+                            //m_monitorMutex.ReleaseMutex();
                         }
-                        else
-                            Alert(pidData.msg);
-                        //m_monitorMutex.ReleaseMutex();
+                        global.md.mdsData.pid = pData.pid;
+                        OnEvent_PID(pData.pid);
                     }
                     //Thread.Sleep(50);
                 }
@@ -360,35 +366,46 @@ namespace CS_SMS_APP
                 {
                     if (tData.buffer > 0)
                     {
-                        m_lastData = tData;
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                         () =>
                         {
-                            m_lastData.send_cnt = 1;
-                            if(m_lastData.buffer > 1)
-                                m_lastData.send_cnt = m_lastData.buffer;
-                            m_cancelData = m_lastData;
+                            tData.send_cnt = 1;
+                            if(tData.buffer > 1)
+                                tData.send_cnt = tData.buffer;
+                            m_cancelData = tData;
                             cancelList.Clear();
-                            cancelList.Add(m_lastData);
-                            Log.Information(m_lastData.chute_num.ToString());
-                            Log.Information("======={0}======", m_lastData.sku_nm);
+                            cancelList.Add(tData);
+                            Log.Information(tData.chute_num.ToString());
+                            Log.Information("======={0}======", tData.sku_nm);
                             Log.Information("=======ADD QUEUE======");
-                            m_queueData.Enqueue(m_lastData);
+                            m_queueData.Enqueue(tData);
                             mdsList.Clear();
-                            foreach (var data in m_lastData.list)
+                            foreach (var data in tData.list)
                             {
                                 if (data.highlight == "yellow")
                                     data.leave_qty_color = "red";
                                 Log.Information(data.highlight);
                                 mdsList.Add(data);
-                                if (data.highlight == "yellow" || data.highlight == "gray")
+                                if (data.highlight == "yellow")
                                 {
                                     var historyData = new PListData(data);
                                     historyData.highlight = "white";
                                     mdsListHistory.Insert(0, historyData);
+                                    while (mdsListHistory.Count() > 10)
+                                    {
+                                        try
+                                        {
+                                            mdsListHistory.RemoveAt(10);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Log.Information("{0} Exception caught.", ex);
+                                        }
+                                    }
                                 }
                             }
                         });
+                        m_lastData = tData;
                     }
                 }
             });
@@ -511,6 +528,7 @@ namespace CS_SMS_APP
                 }
 
                 Bundle_input.Focus(FocusState.Programmatic);
+                Bundle_input.SelectionStart = Bundle_input.Text.Length;
                 TextBox box = sender as TextBox;
                 Log.Information(box.Text);
                 foreach( var data in bundleList)
@@ -550,11 +568,22 @@ namespace CS_SMS_APP
                                     d.leave_qty_color = "red";
                                 }
                                 mdsList.Add(d);
-                                if (d.highlight == "yellow" || d.highlight == "gray")
+                                if (d.highlight == "yellow" )
                                 {
                                     var historyData = new PListData(d);
                                     historyData.highlight = "white";
                                     mdsListHistory.Insert(0, historyData);
+                                    while (mdsListHistory.Count() > 10)
+                                    {
+                                        try
+                                        {
+                                            mdsListHistory.RemoveAt(10);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Log.Information("{0} Exception caught.", ex);
+                                        }
+                                    }
                                 }
                             }
                             //Log.Information("=======Make PID======");
@@ -564,8 +593,9 @@ namespace CS_SMS_APP
                         }
                     }
                 }
-                //Monitoring_bundle.Flyout.Hide();
-                Thread.Sleep(600);
+                Monitoring_bundle.Flyout.Hide();
+                //Thread.Sleep(600);
+                Thread.Sleep(700);
                 Bundle_Processing();
             }
         }
@@ -623,11 +653,22 @@ namespace CS_SMS_APP
                                 if (data.seq == d.seq)
                                     data.highlight = "yellow";
                                 mdsList.Add(d);
-                                if (d.highlight == "yellow" || d.highlight == "gray")
+                                if (d.highlight == "yellow" )
                                 {
                                     var historyData = new PListData(d);
                                     historyData.highlight = "white";
                                     mdsListHistory.Insert(0, historyData);
+                                    while (mdsListHistory.Count() > 10)
+                                    {
+                                        try
+                                        {
+                                            mdsListHistory.RemoveAt(10);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Log.Information("{0} Exception caught.", ex);
+                                        }
+                                    }
                                 }
                             }
                             global.api.Leave(m_lastData.seq, -1, m_lastData.send_cnt, m_lastData.chute_num);
@@ -635,7 +676,8 @@ namespace CS_SMS_APP
                     }
                 }
                 //remainList.Clear();
-                Thread.Sleep(500);
+                //Thread.Sleep(500);
+                Thread.Sleep(200);
                 Remain_Processing();
                 //Monitoring_remain.Flyout.Hide();
             }
@@ -656,13 +698,12 @@ namespace CS_SMS_APP
             var tData = await global.api.GetChute(m_lastCode, "bundle");
             if (tData.status == "OK")
             {
-                m_lastData = tData;
                 bool isFirst = true;
                 ///check focus
                 Log.Information("bundleFocusIdx: " + m_bundleFocusIdx.ToString());
                 ///check dup send seq
                 bool isBeforeUpdate = false;
-                foreach (var data in m_lastData.list)
+                foreach (var data in tData.list)
                 {
                     if (m_lastBundleSeq > 0 && m_lastBundleSeq == data.seq)
                     {
@@ -672,7 +713,8 @@ namespace CS_SMS_APP
                 }
                 if (isBeforeUpdate) ///데이터 다시 가지고 오기
                 {
-                    Thread.Sleep(500);
+                    //Thread.Sleep(500);
+                    Thread.Sleep(200);
                     Log.Information("=======RE Get Chute======");
                     var ttData = await global.api.GetChute(m_lastCode, "bundle");
                     if (ttData.status != "OK")
@@ -682,6 +724,8 @@ namespace CS_SMS_APP
                     }
                     m_lastData = ttData;
                 }
+                else
+                    m_lastData = tData;
                 if (m_lastData.list.Count() > m_bundleFocusIdx)
                 {
                     if (m_lastData.list[m_bundleFocusIdx].highlight != "gray")
@@ -706,12 +750,6 @@ namespace CS_SMS_APP
                     //d.highlight = "yellow";
                     //d.leave_qty_color = "red";
                     mdsList.Add(data);
-                    if (data.highlight == "yellow" || data.highlight == "gray")
-                    {
-                        var historyData = new PListData(data);
-                        historyData.highlight = "white";
-                        mdsListHistory.Insert(0, historyData);
-                    }
                 }
             }
             else
@@ -733,16 +771,15 @@ namespace CS_SMS_APP
             var tData = await global.api.GetChute(m_lastCode, "remain");
             if (tData.status == "OK")
             {
-                m_lastData = tData;
                 bool isFirst = true;
                 ///for focus
-                if( m_lastData.list.Count() > m_remainFocusIdx)
+                if( tData.list.Count() > m_remainFocusIdx)
                 {
-                    if( m_lastData.list[m_remainFocusIdx].highlight != "gray" )
+                    if( tData.list[m_remainFocusIdx].highlight != "gray" )
                         isFirst = false;
                 }
                 int idx = 0;
-                foreach (var data in m_lastData.list)
+                foreach (var data in tData.list)
                 {
 
                     if (data.highlight != "gray")
@@ -761,13 +798,8 @@ namespace CS_SMS_APP
                     //d.highlight = "yellow";
                     //d.leave_qty_color = "red";
                     mdsList.Add(data);
-                    if (data.highlight == "yellow" || data.highlight == "gray")
-                    {
-                        var historyData = new PListData(data);
-                        historyData.highlight = "white";
-                        mdsListHistory.Insert(0, historyData);
-                    }
                 }
+                m_lastData = tData;
             }
             else
                 Alert(tData.msg);
@@ -806,21 +838,20 @@ namespace CS_SMS_APP
             var tData = await global.api.GetChute(m_lastCode, "single");
             if (tData.status == "OK")
             {
-                m_lastData = tData;
                 //Log.Information("=======Make PID======");
                 //global.md.MakePID();
-                m_cancelData = m_lastData;
+                m_cancelData = tData;
                 cancelList.Clear();
-                cancelList.Add(m_lastData);
+                cancelList.Add(tData);
 
-                m_lastData.send_cnt = 1;
-                Log.Information(m_lastData.chute_num.ToString());
-                Log.Information("======={0}======", m_lastData.sku_nm);
+                tData.send_cnt = 1;
+                Log.Information(tData.chute_num.ToString());
+                Log.Information("======={0}======", tData.sku_nm);
                 Log.Information("=======ADD QUEUE======");
-                m_queueData.Enqueue(m_lastData);
+                m_queueData.Enqueue(tData);
 
                 mdsList.Clear();
-                foreach (var data in m_lastData.list)
+                foreach (var data in tData.list)
                 {
                     //if (data.highlight == "ON")
                     //    data.color = "Aqua";
@@ -828,13 +859,25 @@ namespace CS_SMS_APP
                         data.leave_qty_color = "red";
                     Log.Information(data.highlight);
                     mdsList.Add(data);
-                    if (data.highlight == "yellow" || data.highlight == "gray")
+                    if (data.highlight == "yellow")
                     {
                         var historyData = new PListData(data);
                         historyData.highlight = "white";
-                        mdsListHistory.Insert(0,historyData);
+                        mdsListHistory.Insert(0, historyData);
+                        while (mdsListHistory.Count() > 10)
+                        {
+                            try
+                            {
+                                mdsListHistory.RemoveAt(10);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Information("{0} Exception caught.", ex);
+                            }
+                        }
                     }
                 }
+                m_lastData = tData;
             }
             else
                 Alert(tData.msg);
@@ -965,6 +1008,7 @@ namespace CS_SMS_APP
                 Log.Information("BundleFocusChange");
                 textbox.Focus(FocusState.Programmatic);
             }
+            textbox.SelectionStart = textbox.Text.Length;
         }
 
         private void RemainChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -975,7 +1019,9 @@ namespace CS_SMS_APP
             {
                 Log.Information("RemainFocusChange");
                 textbox.Focus(FocusState.Programmatic);
+                textbox.SelectionStart = textbox.Text.Length;
             }
+            textbox.SelectionStart = textbox.Text.Length;
         }
 
         private void Bundle_Close(object sender, RoutedEventArgs e)
@@ -1028,7 +1074,7 @@ namespace CS_SMS_APP
                 string box_num = res.properties.box_num;
                 Log.Information("handleWebPrintingRack rack_num {0} chute_num {1} job_dt {2} box_num {3}",
                             rack_num, chute_num, job_dt, box_num);
-                Printing(chute_num, job_dt, box_num);
+                PrintingRack(rack_num, chute_num, job_dt, box_num);
             };
             global.mqc.handleWebPrintingChute = (CMqttApi.WebReq<CMqttApi.WebPropertiesPrintChute> res) =>
             {

@@ -742,6 +742,7 @@ namespace CS_SMS_LIB
         public string msg { get; set; }
         public int send_cnt { get; set; }
         public int buffer { get; set; }
+        public int pid { get; set; }
         public List<PListData> list { get; set; }
 
         public Product()
@@ -759,6 +760,7 @@ namespace CS_SMS_LIB
             msg = "";
             send_cnt = 1;
             buffer = 0;
+            pid = 0;
             list = new List<PListData>();
         }
         public void Set(PListData p)
@@ -772,6 +774,10 @@ namespace CS_SMS_LIB
             total_qty = p.total_qty;
             leave_qty = p.leave_qty;
             remain_qty = p.remain_qty;
+            msg = "";
+            send_cnt = 1;
+            buffer = 0;
+            pid = 0;
         }
     }
     public class PListData

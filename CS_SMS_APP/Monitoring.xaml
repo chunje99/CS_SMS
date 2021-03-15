@@ -86,7 +86,7 @@
                                 <TextBlock Text="묶음수량" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                             </Grid>
-                            <ListView Grid.Row="2"  x:Name="BundleData" ItemsSource="{x:Bind bundleList, Mode=OneWay}" SelectionMode="None" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1260">
+                            <ListView Grid.Row="2"  x:Name="BundleData" TabNavigation="Cycle" ItemsSource="{x:Bind bundleList, Mode=OneWay}" SelectionMode="None" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1260">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                         <Grid Background="{x:Bind highlight}" Width="1260" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -184,7 +184,7 @@
                                 <TextBlock Text="잔류수량" FontSize="16" HorizontalAlignment="Center" 
                                 Grid.Column="8" VerticalAlignment="Center"/>
                             </Grid>
-                            <ListView Grid.Row="2"  x:Name="RemainData" ItemsSource="{x:Bind remainList, Mode=OneWay}" SelectionMode="None">
+                            <ListView Grid.Row="2"  x:Name="RemainData" TabNavigation="Cycle" ItemsSource="{x:Bind remainList, Mode=OneWay}" SelectionMode="None">
                                 <ListView.ItemTemplate>
                                     <DataTemplate x:DataType="CS_SMS_LIB:PListData">
                                         <Grid Background="{x:Bind highlight}" Width="1260">

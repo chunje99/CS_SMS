@@ -136,9 +136,9 @@ namespace CS_SMS_APP
                 Thread.Sleep(1000);
                 var devices = global.udp.m_deviceTable;
                 Log.Information(devices.Count().ToString());
-                if(devices.Count() != 3 )
+                if(devices.Count() != 4 )
                 {
-                    msg = "Sub Scanner Count Error";
+                    msg = "Sub Scanner Count Error : " + devices.Count().ToString();
                     UpdateUI(msg, "red");
                     m_errorCnt++;
                 }
