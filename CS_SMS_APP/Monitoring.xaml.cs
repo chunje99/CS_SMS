@@ -593,7 +593,7 @@ namespace CS_SMS_APP
                         }
                     }
                 }
-                Monitoring_bundle.Flyout.Hide();
+                //Monitoring_bundle.Flyout.Hide();
                 //Thread.Sleep(600);
                 Thread.Sleep(700);
                 Bundle_Processing();
